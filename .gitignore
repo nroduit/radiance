@@ -1,5 +1,6 @@
 # Compiled class file
 *.class
+*.jar
 
 .gradle/
 .idea/
@@ -7,3 +8,10 @@
 build/
 out/
 bin/
+
+
+# Ignore the eclipse configuration files
+.classpath
+.project
+.settings/
+

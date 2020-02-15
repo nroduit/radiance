@@ -28,14 +28,22 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-apply plugin: 'java'
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
 
 dependencies {
     implementation project(':neon')
     implementation project(':trident')
 }
 
-sourceCompatibility = 1.8
 
 ext.designation = "core"
 
@@ -45,6 +53,25 @@ jar {
 
 javadoc {
     exclude 'org/pushingpixels/substance/internal/**'
+}
+
+configurations {
+    // configuration that holds jars to include in the jar
+    extraLibs
+}
+jar {
+    manifest {
+        attributes("Radiance-Version": "${version}",    \
+                 "Built-JDK": System.getProperty('java.version'),    \
+                 "Built-JDK-Vendor": System.getProperty('java.vendor'),    \
+                 "Build-Time": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"))
+    }
+    baseName = "${rootProject.name}-substance-all"
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
 }
 
 apply plugin: 'com.bmuschko.nexus'
@@ -78,16 +105,17 @@ modifyPom {
             }
         }
         dependencies {
-            dependency {
-                groupId = project.group
-                artifactId = project.archivesBaseName + '-trident'
-                version = project.version
-            }
-            dependency {
-                groupId = project.group
-                artifactId = project.archivesBaseName + '-neon'
-                version = project.version
-            }
+        }
+    }
+}
+
+publishing {
+    publications {
+        testing(MavenPublication) {
+            from components.java
+                afterEvaluate {
+                    artifact sourcesJar
+                }
         }
     }
 }

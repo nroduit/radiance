@@ -28,7 +28,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = '3.0-SNAPSHOT'
+version = '3.0.0-rc3'
 ext.codename = 'Diamond'
 ext.isRelease = false
 
@@ -70,15 +70,7 @@ allprojects {
     // Configure Java compilation for all the projects
     tasks.withType(JavaCompile) {
         // enforce Java 9 as the source + target + compile time level
-        def javaVersion = JavaVersion.VERSION_1_9
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
-
-        compileJava.doFirst {
-            if (JavaVersion.current() != javaVersion)
-                throw new IllegalStateException("Compiler version mismatch; required is "
-                        + javaVersion + ", but using " + JavaVersion.current());
-        }
+        sourceCompatibility = JavaVersion.VERSION_11
 
         // flag all usage of deprecated APIs as errors
         options.deprecation = true
