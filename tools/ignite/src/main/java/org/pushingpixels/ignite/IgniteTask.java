@@ -35,10 +35,7 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
-import org.pushingpixels.photon.api.transcoder.LanguageRenderer;
-import org.pushingpixels.photon.api.transcoder.SvgBatchConverter;
-import org.pushingpixels.photon.api.transcoder.SvgTranscoder;
-import org.pushingpixels.photon.api.transcoder.TranscoderListener;
+import org.pushingpixels.photon.api.transcoder.*;
 import org.pushingpixels.photon.api.transcoder.java.JavaLanguageRenderer;
 import org.pushingpixels.photon.api.transcoder.kotlin.KotlinLanguageRenderer;
 
@@ -46,9 +43,11 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-public class IgniteTask extends DefaultTask {
+public class IgniteTask extends IgniteBaseTask {
     private String outputPackageName;
 
     private String outputLanguage;
@@ -76,7 +75,7 @@ public class IgniteTask extends DefaultTask {
         return outputLanguage;
     }
 
-    @Option(option = "outputPackageName", description = "Configures the output package name.")
+    @Option(option = "outputLanguage", description = "Configures the output language.")
     public void setOutputLanguage(String outputLanguage) {
         this.outputLanguage = outputLanguage;
     }
@@ -148,47 +147,8 @@ public class IgniteTask extends DefaultTask {
         templateFileName += (useResizableTemplate ? "Resizable" : "Plain");
         templateFileName += ".templ";
 
-        File[] svgFiles = inputDirectory.listFiles(
-                (File dir, String name) -> name.endsWith(".svg"));
-        if (svgFiles != null) {
-            for (File file : svgFiles) {
-                String svgClassName = outputClassNamePrefix
-                        + file.getName().substring(0, file.getName().length() - 4);
-                svgClassName = svgClassName.replace('-', '_');
-                svgClassName = svgClassName.replace(' ', '_');
-                String classFilename =
-                        outputDirectory + File.separator + svgClassName + outputFileNameExtension;
-
-                logger.trace("Processing " + file.getName());
-
-                try (PrintWriter pw = new PrintWriter(classFilename);
-                     InputStream templateStream = SvgBatchConverter.class
-                             .getResourceAsStream(templateFileName)) {
-                    if (templateStream == null) {
-                        logger.error("Couldn't load " + templateFileName);
-                        return;
-                    }
-
-                    final CountDownLatch latch = new CountDownLatch(1);
-
-                    SvgTranscoder transcoder = new SvgTranscoder(file.toURI().toURL().toString(),
-                            svgClassName, languageRenderer);
-                    transcoder.setPackageName(outputPackageName);
-                    transcoder.setListener(new TranscoderListener() {
-                        public Writer getWriter() {
-                            return pw;
-                        }
-
-                        public void finished() {
-                            latch.countDown();
-                        }
-                    });
-                    transcoder.transcode(templateStream);
-                    latch.await();
-                } catch (Exception e) {
-                    logger.error("Transcoding failed", e);
-                }
-            }
-        }
+        this.transcodeAllFilesInFolder(inputDirectory, outputDirectory,
+                outputClassNamePrefix, outputFileNameExtension,
+                outputPackageName, languageRenderer, templateFileName);
     }
 }

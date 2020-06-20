@@ -7,15 +7,15 @@ A **skin** is a set of visual settings that gives your application a polished an
 [Light skins](toneddown.md) use predominantly light colors for painting the UI controls and containers. [Business skin](toneddown.md#business) is an example of a light skin:
 
 <p>
-<img alt="Business" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/business1.png" width="340" height="254">
-<img alt="Business" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/business2.png" width="340" height="254">
+<img alt="Business" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/business1.png" width="340" height="258">
+<img alt="Business" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/business2.png" width="340" height="258">
 </p>
 
 [Dark skins](dark.md) use predominantly dark colors for painting the UI controls and containers. [Graphite Chalk](dark.md#graphite-chalk) skin is an example of a dark skin:
 
 <p>
-<img alt="GraphiteChalk" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/graphitechalk1.png" width="340" height="254">
-<img alt="GraphiteChalk" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/graphitechalk2.png" width="340" height="254">
+<img alt="GraphiteChalk" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/graphitechalk1.png" width="340" height="258">
+<img alt="GraphiteChalk" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/graphitechalk2.png" width="340" height="258">
 </p>
 
 The core Substance skins are in the `org.pushingpixels.substance.api.skin` package, and `the org.pushingpixels.substance.api.SubstanceSkin` class contains all the APIs officially supported by Substance skins. It is possible to use different Substance skins on different windows in the same application. Consult the documentation on the `SubstanceLookAndFeel.SKIN_PROPERTY` client property.
@@ -42,11 +42,11 @@ In order to define a valid skin, you need to specify all its mandatory parameter
 
 ### Decoration areas
 
-The documentation on decoration painters explains the notion of a decoration area type. While a valid skin must define a color scheme bundle for `DecorationAreaType.NONE`, all other decoration area types are optional. Different skins have different sets of decoration areas that are painted. For example, the [Moderate skin](toneddown.md#moderate) decorates only `DecorationAreaType.PRIMARY_TITLE_PANE`, `DecorationAreaType.SECONDARY_TITLE_PANE` and `DecorationAreaType.HEADER`, while the [Business Blue Steel skin](toneddown.md#business-blue-steel) also decorates `DecorationAreaType.TOOLBAR`, `DecorationAreaType.FOOTER` and `DecorationAreaType.GENERAL`:
+The documentation on decoration painters explains the notion of a decoration area type. While a valid skin must define a color scheme bundle for `DecorationAreaType.NONE`, all other decoration area types are optional. Different skins have different sets of decoration areas that are painted. For example, the [Moderate skin](toneddown.md#moderate) decorates `DecorationAreaType.PRIMARY_TITLE_PANE`, `DecorationAreaType.SECONDARY_TITLE_PANE` and `DecorationAreaType.HEADER`, while the [Nebula Amethyst skin](toneddown.md#nebula-amethyst) also decorates `DecorationAreaType.TOOLBAR`:
 
 <p>
-<img alt="Moderate" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/moderate1.png" width="340" height="254">
-<img alt="Business Blue Steel" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/businessbluesteel1.png" width="340" height="254">
+<img alt="Moderate" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/moderate1.png" width="340" height="258">
+<img alt="Nebula Amethyst" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/nebulaamethyst1.png" width="340" height="258">
 </p>
 
 In order to register a custom color scheme bundle and an optional background color scheme on the specific decoration area type(s), use the following APIs:
@@ -188,7 +188,7 @@ this.addOverlayPainter(this.bottomLineOverlayPainter,
 
 and here is how it looks like:
 
-<img alt="Nebula" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/nebula1.png" width="340" height="254">
+<img alt="Nebula" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/nebula1.png" width="340" height="258">
 
 ### Miscellaneous settings
 
@@ -218,7 +218,7 @@ public void setTabFadeEnd(double tabFadeEnd)
 
 By default, the fade start is at 0.1 and the fade end is at 0.3 - here is how it looks like on the [Sahara skin](toneddown.md#sahara):
 
-<img alt="Sahara" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/sahara1.png" width="340" height="254">
+<img alt="Sahara" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/sahara1.png" width="340" height="258">
 
 Here is how these APIs are used in the [Creme skin](toneddown.md#creme) to specify a slightly larger selected tab fade:
 
@@ -229,7 +229,7 @@ Here is how these APIs are used in the [Creme skin](toneddown.md#creme) to speci
 
 and this is how it looks like:
 
-<img alt="Creme" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/creme1.png" width="340" height="254">
+<img alt="Creme" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/creme1.png" width="340" height="258">
 
 All the other settings (watermark, painters, watermark color scheme) are set in the skin constructor. Here is sample code from the [Office Silver 2007 skin](toneddown.md#office-silver-2007):
 
@@ -311,6 +311,30 @@ public interface ColorSchemeTransform {
   public SubstanceColorScheme transform(SubstanceColorScheme scheme);
 }
 ```
+
+### Accented skins
+
+Another, more fine grained mechanism for deriving a skin is using **accented skins**. This can be done by extending a skin that extends the `SubstanceSkin.Accented` super class.
+
+Such skins "declare" themselves to support one particular, narrowly scoped kind of derivation - providing up to five [color schemes](colorschemes.md) as accents. It is up to a skin that declares itself as accented to "decide" how to apply those accent colors.
+
+For example, here are two `Creme` skins that extend the core `CremeAccentedSkin` class:
+
+<p>
+<img alt="Creme" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/creme1.png" width="340" height="258">
+<img alt="Creme Coffee" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/cremecoffee1.png" width="340" height="258">
+</p>
+
+The first passes a light blue color scheme as the accent for active controls and cell highlights, while the second passes a light brown scheme as the accent for the same parts of the UI. This particular accented skin family uses these two accent types for selected tabs, checkboxes, radio buttons, default buttons, scroll bars and active cells in tables, trees, and lists.
+
+As another example, here are two `Nebula` skins that extend the core `NebulaAccentedSkin` class:
+
+<p>
+<img alt="Nebula" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/nebula1.png" width="340" height="258">
+<img alt="Nebula Brick Wall" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/nebulabrickwall1.png" width="340" height="258">
+</p>
+
+The first passes a light silver scheme as the window chrome accent, while the second passes an orange scheme as the window chrome accent. This particular accented skin family uses the window chrome accent on the root pane border, the title pane and the menu bar - while maintaining the overall consistency of its visual "language", such as decoration painter, fill painter, color scheme for active controls in the main UI area, etc.
 
 ### Providing custom skins
 

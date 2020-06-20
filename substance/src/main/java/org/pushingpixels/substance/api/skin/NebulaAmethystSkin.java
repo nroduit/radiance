@@ -38,12 +38,11 @@ import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.api.painter.overlay.BottomShadowOverlayPainter;
 
 /**
- * <code>Nebula Amethyst</code> skin. This class is part of officially
- * supported API.
+ * <code>Nebula Amethyst</code> skin. This class is part of officially supported API.
  * 
  * @author Kirill Grouchnikov
  */
-public class NebulaAmethystSkin extends NebulaSkin {
+public class NebulaAmethystSkin extends NebulaAccentedSkin {
 	/**
 	 * Display name for <code>this</code> skin.
 	 */
@@ -53,27 +52,20 @@ public class NebulaAmethystSkin extends NebulaSkin {
 	 * Creates a new <code>Nebula Amethyst</code> skin.
 	 */
 	public NebulaAmethystSkin() {
-		super();
+		super(new AccentBuilder().withWindowChromeAccent(new PurpleColorScheme()));
 
-		SubstanceColorScheme purpleColorScheme = new PurpleColorScheme();
-
-		this.registerAsDecorationArea(purpleColorScheme,
-				DecorationAreaType.PRIMARY_TITLE_PANE,
-				DecorationAreaType.SECONDARY_TITLE_PANE,
-				DecorationAreaType.TOOLBAR,
-				DecorationAreaType.HEADER);
-
+		// Also apply the window chrome accent color on the TOOLBAR area
+		SubstanceColorScheme windowChromeAccent = this.getWindowChromeAccent();
+		this.registerAsDecorationArea(windowChromeAccent, DecorationAreaType.TOOLBAR);
 		this.clearOverlayPainters(DecorationAreaType.TOOLBAR);
-		this.addOverlayPainter(BottomShadowOverlayPainter.getInstance(100),
-				DecorationAreaType.TOOLBAR);
-		this.addOverlayPainter(this.bottomLineOverlayPainter,
-				DecorationAreaType.TOOLBAR);
+		this.addOverlayPainter(BottomShadowOverlayPainter.getInstance(100), DecorationAreaType.TOOLBAR);
+		this.addOverlayPainter(this.bottomLineOverlayPainter, DecorationAreaType.TOOLBAR);
 
 		SubstanceColorSchemeBundle toolbarBundle = new SubstanceColorSchemeBundle(
-				purpleColorScheme.saturate(0.1f), purpleColorScheme, purpleColorScheme);
+				windowChromeAccent.saturate(0.1f), windowChromeAccent, windowChromeAccent);
 		toolbarBundle.registerAlpha(0.5f, ComponentState.DISABLED_SELECTED,
 				ComponentState.DISABLED_UNSELECTED);
-		toolbarBundle.registerColorScheme(purpleColorScheme.saturate(0.08f),
+		toolbarBundle.registerColorScheme(windowChromeAccent.saturate(0.08f),
 				SubstanceSlices.ColorSchemeAssociationKind.SEPARATOR);
 		this.registerDecorationAreaSchemeBundle(toolbarBundle, DecorationAreaType.TOOLBAR);
 	}

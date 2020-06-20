@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage
 import java.io.*
 import java.lang.ref.WeakReference
 import java.util.Base64
+import java.util.Stack
 import javax.imageio.ImageIO
 import javax.swing.plaf.UIResource
 
@@ -19,14 +20,69 @@ import org.pushingpixels.neon.api.icon.ResizableIconUIResource
  */
 class ic_search_black_24px private constructor(private var width: Int, private var height: Int)
        : ResizableIcon {
+    @Suppress("UNUSED_VARIABLE") private var shape: Shape? = null
+    @Suppress("UNUSED_VARIABLE") private var generalPath: GeneralPath? = null
+    @Suppress("UNUSED_VARIABLE") private var paint: Paint? = null
+    @Suppress("UNUSED_VARIABLE") private var stroke: Stroke? = null
+    @Suppress("UNUSED_VARIABLE") private var clip: Shape? = null
+    private val transformsStack = Stack<AffineTransform>()
+
     
 
-	private fun innerPaint(g : Graphics2D) {
-        @Suppress("UNUSED_VARIABLE") var shape: Shape?
-        @Suppress("UNUSED_VARIABLE") var paint: Paint?
-        @Suppress("UNUSED_VARIABLE") var stroke: Stroke?
-        @Suppress("UNUSED_VARIABLE") var clip: Shape?
+	private fun _paint0(g : Graphics2D,origAlpha : Float) {
+transformsStack.push(g.transform)
+// 
+g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
+transformsStack.push(g.transform)
+g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, -0.0f, -0.0f))
+// _0
+g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
+transformsStack.push(g.transform)
+g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
+// _0_0
+if (generalPath == null) {
+   generalPath = GeneralPath()
+} else {
+   generalPath!!.reset()
+}
+generalPath!!.moveTo(15.5f, 14.0f)
+generalPath!!.lineTo(14.71f, 14.0f)
+generalPath!!.lineTo(14.43f, 13.73f)
+generalPath!!.curveTo(15.41f, 12.59f, 16.0f, 11.11f, 16.0f, 9.5f)
+generalPath!!.curveTo(16.0f, 5.91f, 13.09f, 3.0f, 9.5f, 3.0f)
+generalPath!!.curveTo(5.91f, 3.0f, 3.0f, 5.91f, 3.0f, 9.5f)
+generalPath!!.curveTo(3.0f, 13.09f, 5.91f, 16.0f, 9.5f, 16.0f)
+generalPath!!.curveTo(11.11f, 16.0f, 12.59f, 15.41f, 13.73f, 14.43f)
+generalPath!!.lineTo(14.0f, 14.71f)
+generalPath!!.lineTo(14.0f, 15.5f)
+generalPath!!.lineTo(19.0f, 20.49f)
+generalPath!!.lineTo(20.49f, 19.0f)
+generalPath!!.lineTo(15.5f, 14.0f)
+generalPath!!.closePath()
+generalPath!!.moveTo(9.5f, 14.0f)
+generalPath!!.curveTo(7.01f, 14.0f, 5.0f, 11.99f, 5.0f, 9.5f)
+generalPath!!.curveTo(5.0f, 7.01f, 7.01f, 5.0f, 9.5f, 5.0f)
+generalPath!!.curveTo(11.99f, 5.0f, 14.0f, 7.01f, 14.0f, 9.5f)
+generalPath!!.curveTo(14.0f, 11.99f, 11.99f, 14.0f, 9.5f, 14.0f)
+generalPath!!.closePath()
+shape = generalPath
+paint = Color(0, 0, 0, 255)
+g.paint = paint
+g.fill(shape)
+g.transform = transformsStack.pop()
+g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
+transformsStack.push(g.transform)
+g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
+// _0_1
+g.transform = transformsStack.pop()
+g.transform = transformsStack.pop()
+g.transform = transformsStack.pop()
 
+}
+
+
+
+	private fun innerPaint(g : Graphics2D) {
         var origAlpha = 1.0f
         val origComposite = g.composite
         if (origComposite is AlphaComposite) {
@@ -35,49 +91,14 @@ class ic_search_black_24px private constructor(private var width: Int, private v
             }
         }
         
-	    val defaultTransform_ = g.transform
-// 
-g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
-val defaultTransform__0 = g.transform
-g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, -0.0f, -0.0f))
-// _0
-g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
-val defaultTransform__0_0 = g.transform
-g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
-// _0_0
-shape = GeneralPath()
-shape.moveTo(15.5, 14.0)
-shape.lineTo(14.71, 14.0)
-shape.lineTo(14.43, 13.73)
-shape.curveTo(15.41, 12.59, 16.0, 11.11, 16.0, 9.5)
-shape.curveTo(16.0, 5.91, 13.09, 3.0, 9.5, 3.0)
-shape.curveTo(5.91, 3.0, 3.0, 5.91, 3.0, 9.5)
-shape.curveTo(3.0, 13.09, 5.91, 16.0, 9.5, 16.0)
-shape.curveTo(11.11, 16.0, 12.59, 15.41, 13.73, 14.43)
-shape.lineTo(14.0, 14.71)
-shape.lineTo(14.0, 15.5)
-shape.lineTo(19.0, 20.49)
-shape.lineTo(20.49, 19.0)
-shape.lineTo(15.5, 14.0)
-shape.closePath()
-shape.moveTo(9.5, 14.0)
-shape.curveTo(7.01, 14.0, 5.0, 11.99, 5.0, 9.5)
-shape.curveTo(5.0, 7.01, 7.01, 5.0, 9.5, 5.0)
-shape.curveTo(11.99, 5.0, 14.0, 7.01, 14.0, 9.5)
-shape.curveTo(14.0, 11.99, 11.99, 14.0, 9.5, 14.0)
-shape.closePath()
-paint = Color(0, 0, 0, 255)
-g.paint = paint
-g.fill(shape)
-g.transform = defaultTransform__0_0
-g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
-val defaultTransform__0_1 = g.transform
-g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
-// _0_1
-g.transform = defaultTransform__0_1
-g.transform = defaultTransform__0
-g.transform = defaultTransform_
+	    _paint0(g, origAlpha)
 
+
+	    shape = null
+	    generalPath = null
+	    paint = null
+	    stroke = null
+	    clip = null
 	}
 	
     companion object {
@@ -157,12 +178,12 @@ g.transform = defaultTransform_
         return height
     }
 
-    override fun setDimension(newDimension: Dimension) {
+    override @Synchronized fun setDimension(newDimension: Dimension) {
         width = newDimension.width
         height = newDimension.height
     }
 
-    override fun paintIcon(c: Component?, g: Graphics, x: Int, y: Int) {
+    override @Synchronized fun paintIcon(c: Component?, g: Graphics, x: Int, y: Int) {
         val g2d = g.create() as Graphics2D
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON)

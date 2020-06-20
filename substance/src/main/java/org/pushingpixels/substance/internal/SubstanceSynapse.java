@@ -29,13 +29,19 @@
  */
 package org.pushingpixels.substance.internal;
 
+import org.pushingpixels.substance.internal.widget.text.CapsLockPasswordBorderWidget;
 import org.pushingpixels.substance.internal.widget.text.LockBorderWidget;
 
 public class SubstanceSynapse {
     /**
-     * Client property name for specifying that the {@link LockBorderWidget} should put a lock icon.
+     * Client property name for specifying that the {@link LockBorderWidget} should put the lock icon.
      */
     public final static String HAS_LOCK_ICON = "substancelaf.internal.widget.hasLockIcon";
+
+    /**
+     * Client property name for specifying that the {@link CapsLockPasswordBorderWidget} should put the caps lock icon.
+     */
+    public final static String HAS_CAPS_LOCK_ICON = "substancelaf.internal.widget.hasCapsLockIcon";
 
     /**
      * Client property name for specifying the preview painter for a component.
@@ -194,11 +200,6 @@ public class SubstanceSynapse {
     public final static String TRACE_FILE = "substancelaf.internal.traceFile";
 
     /**
-     * Client property name for specifying the heap status trace file.
-     */
-    public static final String HEAP_STATUS_TRACE_FILE = "substancelaf.internal.heapStatusTraceFile";
-
-    /**
      * Client property name for specifying the kind of focus indication.
      */
     public final static String FOCUS_KIND = "substancelaf.internal.focusKind";
@@ -232,9 +233,9 @@ public class SubstanceSynapse {
     public final static String ROOT_PANE_PREFERRED_TITLE_PANE_HEIGHT = "substancelaf.internal.rootPanePreferredTitlePaneHeight";
 
     /**
-     * Client property name for specifying the horizontal gravity of the button bar content.
+     * Client property name for specifying that a label should be painted as title pane text.
      */
-    public final static String BUTTON_BAR_GRAVITY = "substancelaf.internal.buttonBarGravity";
+    public final static String IS_TITLE_PANE_LABEL = "substancelaf.internal.isTitlePaneLabel";
 
     /**
      * Client property name for specifying the horizontal gravity of the title pane text.

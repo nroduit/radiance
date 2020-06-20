@@ -30,7 +30,6 @@
 package org.pushingpixels.demo.flamingo.ribbon;
 
 import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.factories.Paddings;
 import org.pushingpixels.demo.flamingo.LocaleSwitcher;
 import org.pushingpixels.demo.flamingo.SkinSwitcher;
 import org.pushingpixels.demo.flamingo.common.QuickStylesPanel;
@@ -76,8 +75,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.CaretEvent;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -1680,13 +1677,32 @@ public class BasicCheckRibbon extends JRibbonFrame {
         this.getRibbon().addTask(animationsTask);
         this.getRibbon().addTask(wrappedTask);
 
+        // "Share" anchored menu
+        Command shareEntrySendMail = Command.builder()
+                .setText(resourceBundle.getString("AppMenuSend.email.text"))
+                .setAction((CommandActionEvent ae) -> System.out.println("Shared to email"))
+                .build();
+
+        Command shareEntrySendHtml = Command.builder()
+                .setText(resourceBundle.getString("AppMenuSend.html.text"))
+                .setAction((CommandActionEvent ae) -> System.out.println("Shared to browser"))
+                .build();
+
+        Command shareEntrySendDoc = Command.builder()
+                .setText(resourceBundle.getString("AppMenuSend.word.text"))
+                .setAction((CommandActionEvent ae) -> System.out.println("Shared to Word"))
+                .build();
+
         this.getRibbon().addAnchoredCommand(Command.builder()
                 .setText(resourceBundle.getString("Share.title"))
                 .setIconFactory(Internet_mail.factory())
-                .setAction((CommandActionEvent e) -> JOptionPane
-                        .showMessageDialog(BasicCheckRibbon.this, "Share button clicked"))
+                .setSecondaryContentModel(new CommandMenuContentModel(new CommandGroup(
+                        shareEntrySendMail, shareEntrySendHtml, shareEntrySendDoc)))
                 .build()
-                .project(CommandButtonPresentationModel.builder().setActionKeyTip("GS").build()));
+                .project(CommandButtonPresentationModel.builder()
+                        .setPopupHorizontalGravity(CommandButtonPresentationModel.PopupHorizontalGravity.END)
+                        .setPopupKeyTip("GS")
+                        .build()));
 
         this.getRibbon().addAnchoredCommand(Command.builder()
                 .setIconFactory(Internet_group_chat.factory())
@@ -2612,6 +2628,7 @@ public class BasicCheckRibbon extends JRibbonFrame {
         });
 
         statusBar = builder.build();
+        statusBar.setOpaque(true);
         SubstanceCortex.ComponentOrParentChainScope.setDecorationType(statusBar,
                 SubstanceSlices.DecorationAreaType.FOOTER);
 

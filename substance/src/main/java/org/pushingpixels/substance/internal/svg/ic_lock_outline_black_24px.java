@@ -6,7 +6,9 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.ref.WeakReference;
 import java.util.Base64;
+import java.util.Stack;
 import javax.imageio.ImageIO;
+import javax.swing.SwingUtilities;
 import javax.swing.plaf.UIResource;
 
 import org.pushingpixels.neon.api.icon.ResizableIcon;
@@ -17,15 +19,79 @@ import org.pushingpixels.neon.api.icon.ResizableIconUIResource;
  * href="https://github.com/kirill-grouchnikov/radiance">Photon SVG transcoder</a>.
  */
 public class ic_lock_outline_black_24px implements ResizableIcon {
+    private Shape shape = null;
+    private GeneralPath generalPath = null;
+    private Paint paint = null;
+    private Stroke stroke = null;
+    private Shape clip = null;
+    private Stack<AffineTransform> transformsStack = new Stack<>();
+
     
+
+	private void _paint0(Graphics2D g,float origAlpha) {
+transformsStack.push(g.getTransform());
+// 
+g.setComposite(AlphaComposite.getInstance(3, 1.0f * origAlpha));
+transformsStack.push(g.getTransform());
+g.transform(new AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, -0.0f, -0.0f));
+// _0
+g.setComposite(AlphaComposite.getInstance(3, 1.0f * origAlpha));
+transformsStack.push(g.getTransform());
+g.transform(new AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f));
+// _0_0
+if (generalPath == null) {
+   generalPath = new GeneralPath();
+} else {
+   generalPath.reset();
+}
+generalPath.moveTo(12.0f, 17.0f);
+generalPath.curveTo(13.1f, 17.0f, 14.0f, 16.1f, 14.0f, 15.0f);
+generalPath.curveTo(14.0f, 13.9f, 13.1f, 13.0f, 12.0f, 13.0f);
+generalPath.curveTo(10.9f, 13.0f, 10.0f, 13.9f, 10.0f, 15.0f);
+generalPath.curveTo(10.0f, 16.1f, 10.9f, 17.0f, 12.0f, 17.0f);
+generalPath.closePath();
+generalPath.moveTo(18.0f, 8.0f);
+generalPath.lineTo(17.0f, 8.0f);
+generalPath.lineTo(17.0f, 6.0f);
+generalPath.curveTo(17.0f, 3.24f, 14.76f, 1.0f, 12.0f, 1.0f);
+generalPath.curveTo(9.24f, 1.0f, 7.0f, 3.24f, 7.0f, 6.0f);
+generalPath.lineTo(7.0f, 8.0f);
+generalPath.lineTo(6.0f, 8.0f);
+generalPath.curveTo(4.9f, 8.0f, 4.0f, 8.9f, 4.0f, 10.0f);
+generalPath.lineTo(4.0f, 20.0f);
+generalPath.curveTo(4.0f, 21.1f, 4.9f, 22.0f, 6.0f, 22.0f);
+generalPath.lineTo(18.0f, 22.0f);
+generalPath.curveTo(19.1f, 22.0f, 20.0f, 21.1f, 20.0f, 20.0f);
+generalPath.lineTo(20.0f, 10.0f);
+generalPath.curveTo(20.0f, 8.9f, 19.1f, 8.0f, 18.0f, 8.0f);
+generalPath.closePath();
+generalPath.moveTo(8.9f, 6.0f);
+generalPath.curveTo(8.9f, 4.29f, 10.29f, 2.9f, 12.0f, 2.9f);
+generalPath.curveTo(13.71f, 2.9f, 15.1f, 4.29f, 15.1f, 6.0f);
+generalPath.lineTo(15.1f, 8.0f);
+generalPath.lineTo(8.9f, 8.0f);
+generalPath.lineTo(8.9f, 6.0f);
+generalPath.closePath();
+generalPath.moveTo(18.0f, 20.0f);
+generalPath.lineTo(6.0f, 20.0f);
+generalPath.lineTo(6.0f, 10.0f);
+generalPath.lineTo(18.0f, 10.0f);
+generalPath.lineTo(18.0f, 20.0f);
+generalPath.closePath();
+shape = generalPath;
+paint = new Color(0, 0, 0, 255);
+g.setPaint(paint);
+g.fill(shape);
+g.setTransform(transformsStack.pop());
+g.setTransform(transformsStack.pop());
+g.setTransform(transformsStack.pop());
+
+}
+
+
 
     @SuppressWarnings("unused")
 	private void innerPaint(Graphics2D g) {
-        Shape shape = null;
-        Paint paint = null;
-        Stroke stroke = null;
-        Shape clip = null;
-
         float origAlpha = 1.0f;
         Composite origComposite = g.getComposite();
         if (origComposite instanceof AlphaComposite) {
@@ -36,58 +102,15 @@ public class ic_lock_outline_black_24px implements ResizableIcon {
             }
         }
         
-	    AffineTransform defaultTransform_ = g.getTransform();
-// 
-g.setComposite(AlphaComposite.getInstance(3, 1.0f * origAlpha));
-AffineTransform defaultTransform__0 = g.getTransform();
-g.transform(new AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, -0.0f, -0.0f));
-// _0
-g.setComposite(AlphaComposite.getInstance(3, 1.0f * origAlpha));
-AffineTransform defaultTransform__0_0 = g.getTransform();
-g.transform(new AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f));
-// _0_0
-shape = new GeneralPath();
-((GeneralPath)shape).moveTo(12.0, 17.0);
-((GeneralPath)shape).curveTo(13.1, 17.0, 14.0, 16.1, 14.0, 15.0);
-((GeneralPath)shape).curveTo(14.0, 13.9, 13.1, 13.0, 12.0, 13.0);
-((GeneralPath)shape).curveTo(10.9, 13.0, 10.0, 13.9, 10.0, 15.0);
-((GeneralPath)shape).curveTo(10.0, 16.1, 10.9, 17.0, 12.0, 17.0);
-((GeneralPath)shape).closePath();
-((GeneralPath)shape).moveTo(18.0, 8.0);
-((GeneralPath)shape).lineTo(17.0, 8.0);
-((GeneralPath)shape).lineTo(17.0, 6.0);
-((GeneralPath)shape).curveTo(17.0, 3.24, 14.76, 1.0, 12.0, 1.0);
-((GeneralPath)shape).curveTo(9.24, 1.0, 7.0, 3.24, 7.0, 6.0);
-((GeneralPath)shape).lineTo(7.0, 8.0);
-((GeneralPath)shape).lineTo(6.0, 8.0);
-((GeneralPath)shape).curveTo(4.9, 8.0, 4.0, 8.9, 4.0, 10.0);
-((GeneralPath)shape).lineTo(4.0, 20.0);
-((GeneralPath)shape).curveTo(4.0, 21.1, 4.9, 22.0, 6.0, 22.0);
-((GeneralPath)shape).lineTo(18.0, 22.0);
-((GeneralPath)shape).curveTo(19.1, 22.0, 20.0, 21.1, 20.0, 20.0);
-((GeneralPath)shape).lineTo(20.0, 10.0);
-((GeneralPath)shape).curveTo(20.0, 8.9, 19.1, 8.0, 18.0, 8.0);
-((GeneralPath)shape).closePath();
-((GeneralPath)shape).moveTo(8.9, 6.0);
-((GeneralPath)shape).curveTo(8.9, 4.29, 10.29, 2.9, 12.0, 2.9);
-((GeneralPath)shape).curveTo(13.71, 2.9, 15.1, 4.29, 15.1, 6.0);
-((GeneralPath)shape).lineTo(15.1, 8.0);
-((GeneralPath)shape).lineTo(8.9, 8.0);
-((GeneralPath)shape).lineTo(8.9, 6.0);
-((GeneralPath)shape).closePath();
-((GeneralPath)shape).moveTo(18.0, 20.0);
-((GeneralPath)shape).lineTo(6.0, 20.0);
-((GeneralPath)shape).lineTo(6.0, 10.0);
-((GeneralPath)shape).lineTo(18.0, 10.0);
-((GeneralPath)shape).lineTo(18.0, 20.0);
-((GeneralPath)shape).closePath();
-paint = new Color(0, 0, 0, 255);
-g.setPaint(paint);
-g.fill(shape);
-g.setTransform(defaultTransform__0_0);
-g.setTransform(defaultTransform__0);
-g.setTransform(defaultTransform_);
+	    _paint0(g, origAlpha);
 
+
+	    shape = null;
+	    generalPath = null;
+	    paint = null;
+	    stroke = null;
+	    clip = null;
+        transformsStack.clear();
 	}
 
     /**
@@ -152,13 +175,13 @@ g.setTransform(defaultTransform_);
 	}
 
 	@Override
-	public void setDimension(Dimension newDimension) {
+	public synchronized void setDimension(Dimension newDimension) {
 		this.width = newDimension.width;
 		this.height = newDimension.height;
 	}
 
     @Override
-	public void paintIcon(Component c, Graphics g, int x, int y) {
+	public synchronized void paintIcon(Component c, Graphics g, int x, int y) {
 		Graphics2D g2d = (Graphics2D) g.create();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);

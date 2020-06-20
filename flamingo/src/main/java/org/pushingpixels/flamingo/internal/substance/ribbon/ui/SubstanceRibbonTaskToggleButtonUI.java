@@ -54,7 +54,6 @@ import javax.swing.border.Border;
 import javax.swing.plaf.ComponentUI;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.geom.GeneralPath;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.EnumSet;
@@ -225,7 +224,7 @@ public class SubstanceRibbonTaskToggleButtonUI extends
                 (JRibbonTaskToggleButton) this.commandButton);
         float focusRingPadding = SubstanceSizeUtils.getFocusRingPadding(SubstanceSizeUtils
                 .getComponentFontSize(this.commandButton));
-        GeneralPath contour = SubstanceOutlineUtilities.getBaseOutline(this.commandButton.getWidth(),
+        Shape contour = SubstanceOutlineUtilities.getBaseOutline(this.commandButton.getWidth(),
                 this.commandButton.getHeight(), radius, EnumSet.of(SubstanceSlices.Side.BOTTOM),
                 focusRingPadding);
 

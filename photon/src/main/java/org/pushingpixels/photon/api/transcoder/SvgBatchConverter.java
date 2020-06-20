@@ -32,144 +32,77 @@ package org.pushingpixels.photon.api.transcoder;
 import org.pushingpixels.photon.api.transcoder.java.JavaLanguageRenderer;
 import org.pushingpixels.photon.api.transcoder.kotlin.KotlinLanguageRenderer;
 
-import java.io.*;
-import java.util.concurrent.CountDownLatch;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.NoSuchFileException;
+import java.util.Objects;
+import java.util.stream.Stream;
 
-public class SvgBatchConverter {
-    private static String getInputArgument(String[] args, String argumentName) {
-        for (String arg : args) {
-            String[] split = arg.split("=");
-            if (split.length != 2) {
-                System.out.println("Argument '" + arg + "' unsupported");
-                System.out.println("Check the documentation for the parameters to pass");
-                System.exit(1);
-            }
-            if (split[0].compareTo(argumentName) == 0) {
-                return split[1];
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @param args <ul>
-     *             <li>sourceFolder=xyz - points to a folder with SVG images</li>
-     *             <li>outputPackageName=xyz - the package name for the transcoded classes</li>
-     *             <li>templateFile=xyz - the template file for creating the transcoded classes</li>
-     *             <li>outputLanguage=java|kotlin - the language for the transcoded classes</li>
-     *             <li>outputFolder=xyz - optional location of output files. If not specified,
-     *             output files will be placed in the 'sourceFolder'</li>
-     *             <li>outputClassNamePrefix=xyz - optional prefix for the class name of each
-     *             transcoded class</li>
-     *             </ul>
-     */
-    public static void main(String[] args) {
+public class SvgBatchConverter extends SvgBatchBaseConverter {
+    public static void main(String[] args) throws IOException {
         if (args.length < 4) {
-            System.out.println("Check the documentation for the parameters to pass");
+            System.out.println("=== Usage ===");
+            Stream.of(
+                    "java " + SvgBatchConverter.class.getCanonicalName(),
+                    "  sourceFolder=xyz - points to a folder with SVG images",
+                    "  outputPackageName=xyz - the package name for the transcoded classes",
+                    "  templateFile=xyz - the template file for creating the transcoded classes",
+                    "  outputLanguage=java|kotlin - the language for the transcoded classes",
+                    "  outputFolder=xyz - optional location of output files. If not specified, output files will be placed in the 'sourceFolder'",
+                    "  outputClassNamePrefix=xyz - optional prefix for the class name of each transcoded class"
+            ).forEach(System.out::println);
+            System.out.println(CHECK_DOCUMENTATION);
             System.exit(1);
         }
 
-        String sourceFolderName = getInputArgument(args, "sourceFolder");
-        if (sourceFolderName == null) {
-            System.out.println(
-                    "Missing source folder. Check the documentation for the parameters to pass");
-            System.exit(1);
+        SvgBatchConverter converter = new SvgBatchConverter();
+
+        String sourceFolderName = converter.getInputArgument(args, "sourceFolder", null);
+        Objects.requireNonNull(sourceFolderName, "Missing source folder. " + CHECK_DOCUMENTATION);
+
+        String outputPackageName = converter.getInputArgument(args, "outputPackageName", null);
+        Objects.requireNonNull(outputPackageName, "Missing output package name. " + CHECK_DOCUMENTATION);
+
+        String templateFile = converter.getInputArgument(args, "templateFile", null);
+        Objects.requireNonNull(templateFile, "Missing template file. " + CHECK_DOCUMENTATION);
+
+        String outputLanguage = converter.getInputArgument(args, "outputLanguage", null);
+        Objects.requireNonNull(outputLanguage, "Missing output language. " + CHECK_DOCUMENTATION);
+
+        final LanguageRenderer languageRenderer;
+        final String outputFileNameExtension;
+        if ("java".equals(outputLanguage)) {
+            languageRenderer = new JavaLanguageRenderer();
+            outputFileNameExtension = ".java";
+        } else if ("kotlin".equals(outputLanguage)) {
+            languageRenderer = new KotlinLanguageRenderer();
+            outputFileNameExtension = ".kt";
+        } else {
+            throw new IllegalArgumentException("Output language must be either Java or Kotlin. " + CHECK_DOCUMENTATION);
         }
-        String outputPackageName = getInputArgument(args, "outputPackageName");
-        if (outputPackageName == null) {
-            System.out.println(
-                    "Missing output package name. Check the documentation for the parameters to " +
-                            "pass");
-            System.exit(1);
-        }
-        String templateFile = getInputArgument(args, "templateFile");
-        if (templateFile == null) {
-            System.out.println(
-                    "Missing template file. Check the documentation for the parameters to pass");
-            System.exit(1);
-        }
-        String outputLanguage = getInputArgument(args, "outputLanguage");
-        if (outputLanguage == null) {
-            System.out.println(
-                    "Missing output language. Check the documentation for the parameters to pass");
-            System.exit(1);
-        }
-        if ((outputLanguage.compareTo("java") != 0) && (outputLanguage.compareTo("kotlin") != 0)) {
-            System.out.println(
-                    "Output language must be either Java or Kotlin. Check the documentation for " +
-                            "the parameters to pass");
-            System.exit(1);
-        }
-        String outputClassNamePrefix = getInputArgument(args, "outputClassNamePrefix");
-        if (outputClassNamePrefix == null) {
-            outputClassNamePrefix = "";
-        }
-        String outputFolderName = getInputArgument(args, "outputFolder");
-        if (outputFolderName == null) {
-            outputFolderName = sourceFolderName;
-        }
+
+        String outputClassNamePrefix = converter.getInputArgument(args, "outputClassNamePrefix", "");
+        String outputFolderName = converter.getInputArgument(args, "outputFolder", sourceFolderName);
 
         File inputFolder = new File(sourceFolderName);
         if (!inputFolder.exists()) {
-            return;
+            throw new NoSuchFileException(sourceFolderName);
         }
         File outputFolder = new File(outputFolderName);
         if (!outputFolder.exists()) {
-            return;
+            throw new NoSuchFileException(outputFolderName);
         }
-
-        LanguageRenderer languageRenderer = ("java".compareTo(outputLanguage) == 0)
-                ? new JavaLanguageRenderer()
-                : new KotlinLanguageRenderer();
-        String outputFileNameExtension = ("java".compareTo(outputLanguage) == 0) ? ".java" : ".kt";
 
         System.out.println(
                 "******************************************************************************");
         System.out.println("Processing");
-        System.out.println("\t  source folder: " + sourceFolderName);
-        System.out.println("\t   package name: " + outputPackageName);
+        System.out.println("\tsource folder: " + sourceFolderName);
+        System.out.println("\tpackage name: " + outputPackageName);
         System.out.println("\toutput language: " + outputLanguage);
         System.out.println(
                 "******************************************************************************");
 
-        for (File file : inputFolder.listFiles((File dir, String name) -> name.endsWith(".svg"))) {
-            String svgClassName = outputClassNamePrefix
-                    + file.getName().substring(0, file.getName().length() - 4);
-            svgClassName = svgClassName.replace('-', '_');
-            svgClassName = svgClassName.replace(' ', '_');
-            String classFilename = outputFolderName + File.separator +
-                    svgClassName + outputFileNameExtension;
-
-            System.err.println("Processing " + file.getName());
-
-            try (PrintWriter pw = new PrintWriter(classFilename);
-                 InputStream templateStream = SvgBatchConverter.class
-                         .getResourceAsStream(templateFile)) {
-                final CountDownLatch latch = new CountDownLatch(1);
-
-                SvgTranscoder transcoder = new SvgTranscoder(file.toURI().toURL().toString(),
-                        svgClassName, languageRenderer);
-                transcoder.setPackageName(outputPackageName);
-                transcoder.setListener(new TranscoderListener() {
-                    public Writer getWriter() {
-                        return pw;
-                    }
-
-                    public void finished() {
-                        latch.countDown();
-                    }
-                });
-                if (templateStream == null) {
-                    System.err.println("Couldn't load " + templateFile);
-                    return;
-                }
-                transcoder.transcode(templateStream);
-                latch.await();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        System.out.println();
+        converter.transcodeAllFilesInFolder(inputFolder, outputFolder, outputClassNamePrefix, outputFileNameExtension,
+                outputPackageName, languageRenderer, templateFile);
     }
 }

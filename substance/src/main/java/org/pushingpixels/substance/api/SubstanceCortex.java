@@ -123,11 +123,11 @@ public class SubstanceCortex {
 
         private static SubstanceIconPack iconPack;
 
-        private static SubstanceSlices.ButtonOrder buttonBarButtonOrder = SubstanceSlices
-                .ButtonOrder.PLATFORM;
+        private static SubstanceSlices.ButtonOrder buttonBarButtonOrder =
+                SubstanceSlices.ButtonOrder.PLATFORM;
 
-        private static SubstanceSlices.HorizontalGravity buttonBarGravity = SubstanceSlices
-                .HorizontalGravity.PLATFORM;
+        private static SubstanceSlices.HorizontalGravity buttonBarGravity =
+                SubstanceSlices.HorizontalGravity.PLATFORM;
 
         /**
          * Sets the specified skin. If the current look-and-feel is not Substance, this method will
@@ -194,8 +194,7 @@ public class SubstanceCortex {
 
                 UIDefaults lafDefaults = UIManager.getLookAndFeelDefaults();
                 UIDefaults defaults = lafDefaults;
-                // The table will be null when the skin is set using a custom
-                // LAF
+                // The table will be null when the skin is set using a custom LAF
                 if (defaults != null) {
                     initFontDefaults(lafDefaults, getFontPolicy().getFontSet());
                     newSkin.addCustomEntriesToTable(lafDefaults);
@@ -423,7 +422,7 @@ public class SubstanceCortex {
 
                     "RadioButtonMenuItem.font", menuFont,
 
-                    "RadioButtonMenuItem.acceleratorFont", menuFont, };
+                    "RadioButtonMenuItem.acceleratorFont", menuFont,};
             table.putDefaults(defaults);
         }
 
@@ -980,9 +979,29 @@ public class SubstanceCortex {
          *                will show a lock icon. Pass <code>null</code> to reset to the default
          *                behavior.
          * @see ComponentScope#setLockIconVisible(JComponent, Boolean)
+         * @see GlobalScope#setExtraWidgetsPresence(Boolean)
+         * @see ComponentOrParentChainScope#setExtraWidgetsPresence(JComponent, Boolean)
          */
         public static void setLockIconVisible(Boolean visible) {
             UIManager.put(SubstanceSynapse.HAS_LOCK_ICON, visible);
+        }
+
+        /**
+         * Specifies global visibility of the caps lock icon on password fields.
+         * Note that this functionality may not be supported on all platforms. See
+         * {@link Toolkit#getLockingKeyState(int)} documentation for more.
+         *
+         * @param visible If <code>true</code>, all password fields not explicitly
+         *                configured with
+         *                {@link ComponentScope#setCapsLockIconVisible(JPasswordField, Boolean)} will show an indicator
+         *                icon when they are focused and caps lock is on. Pass <code>null</code> to reset to the
+         *                default behavior.
+         * @see ComponentScope#setCapsLockIconVisible(JPasswordField, Boolean)
+         * @see GlobalScope#setExtraWidgetsPresence(Boolean)
+         * @see ComponentOrParentChainScope#setExtraWidgetsPresence(JComponent, Boolean)
+         */
+        public static void setCapsLockIconVisible(Boolean visible) {
+            UIManager.put(SubstanceSynapse.HAS_CAPS_LOCK_ICON, visible);
         }
 
         /**
@@ -1014,10 +1033,8 @@ public class SubstanceCortex {
          * Paste / ... menu items)
          *
          * @param hasEditContextMenu If <code>true</code>, text components will have the edit
-         *                           context menu (with
-         *                           Cut / Copy / Paste / ... menu items). Pass <code>null</code>
-         *                           to reset to the
-         *                           default behavior.
+         *                           context menu (with Cut / Copy / Paste / ... menu items). Pass <code>null</code>
+         *                           to reset to the default behavior.
          * @see ComponentScope#setTextEditContextMenuPresence(JTextComponent, Boolean)
          */
         public static void setTextEditContextMenuPresence(Boolean hasEditContextMenu) {
@@ -1028,8 +1045,8 @@ public class SubstanceCortex {
          * Specifies whether trees should have should have automatic drag and drop support.
          *
          * @param hasAutomaticDragAndDropSupport If <code>true</code>, trees will have automatic
-         *                                       drag and drop support. Pass
-         *                                       <code>null</code> to reset to the default behavior.
+         *                                       drag and drop support. Pass <code>null</code> to reset to the
+         *                                       default behavior.
          * @see ComponentScope#setAutomaticDragAndDropSupportPresence(JTree, Boolean)
          */
         public static void setAutomaticDragAndDropSupportPresence(
@@ -1047,6 +1064,8 @@ public class SubstanceCortex {
          *                           <code>null</code> to reset to
          *                           the default behavior.
          * @see ComponentScope#setAutomaticScrollPresence(JScrollPane, Boolean)
+         * @see GlobalScope#setExtraWidgetsPresence(Boolean)
+         * @see ComponentOrParentChainScope#setExtraWidgetsPresence(JComponent, Boolean)
          */
         public static void setAutomaticScrollPresence(Boolean hasAutomaticScroll) {
             UIManager.put(SubstanceSynapse.AUTO_SCROLL, hasAutomaticScroll);
@@ -1060,8 +1079,7 @@ public class SubstanceCortex {
          * called with <code>true</code>.
          *
          * @param watermarkVisible If <code>true</code>, watermark will be painted on all
-         *                         components not
-         *                         explicitly configured with
+         *                         components not explicitly configured with
          *                         {@link ComponentOrParentChainScope#setWatermarkVisible(JComponent, Boolean)}.
          *                         Pass <code>null</code> to reset to the default behavior.
          * @see ComponentOrParentChainScope#setWatermarkVisible(JComponent, Boolean)
@@ -1077,10 +1095,8 @@ public class SubstanceCortex {
          * {@link ClassicButtonShaper} respect this setting.
          *
          * @param buttonIgnoreMinimumSize If <code>true</code>, buttons will ignore the default
-         *                                (minimum) size under
-         *                                button shapers that respect this setting. Pass
-         *                                <code>null</code> to reset to
-         *                                the default behavior.
+         *                                (minimum) size under button shapers that respect this setting. Pass
+         *                                <code>null</code> to reset to the default behavior.
          * @see ComponentOrParentScope#setButtonIgnoreMinimumSize(JComponent, Boolean)
          */
         public static void setButtonIgnoreMinimumSize(Boolean buttonIgnoreMinimumSize) {
@@ -1132,10 +1148,8 @@ public class SubstanceCortex {
          * should be shown.
          *
          * @param extraWidgetsPresence If <code>true</code>, extra UI elements (such as menu
-         *                             items in system menu or
-         *                             lock borders) will be shown. Pass <code>null</code> to
-         *                             reset to the default
-         *                             behavior.
+         *                             items in system menu or lock borders) will be shown. Pass <code>null</code> to
+         *                             reset to the default behavior.
          * @see ComponentOrParentChainScope#setExtraWidgetsPresence(JComponent, Boolean)
          */
         public static void setExtraWidgetsPresence(Boolean extraWidgetsPresence) {
@@ -1243,8 +1257,7 @@ public class SubstanceCortex {
          */
         public static void setTabContentPaneBorderKind(
                 TabContentPaneBorderKind tabContentPaneBorderKind) {
-            UIManager.put(SubstanceSynapse.TABBED_PANE_CONTENT_BORDER_KIND,
-                    tabContentPaneBorderKind);
+            UIManager.put(SubstanceSynapse.TABBED_PANE_CONTENT_BORDER_KIND, tabContentPaneBorderKind);
         }
 
         /**
@@ -1300,8 +1313,7 @@ public class SubstanceCortex {
          */
         public static void setComboBoxPrototypeCallback(
                 ComboPopupPrototypeCallback comboPopupPrototypeCallback) {
-            UIManager.put(SubstanceSynapse.COMBOBOX_POPUP_PROTOTYPE_CALLBACK,
-                    comboPopupPrototypeCallback);
+            UIManager.put(SubstanceSynapse.COMBOBOX_POPUP_PROTOTYPE_CALLBACK, comboPopupPrototypeCallback);
         }
 
         /**
@@ -1316,8 +1328,7 @@ public class SubstanceCortex {
          */
         public static void setComboBoxPrototypeDisplayValue(
                 Object comboPopupPrototypeDisplayValue) {
-            UIManager.put(SubstanceSynapse.COMBOBOX_POPUP_PROTOTYPE_OBJECT,
-                    comboPopupPrototypeDisplayValue);
+            UIManager.put(SubstanceSynapse.COMBOBOX_POPUP_PROTOTYPE_OBJECT, comboPopupPrototypeDisplayValue);
         }
 
         /**
@@ -1418,8 +1429,8 @@ public class SubstanceCortex {
          * Returns the colorized version of icon based off of the passed icon factory. The returned
          * icon also implements the marker {@link javax.swing.plaf.UIResource} interface.
          *
-         * @param sourceFactory    Source factory to be used to create the icon.
-         * @param colorScheme      Color scheme for colorization.
+         * @param sourceFactory Source factory to be used to create the icon.
+         * @param colorScheme   Color scheme for colorization.
          * @return The colorized version of the icon.
          */
         public static ResizableIconUIResource colorizeIconAsUiResource(
@@ -1463,8 +1474,7 @@ public class SubstanceCortex {
         public static void registerTabCloseChangeListener(JTabbedPane tabbedPane,
                 BaseTabCloseListener tabCloseListener) {
             if (tabbedPane == null) {
-                throw new IllegalArgumentException(
-                        "Component scope APIs do not accept null components");
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
             }
             TabCloseListenerManager.getInstance().registerListener(tabbedPane, tabCloseListener);
         }
@@ -1482,8 +1492,7 @@ public class SubstanceCortex {
         public static void unregisterTabCloseChangeListener(JTabbedPane tabbedPane,
                 BaseTabCloseListener tabCloseListener) {
             if (tabbedPane == null) {
-                throw new IllegalArgumentException(
-                        "Component scope APIs do not accept null components");
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
             }
             TabCloseListenerManager.getInstance().unregisterListener(tabbedPane, tabCloseListener);
         }
@@ -1498,8 +1507,7 @@ public class SubstanceCortex {
          */
         public static Set<BaseTabCloseListener> getAllTabCloseListeners(JTabbedPane tabbedPane) {
             if (tabbedPane == null) {
-                throw new IllegalArgumentException(
-                        "Component scope APIs do not accept null components");
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
             }
             return TabCloseListenerManager.getInstance().getListeners(tabbedPane);
         }
@@ -1512,8 +1520,7 @@ public class SubstanceCortex {
          */
         public static void allowAnimations(Component comp, AnimationFacet animationFacet) {
             if (comp == null) {
-                throw new IllegalArgumentException(
-                        "Component scope APIs do not accept null components");
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
             }
             AnimationConfigurationManager.getInstance().allowAnimations(animationFacet, comp);
         }
@@ -1526,8 +1533,7 @@ public class SubstanceCortex {
          */
         public static void disallowAnimations(Component comp, AnimationFacet animationFacet) {
             if (comp == null) {
-                throw new IllegalArgumentException(
-                        "Component scope APIs do not accept null components");
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
             }
             AnimationConfigurationManager.getInstance().disallowAnimations(animationFacet, comp);
         }
@@ -1542,8 +1548,7 @@ public class SubstanceCortex {
          */
         public static boolean isAnimationAllowed(Component comp, AnimationFacet animationFacet) {
             if (comp == null) {
-                throw new IllegalArgumentException(
-                        "Component scope APIs do not accept null components");
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
             }
             return AnimationConfigurationManager.getInstance().isAnimationAllowed(animationFacet,
                     comp);
@@ -1562,8 +1567,7 @@ public class SubstanceCortex {
          */
         public static DecorationAreaType getImmediateDecorationType(Component comp) {
             if (comp == null) {
-                throw new IllegalArgumentException(
-                        "Component scope APIs do not accept null components");
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
             }
             return DecorationPainterUtils.getImmediateDecorationType(comp);
         }
@@ -1576,9 +1580,34 @@ public class SubstanceCortex {
          *                when it is in non-editable mode. Pass <code>null</code> to reset to the
          *                default behavior.
          * @see GlobalScope#setLockIconVisible(Boolean)
+         * @see GlobalScope#setExtraWidgetsPresence(Boolean)
+         * @see ComponentOrParentChainScope#setExtraWidgetsPresence(JComponent, Boolean)
          */
         public static void setLockIconVisible(JComponent comp, Boolean visible) {
+            if (comp == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             comp.putClientProperty(SubstanceSynapse.HAS_LOCK_ICON, visible);
+        }
+
+        /**
+         * Specifies component-level visibility of the caps lock icon on the specific password field.
+         * Note that this functionality may not be supported on all platforms. See
+         * {@link Toolkit#getLockingKeyState(int)} documentation for more.
+         *
+         * @param passwordField Password field.
+         * @param visible       If <code>true</code>, the specific password field will show an indicator icon
+         *                      when it is focused and caps lock is on. Pass <code>null</code> to reset to the
+         *                      default behavior.
+         * @see GlobalScope#setCapsLockIconVisible(Boolean)
+         * @see GlobalScope#setExtraWidgetsPresence(Boolean)
+         * @see ComponentOrParentChainScope#setExtraWidgetsPresence(JComponent, Boolean)
+         */
+        public static void setCapsLockIconVisible(JPasswordField passwordField, Boolean visible) {
+            if (passwordField == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
+            passwordField.putClientProperty(SubstanceSynapse.HAS_CAPS_LOCK_ICON, visible);
         }
 
         /**
@@ -1589,6 +1618,9 @@ public class SubstanceCortex {
          */
         public static void setPasswordStrengthChecker(JPasswordField passwordField,
                 PasswordStrengthChecker passwordStrengthChecker) {
+            if (passwordField == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             passwordField.putClientProperty(SubstanceSynapse.PASSWORD_STRENGTH_CHECKER,
                     passwordStrengthChecker);
         }
@@ -1605,6 +1637,9 @@ public class SubstanceCortex {
          */
         public static void setFlipTextSelectionOnEscape(JTextComponent comp,
                 Boolean flipTextSelectionOnEscape) {
+            if (comp == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             comp.putClientProperty(SubstanceSynapse.TEXT_FLIP_SELECT_ON_ESCAPE,
                     flipTextSelectionOnEscape);
         }
@@ -1623,6 +1658,9 @@ public class SubstanceCortex {
          */
         public static void setTextEditContextMenuPresence(JTextComponent comp,
                 Boolean hasEditContextMenu) {
+            if (comp == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             comp.putClientProperty(SubstanceSynapse.TEXT_EDIT_CONTEXT_MENU, hasEditContextMenu);
         }
 
@@ -1637,8 +1675,10 @@ public class SubstanceCortex {
          */
         public static void setAutomaticDragAndDropSupportPresence(JTree tree,
                 Boolean hasAutomaticDragAndDropSupport) {
-            tree.putClientProperty(SubstanceSynapse.TREE_AUTO_DND_SUPPORT,
-                    hasAutomaticDragAndDropSupport);
+            if (tree == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
+            tree.putClientProperty(SubstanceSynapse.TREE_AUTO_DND_SUPPORT, hasAutomaticDragAndDropSupport);
         }
 
         /**
@@ -1652,9 +1692,14 @@ public class SubstanceCortex {
          *                           <code>null</code> to
          *                           reset to the default behavior.
          * @see GlobalScope#setAutomaticScrollPresence(Boolean)
+         * @see GlobalScope#setExtraWidgetsPresence(Boolean)
+         * @see ComponentOrParentChainScope#setExtraWidgetsPresence(JComponent, Boolean)
          */
         public static void setAutomaticScrollPresence(JScrollPane scrollPane,
                 Boolean hasAutomaticScroll) {
+            if (scrollPane == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             scrollPane.putClientProperty(SubstanceSynapse.AUTO_SCROLL, hasAutomaticScroll);
         }
 
@@ -1670,6 +1715,9 @@ public class SubstanceCortex {
          * org.pushingpixels.substance.api.SubstanceSlices.Side)
          */
         public static void setButtonOpenSide(JComponent comp, SubstanceSlices.Side openSide) {
+            if (comp == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             comp.putClientProperty(SubstanceSynapse.BUTTON_OPEN_SIDE, openSide);
         }
 
@@ -1683,8 +1731,10 @@ public class SubstanceCortex {
          * @see #setButtonOpenSide(JComponent, org.pushingpixels.substance.api.SubstanceSlices.Side)
          * @see #setButtonStraightSides(JComponent, Set)
          */
-        public static void setButtonOpenSides(JComponent comp,
-                Set<SubstanceSlices.Side> openSides) {
+        public static void setButtonOpenSides(JComponent comp, Set<SubstanceSlices.Side> openSides) {
+            if (comp == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             comp.putClientProperty(SubstanceSynapse.BUTTON_OPEN_SIDE, openSides);
         }
 
@@ -1698,8 +1748,10 @@ public class SubstanceCortex {
          * @see #setButtonOpenSide(JComponent, org.pushingpixels.substance.api.SubstanceSlices.Side)
          * @see #setButtonStraightSides(JComponent, Set)
          */
-        public static void setButtonStraightSide(JComponent comp,
-                SubstanceSlices.Side straightSide) {
+        public static void setButtonStraightSide(JComponent comp, SubstanceSlices.Side straightSide) {
+            if (comp == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             comp.putClientProperty(SubstanceSynapse.BUTTON_STRAIGHT_SIDE, straightSide);
         }
 
@@ -1714,8 +1766,10 @@ public class SubstanceCortex {
          * org.pushingpixels.substance.api.SubstanceSlices.Side)
          * @see #setButtonOpenSides(JComponent, Set)
          */
-        public static void setButtonStraightSides(JComponent comp,
-                Set<SubstanceSlices.Side> straightSides) {
+        public static void setButtonStraightSides(JComponent comp, Set<SubstanceSlices.Side> straightSides) {
+            if (comp == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             comp.putClientProperty(SubstanceSynapse.BUTTON_STRAIGHT_SIDE, straightSides);
         }
 
@@ -1731,6 +1785,9 @@ public class SubstanceCortex {
          */
         public static void setToolbarButtonCornerRadius(AbstractButton button,
                 float toolbarButtonCornerRadius) {
+            if (button == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             button.putClientProperty(SubstanceSynapse.TOOLBAR_BUTTON_CORNER_RADIUS,
                     Float.valueOf(toolbarButtonCornerRadius));
         }
@@ -1761,8 +1818,10 @@ public class SubstanceCortex {
          *                         matching frame / dialog will be animated.
          * @see RootPaneScope#setContentsModified(JRootPane, Boolean)
          */
-        public static void setTabContentsModified(JComponent tabComponent,
-                Boolean contentsModified) {
+        public static void setTabContentsModified(JComponent tabComponent, Boolean contentsModified) {
+            if (tabComponent == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             tabComponent.putClientProperty(SubstanceSynapse.CONTENTS_MODIFIED, contentsModified);
         }
 
@@ -1789,10 +1848,11 @@ public class SubstanceCortex {
          * @see #setTabCloseButtonsVisible(JTabbedPane, Boolean)
          * @see GlobalScope#setTabCloseButtonsVisible(Boolean)
          */
-        public static void setTabCloseButtonVisible(JComponent tabComponent,
-                Boolean tabCloseButtonVisible) {
-            tabComponent.putClientProperty(SubstanceSynapse.TABBED_PANE_CLOSE_BUTTONS,
-                    tabCloseButtonVisible);
+        public static void setTabCloseButtonVisible(JComponent tabComponent, Boolean tabCloseButtonVisible) {
+            if (tabComponent == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
+            tabComponent.putClientProperty(SubstanceSynapse.TABBED_PANE_CLOSE_BUTTONS, tabCloseButtonVisible);
         }
 
         /**
@@ -1810,8 +1870,10 @@ public class SubstanceCortex {
          */
         public static void setTabCloseCallback(JTabbedPane tabbedPane,
                 TabCloseCallback tabCloseCallback) {
-            tabbedPane.putClientProperty(SubstanceSynapse.TABBED_PANE_CLOSE_CALLBACK,
-                    tabCloseCallback);
+            if (tabbedPane == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
+            tabbedPane.putClientProperty(SubstanceSynapse.TABBED_PANE_CLOSE_CALLBACK, tabCloseCallback);
         }
 
         /**
@@ -1828,8 +1890,10 @@ public class SubstanceCortex {
          */
         public static void setTabCloseCallback(JComponent tabComponent,
                 TabCloseCallback tabCloseCallback) {
-            tabComponent.putClientProperty(SubstanceSynapse.TABBED_PANE_CLOSE_CALLBACK,
-                    tabCloseCallback);
+            if (tabComponent == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
+            tabComponent.putClientProperty(SubstanceSynapse.TABBED_PANE_CLOSE_CALLBACK, tabCloseCallback);
         }
 
         /**
@@ -1848,6 +1912,9 @@ public class SubstanceCortex {
          */
         public static void setRunModifiedAnimationOnTabCloseButton(JTabbedPane tabbedPane,
                 Boolean runModifiedAnimationOnTabCloseButton) {
+            if (tabbedPane == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             tabbedPane.putClientProperty(
                     SubstanceSynapse.TABBED_PANE_CLOSE_BUTTONS_MODIFIED_ANIMATION,
                     runModifiedAnimationOnTabCloseButton);
@@ -1869,6 +1936,9 @@ public class SubstanceCortex {
          */
         public static void setRunModifiedAnimationOnTabCloseButton(JComponent tabComponent,
                 Boolean runModifiedAnimationOnTabCloseButton) {
+            if (tabComponent == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             tabComponent.putClientProperty(
                     SubstanceSynapse.TABBED_PANE_CLOSE_BUTTONS_MODIFIED_ANIMATION,
                     runModifiedAnimationOnTabCloseButton);
@@ -1883,6 +1953,9 @@ public class SubstanceCortex {
          */
         public static void setTabContentPaneBorderKind(JTabbedPane tabbedPane,
                 TabContentPaneBorderKind tabContentPaneBorderKind) {
+            if (tabbedPane == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             tabbedPane.putClientProperty(SubstanceSynapse.TABBED_PANE_CONTENT_BORDER_KIND,
                     tabContentPaneBorderKind);
         }
@@ -1894,6 +1967,9 @@ public class SubstanceCortex {
          * @param buttonShaper Button shaper to be used for the component.
          */
         public static void setButtonShaper(JComponent comp, SubstanceButtonShaper buttonShaper) {
+            if (comp == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             comp.putClientProperty(SubstanceSynapse.BUTTON_SHAPER, buttonShaper);
         }
 
@@ -1908,6 +1984,9 @@ public class SubstanceCortex {
          */
         public static void setNumberOfPasswordEchoesPerCharacter(JPasswordField passwordField,
                 int echoCount) {
+            if (passwordField == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             passwordField.putClientProperty(SubstanceSynapse.PASSWORD_ECHO_PER_CHAR,
                     Integer.valueOf(echoCount));
         }
@@ -1925,6 +2004,9 @@ public class SubstanceCortex {
          */
         public static void setComboBoxPrototypeCallback(JComboBox comboBox,
                 ComboPopupPrototypeCallback comboPopupPrototypeCallback) {
+            if (comboBox == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             comboBox.putClientProperty(SubstanceSynapse.COMBOBOX_POPUP_PROTOTYPE_CALLBACK,
                     comboPopupPrototypeCallback);
         }
@@ -1942,6 +2024,9 @@ public class SubstanceCortex {
          */
         public static void setComboBoxPrototypeDisplayValue(JComboBox comboBox,
                 Object comboPopupPrototypeDisplayValue) {
+            if (comboBox == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             comboBox.putClientProperty(SubstanceSynapse.COMBOBOX_POPUP_PROTOTYPE_OBJECT,
                     comboPopupPrototypeDisplayValue);
         }
@@ -1973,6 +2058,9 @@ public class SubstanceCortex {
          */
         public static void setComboBoxPopupFlyoutOrientation(JComboBox comboBox,
                 Integer comboPopupFlyoutOrientation) {
+            if (comboBox == null) {
+                throw new IllegalArgumentException("Component scope APIs do not accept null components");
+            }
             comboBox.putClientProperty(SubstanceSynapse.COMBO_BOX_POPUP_FLYOUT_ORIENTATION,
                     comboPopupFlyoutOrientation);
         }
@@ -2331,6 +2419,7 @@ public class SubstanceCortex {
          * @see #setPreferredTitlePaneHeight(Window, int)
          * @see #getTitleControlButtonGroupHorizontalGravity(Window)
          * @see #createTitlePaneControlButton(Window)
+         * @see #markLabelAsTitlePaneText(Window, JLabel) 
          */
         public static void extendContentIntoTitlePane(Window window,
                 SubstanceSlices.HorizontalGravity controlButtonGroupHorizontalGravity,
@@ -2380,6 +2469,7 @@ public class SubstanceCortex {
          * SubstanceSlices.VerticalGravity)
          * @see #getTitlePaneControlInsets(Window)
          * @see #setPreferredTitlePaneHeight(Window, int)
+         * @see #markLabelAsTitlePaneText(Window, JLabel)
          */
         public static JButton createTitlePaneControlButton(Window window) {
             if (window == null) {
@@ -2426,8 +2516,7 @@ public class SubstanceCortex {
          * Increase the preferred height of the title pane area in case the content you extend into
          * that area with
          * {@link #extendContentIntoTitlePane(Window, SubstanceSlices.HorizontalGravity, SubstanceSlices.VerticalGravity)}
-         * API is taller than the main
-         * control buttons.
+         * API is taller than the main control buttons.
          *
          * @param window                   Window. May not be <code>null</code>.
          * @param preferredTitlePaneHeight Preferred height of the title pane area. Must be a
@@ -2437,8 +2526,7 @@ public class SubstanceCortex {
          * @see #createTitlePaneControlButton(Window)
          * @see #getTitlePaneControlInsets(Window)
          */
-        public static void setPreferredTitlePaneHeight(Window window,
-                int preferredTitlePaneHeight) {
+        public static void setPreferredTitlePaneHeight(Window window, int preferredTitlePaneHeight) {
             if (window == null) {
                 throw new IllegalArgumentException("Window scope APIs do not accept null windows");
             }
@@ -2476,6 +2564,23 @@ public class SubstanceCortex {
             }
             return SubstanceTitlePaneUtilities.getTitleControlButtonGroupHorizontalGravity(
                     SwingUtilities.getRootPane(window));
+        }
+
+        /**
+         * Marks the passed label to be drawn as title pane text (window title).
+         *
+         * @param window Window. May not be <code>null</code>.
+         * @param label  Label. May not be <code>null</code>.
+         * @see #extendContentIntoTitlePane(Window, SubstanceSlices.HorizontalGravity,
+         * SubstanceSlices.VerticalGravity)
+         * @see #createTitlePaneControlButton(Window)
+         */
+        public static void markLabelAsTitlePaneText(Window window, JLabel label) {
+            if (label == null) {
+                throw new IllegalArgumentException("Should pass non-null label");
+            }
+            label.setFont(SubstanceCortex.GlobalScope.getFontPolicy().getFontSet().getWindowTitleFont());
+            label.putClientProperty(SubstanceSynapse.IS_TITLE_PANE_LABEL, true);
         }
     }
 }

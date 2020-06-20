@@ -49,20 +49,12 @@ import org.pushingpixels.substance.api.shaper.ClassicButtonShaper
  *
  * @author Kirill Grouchnikov
  */
-class RobotDefaultSkin(colorScheme: SubstanceColorScheme) : SubstanceSkin() {
+class RobotDefaultSkin(accentColorScheme: SubstanceColorScheme) :
+        SubstanceSkin.Accented(AccentBuilder()
+                .withActiveControlsAccent(accentColorScheme)
+                .withWindowChromeAccent(accentColorScheme)) {
 
     init {
-        val defaultSchemeBundle = SubstanceColorSchemeBundle(
-                colorScheme, MetallicColorScheme(),
-                LightGrayColorScheme())
-        this.registerDecorationAreaSchemeBundle(defaultSchemeBundle,
-                DecorationAreaType.NONE)
-
-        this.registerAsDecorationArea(colorScheme,
-                DecorationAreaType.PRIMARY_TITLE_PANE,
-                DecorationAreaType.SECONDARY_TITLE_PANE,
-                DecorationAreaType.HEADER)
-
         val bottomLineOverlayPainter = BottomLineOverlayPainter(
                 ColorSchemeSingleColorQuery.MID)
         this.addOverlayPainter(bottomLineOverlayPainter,
@@ -81,10 +73,20 @@ class RobotDefaultSkin(colorScheme: SubstanceColorScheme) : SubstanceSkin() {
 
         this.highlightPainter = ClassicHighlightPainter()
         this.borderPainter = ClassicBorderPainter()
+
+        val defaultSchemeBundle = SubstanceColorSchemeBundle(
+                this.activeControlsAccent, MetallicColorScheme(), LightGrayColorScheme())
+        this.registerDecorationAreaSchemeBundle(defaultSchemeBundle,
+                DecorationAreaType.NONE)
+
+        this.registerAsDecorationArea(this.activeControlsAccent,
+                DecorationAreaType.PRIMARY_TITLE_PANE,
+                DecorationAreaType.SECONDARY_TITLE_PANE,
+                DecorationAreaType.HEADER)
     }
 
     override fun getDisplayName(): String {
-        return NAME
+        return NAME + " accent " + this.activeControlsAccent.displayName
     }
 
     companion object {

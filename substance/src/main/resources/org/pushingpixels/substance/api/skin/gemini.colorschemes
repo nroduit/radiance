@@ -9,6 +9,12 @@ Gemini Dark Blue Background {
     colorForeground=#CAD9D2
 }
 
+Gemini Dark Blue Separator {
+    kind=Dark
+    colorBackground=#505F6C->#0E1830
+    colorForeground=#000000
+}
+
 Gemini White Background {
     kind=Light
     colorUltraLight=#EBF1F1
@@ -117,6 +123,17 @@ Gemini Highlight Border {
     colorDark=#FCB326
     colorUltraDark=#FDA607
     colorForeground=#70430B
+}
+
+Gemini Disabled {
+    kind=Light
+    colorUltraLight=#C8CBCC
+    colorExtraLight=#BDC1C1
+    colorLight=#BABEBD
+    colorMid=#B0B3B3
+    colorDark=#848786
+    colorUltraDark=#747776
+    colorForeground=#1E1E1E
 }
 
 Gemini Black Active Header {

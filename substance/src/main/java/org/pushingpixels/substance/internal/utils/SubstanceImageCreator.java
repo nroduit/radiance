@@ -121,7 +121,7 @@ public final class SubstanceImageCreator {
         boolean skipInnerBorder = (c instanceof JTextComponent)
                 || ((SwingUtilities.getAncestorOfClass(CellRendererPane.class, c) != null)
                         && (SwingUtilities.getAncestorOfClass(JFileChooser.class, c) != null));
-        GeneralPath contourInner = skipInnerBorder ? null
+        Shape contourInner = skipInnerBorder ? null
                 : SubstanceOutlineUtilities.getBaseOutline(width, height, radius - borderThickness,
                         null, borderThickness + borderDelta);
         borderPainter.paintBorder(graphics, c, width, height, contour, contourInner, borderScheme);
@@ -150,12 +150,11 @@ public final class SubstanceImageCreator {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // create curved checkbox path
+        // create straight checkbox path
         GeneralPath path = new GeneralPath();
-
-        path.moveTo(0.25f * dimension, 0.5f * dimension);
-        path.quadTo(0.37f * dimension, 0.6f * dimension, 0.47f * dimension, 0.8f * dimension);
-        path.quadTo(0.55f * dimension, 0.5f * dimension, 0.85f * dimension, 0f);
+        path.moveTo(0.22f * dimension, 0.55f * dimension);
+        path.lineTo(0.45f * dimension, 0.8f * dimension);
+        path.lineTo(0.73f * dimension, 0.35f * dimension);
 
         // compute the x-based clip for the visibility
         float xClipStart = 0.15f * dimension;
@@ -593,7 +592,7 @@ public final class SubstanceImageCreator {
 
         int contourDim = dimension - delta;
         float borderDelta = SubstanceSizeUtils.getBorderStrokeWidth() / 2.0f;
-        GeneralPath contour = SubstanceOutlineUtilities.getBaseOutline(contourDim, contourDim,
+        Shape contour = SubstanceOutlineUtilities.getBaseOutline(contourDim, contourDim,
                 cornerRadius, null, borderDelta);
 
         if (!componentState.isActive()) {
@@ -609,7 +608,7 @@ public final class SubstanceImageCreator {
                 fillColorScheme, true);
 
         float borderThickness = SubstanceSizeUtils.getBorderStrokeWidth();
-        GeneralPath contourInner = SubstanceOutlineUtilities.getBaseOutline(contourDim, contourDim,
+        Shape contourInner = SubstanceOutlineUtilities.getBaseOutline(contourDim, contourDim,
                 cornerRadius - borderThickness, null, borderThickness + borderDelta);
         borderPainter.paintBorder(graphics, button, contourDim, contourDim, contour, contourInner,
                 borderColorScheme);
@@ -1576,7 +1575,7 @@ public final class SubstanceImageCreator {
 
     /**
      * Returns a lock icon that matches the specified scheme.
-     * 
+     *
      * @param scheme
      *            Scheme instance.
      * @return Lock icon that matches the specified scheme.
@@ -1587,6 +1586,21 @@ public final class SubstanceImageCreator {
         int size = 9 + 2 * extraPadding;
 
         return SubstanceCortex.GlobalScope.getIconPack().getLockIcon(size, scheme);
+    }
+
+    /**
+     * Returns a caps lock icon that matches the specified scheme.
+     *
+     * @param scheme
+     *            Scheme instance.
+     * @return Caps lock icon that matches the specified scheme.
+     */
+    public static Icon getCapsLockIcon(SubstanceColorScheme scheme, Component c) {
+        int componentFontSize = SubstanceSizeUtils.getComponentFontSize(c);
+        int extraPadding = SubstanceSizeUtils.getExtraPadding(componentFontSize);
+        int size = 11 + 2 * extraPadding;
+
+        return SubstanceCortex.GlobalScope.getIconPack().getCapsLockIcon(size, scheme);
     }
 
     /**

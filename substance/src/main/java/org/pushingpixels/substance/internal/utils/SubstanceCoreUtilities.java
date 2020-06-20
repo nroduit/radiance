@@ -30,6 +30,7 @@
 package org.pushingpixels.substance.internal.utils;
 
 import org.pushingpixels.neon.api.NeonCortex;
+import org.pushingpixels.neon.api.UiThreadingViolationException;
 import org.pushingpixels.substance.api.*;
 import org.pushingpixels.substance.api.SubstanceSlices.*;
 import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
@@ -43,7 +44,6 @@ import org.pushingpixels.substance.internal.SubstanceSynapse;
 import org.pushingpixels.substance.internal.animation.TransitionAwareUI;
 import org.pushingpixels.substance.internal.contrib.jgoodies.looks.LookUtils;
 import org.pushingpixels.substance.internal.painter.DecorationPainterUtils;
-import org.pushingpixels.substance.internal.ui.SubstanceButtonUI;
 import org.pushingpixels.substance.internal.ui.SubstanceRootPaneUI;
 import org.pushingpixels.substance.internal.utils.combo.SubstanceComboPopup;
 import org.pushingpixels.substance.internal.utils.icon.ArrowButtonTransitionAwareIcon;
@@ -1324,7 +1324,7 @@ public class SubstanceCoreUtilities {
     /**
      * Returns the class loader for loading the resource files. It is a fix by Dag Joar and
      * Christian Schlichtherle for application running with -Xbootclasspath VM flag. In this case,
-     * the using MyClass.class.getClassLoader() would return null, but the context class loader will
+     * using MyClass.class.getClassLoader() would return null, but the context class loader will
      * function properly that classes will be properly loaded regardless of whether the lib is added
      * to the system class path, the extension class path and regardless of the class loader
      * architecture set up by some frameworks.
@@ -1954,6 +1954,10 @@ public class SubstanceCoreUtilities {
     private static List<AWTEventListener> awtEventListeners = new ArrayList<>();
 
     public synchronized static void registerAWTEventListener(AWTEventListener awtEventListener) {
+        if (awtEventListeners.contains(awtEventListener)) {
+            // Already registered
+            return;
+        }
         awtEventListeners.add(awtEventListener);
     }
 

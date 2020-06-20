@@ -29,7 +29,19 @@
  */
 package org.pushingpixels.photon.api.transcoder;
 
+import java.util.List;
+
 public interface LanguageRenderer {
+    public class MethodArgument {
+        public String name;
+        public String type;
+
+        public MethodArgument(String name, String type) {
+            this.name = name;
+            this.type = type;
+        }
+    }
+
     String getStatementEnd();
 
     String getObjectCreation(String className);
@@ -37,6 +49,8 @@ public interface LanguageRenderer {
     String getObjectCreationNoParams(String className);
 
     String getObjectCast(String objectName, String classToCastTo);
+
+    String getObjectNoNull(String objectName);
 
     String startPrimitiveArrayOf(String primitiveTypeName);
 
@@ -51,4 +65,10 @@ public interface LanguageRenderer {
     String endSetterAssignment();
     
     String getGetter(String propertyName);
+
+    String startMethod(String methodName, MethodArgument... arguments);
+
+    String endMethod();
+
+    String getPrimitiveTypeFor(Class<?> clazz);
 }

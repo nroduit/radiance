@@ -29,6 +29,7 @@
  */
 package org.pushingpixels.substance.internal.utils;
 
+import org.pushingpixels.neon.api.NeonCortex;
 import org.pushingpixels.neon.api.icon.ResizableIconUIResource;
 import org.pushingpixels.substance.api.ComponentState;
 import org.pushingpixels.substance.api.SubstanceCortex;
@@ -114,10 +115,17 @@ public class SkinUtilities {
         Color selectionTextForegroundColor = new ColorUIResource(
                 textHighlightColorScheme.getSelectionForegroundColor());
 
+        SubstanceColorScheme highlightColorScheme = skin.getColorScheme(
+                (Component) null, ColorSchemeAssociationKind.HIGHLIGHT,
+                ComponentState.SELECTED);
+        if (highlightColorScheme == null) {
+            highlightColorScheme = skin.getColorScheme(null,
+                    ComponentState.ROLLOVER_SELECTED);
+        }
         Color selectionCellForegroundColor = new ColorUIResource(
-                textHighlightColorScheme.getForegroundColor());
+                highlightColorScheme.getForegroundColor());
         Color selectionCellBackgroundColor = new ColorUIResource(
-                textHighlightColorScheme.getBackgroundFillColor());
+                highlightColorScheme.getBackgroundFillColor());
 
         UIDefaults.LazyValue popupMenuBorder = (UIDefaults table) -> new SubstancePopupMenuBorder();
 
@@ -1132,5 +1140,8 @@ public class SkinUtilities {
                 inputMapSet.getTreeAncestorInputMap().getUiMap());
         uiDefaults.put("Tree.focusInputMap",
                 inputMapSet.getTreeFocusInputMap().getUiMap());
+
+        // add user scale factor to allow layout managers (e.g. MigLayout) to use it
+        uiDefaults.put("laf.scaleFactor", (UIDefaults.ActiveValue) t -> NeonCortex.getScaleFactor());
     }
 }

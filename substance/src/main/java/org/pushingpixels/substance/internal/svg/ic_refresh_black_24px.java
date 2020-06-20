@@ -6,7 +6,9 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.ref.WeakReference;
 import java.util.Base64;
+import java.util.Stack;
 import javax.imageio.ImageIO;
+import javax.swing.SwingUtilities;
 import javax.swing.plaf.UIResource;
 
 import org.pushingpixels.neon.api.icon.ResizableIcon;
@@ -17,15 +19,65 @@ import org.pushingpixels.neon.api.icon.ResizableIconUIResource;
  * href="https://github.com/kirill-grouchnikov/radiance">Photon SVG transcoder</a>.
  */
 public class ic_refresh_black_24px implements ResizableIcon {
+    private Shape shape = null;
+    private GeneralPath generalPath = null;
+    private Paint paint = null;
+    private Stroke stroke = null;
+    private Shape clip = null;
+    private Stack<AffineTransform> transformsStack = new Stack<>();
+
     
+
+	private void _paint0(Graphics2D g,float origAlpha) {
+transformsStack.push(g.getTransform());
+// 
+g.setComposite(AlphaComposite.getInstance(3, 1.0f * origAlpha));
+transformsStack.push(g.getTransform());
+g.transform(new AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, -0.0f, -0.0f));
+// _0
+g.setComposite(AlphaComposite.getInstance(3, 1.0f * origAlpha));
+transformsStack.push(g.getTransform());
+g.transform(new AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f));
+// _0_0
+if (generalPath == null) {
+   generalPath = new GeneralPath();
+} else {
+   generalPath.reset();
+}
+generalPath.moveTo(17.65f, 6.35f);
+generalPath.curveTo(16.2f, 4.9f, 14.21f, 4.0f, 12.0f, 4.0f);
+generalPath.curveTo(7.58f, 4.0f, 4.01f, 7.58f, 4.01f, 12.0f);
+generalPath.curveTo(4.01f, 16.42f, 7.58f, 20.0f, 12.0f, 20.0f);
+generalPath.curveTo(15.73f, 20.0f, 18.84f, 17.45f, 19.73f, 14.0f);
+generalPath.lineTo(17.65f, 14.0f);
+generalPath.curveTo(16.83f, 16.33f, 14.61f, 18.0f, 12.0f, 18.0f);
+generalPath.curveTo(8.690001f, 18.0f, 6.0f, 15.309999f, 6.0f, 12.0f);
+generalPath.curveTo(6.0f, 8.690001f, 8.690001f, 6.0f, 12.0f, 6.0f);
+generalPath.curveTo(13.66f, 6.0f, 15.14f, 6.69f, 16.22f, 7.7799997f);
+generalPath.lineTo(13.0f, 11.0f);
+generalPath.lineTo(20.0f, 11.0f);
+generalPath.lineTo(20.0f, 4.0f);
+generalPath.lineTo(17.65f, 6.35f);
+generalPath.closePath();
+shape = generalPath;
+paint = new Color(0, 0, 0, 255);
+g.setPaint(paint);
+g.fill(shape);
+g.setTransform(transformsStack.pop());
+g.setComposite(AlphaComposite.getInstance(3, 1.0f * origAlpha));
+transformsStack.push(g.getTransform());
+g.transform(new AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f));
+// _0_1
+g.setTransform(transformsStack.pop());
+g.setTransform(transformsStack.pop());
+g.setTransform(transformsStack.pop());
+
+}
+
+
 
     @SuppressWarnings("unused")
 	private void innerPaint(Graphics2D g) {
-        Shape shape = null;
-        Paint paint = null;
-        Stroke stroke = null;
-        Shape clip = null;
-
         float origAlpha = 1.0f;
         Composite origComposite = g.getComposite();
         if (origComposite instanceof AlphaComposite) {
@@ -36,44 +88,15 @@ public class ic_refresh_black_24px implements ResizableIcon {
             }
         }
         
-	    AffineTransform defaultTransform_ = g.getTransform();
-// 
-g.setComposite(AlphaComposite.getInstance(3, 1.0f * origAlpha));
-AffineTransform defaultTransform__0 = g.getTransform();
-g.transform(new AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, -0.0f, -0.0f));
-// _0
-g.setComposite(AlphaComposite.getInstance(3, 1.0f * origAlpha));
-AffineTransform defaultTransform__0_0 = g.getTransform();
-g.transform(new AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f));
-// _0_0
-shape = new GeneralPath();
-((GeneralPath)shape).moveTo(17.65, 6.35);
-((GeneralPath)shape).curveTo(16.2, 4.9, 14.21, 4.0, 12.0, 4.0);
-((GeneralPath)shape).curveTo(7.58, 4.0, 4.01, 7.58, 4.01, 12.0);
-((GeneralPath)shape).curveTo(4.01, 16.42, 7.58, 20.0, 12.0, 20.0);
-((GeneralPath)shape).curveTo(15.73, 20.0, 18.84, 17.45, 19.73, 14.0);
-((GeneralPath)shape).lineTo(17.65, 14.0);
-((GeneralPath)shape).curveTo(16.83, 16.33, 14.61, 18.0, 12.0, 18.0);
-((GeneralPath)shape).curveTo(8.690001, 18.0, 6.0, 15.309999, 6.0, 12.0);
-((GeneralPath)shape).curveTo(6.0, 8.690001, 8.690001, 6.0, 12.0, 6.0);
-((GeneralPath)shape).curveTo(13.66, 6.0, 15.14, 6.69, 16.22, 7.7799997);
-((GeneralPath)shape).lineTo(13.0, 11.0);
-((GeneralPath)shape).lineTo(20.0, 11.0);
-((GeneralPath)shape).lineTo(20.0, 4.0);
-((GeneralPath)shape).lineTo(17.65, 6.35);
-((GeneralPath)shape).closePath();
-paint = new Color(0, 0, 0, 255);
-g.setPaint(paint);
-g.fill(shape);
-g.setTransform(defaultTransform__0_0);
-g.setComposite(AlphaComposite.getInstance(3, 1.0f * origAlpha));
-AffineTransform defaultTransform__0_1 = g.getTransform();
-g.transform(new AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f));
-// _0_1
-g.setTransform(defaultTransform__0_1);
-g.setTransform(defaultTransform__0);
-g.setTransform(defaultTransform_);
+	    _paint0(g, origAlpha);
 
+
+	    shape = null;
+	    generalPath = null;
+	    paint = null;
+	    stroke = null;
+	    clip = null;
+        transformsStack.clear();
 	}
 
     /**
@@ -138,13 +161,13 @@ g.setTransform(defaultTransform_);
 	}
 
 	@Override
-	public void setDimension(Dimension newDimension) {
+	public synchronized void setDimension(Dimension newDimension) {
 		this.width = newDimension.width;
 		this.height = newDimension.height;
 	}
 
     @Override
-	public void paintIcon(Component c, Graphics g, int x, int y) {
+	public synchronized void paintIcon(Component c, Graphics g, int x, int y) {
 		Graphics2D g2d = (Graphics2D) g.create();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);

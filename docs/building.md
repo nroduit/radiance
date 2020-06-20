@@ -4,7 +4,7 @@ Radiance libraries are built with [Gradle](https://docs.gradle.org/). Each libra
 
 ### Java requirements
 
-Radiance requires Java 9 for building. Search for "Java 9 download" in your favorite search engine, or browse [this page](https://www.oracle.com/technetwork/java/javase/downloads/index.html) (and perhaps the archives that it points to) to get the JDK distribution for your environment.
+Radiance is built with Java 9. Search for "Java 9 download" in your favorite search engine, or browse [this page](https://www.oracle.com/technetwork/java/javase/downloads/index.html) (and perhaps the archives that it points to) to get the JDK distribution for your environment.
 
 ### Local artifacts
 
@@ -23,7 +23,7 @@ Some of the Radiance libraries have third-party dependencies. To print the full 
 ```
 ------------------ photon -------------------
 org.apache.xmlgraphics:batik-all:1.12
-org.pushing-pixels:neon:3.0-SNAPSHOT
+org.pushing-pixels:neon:3.5-SNAPSHOT
 ```
 
 To locally copy these dependencies (in case you do not want to pull them at build time with Gradle in your own environment), use the following:

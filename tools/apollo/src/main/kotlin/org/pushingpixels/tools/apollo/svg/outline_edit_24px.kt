@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage
 import java.io.*
 import java.lang.ref.WeakReference
 import java.util.Base64
+import java.util.Stack
 import javax.imageio.ImageIO
 import javax.swing.plaf.UIResource
 
@@ -19,14 +20,93 @@ import org.pushingpixels.neon.api.icon.ResizableIconUIResource
  */
 class outline_edit_24px private constructor(private var width: Int, private var height: Int)
        : ResizableIcon {
+    @Suppress("UNUSED_VARIABLE") private var shape: Shape? = null
+    @Suppress("UNUSED_VARIABLE") private var generalPath: GeneralPath? = null
+    @Suppress("UNUSED_VARIABLE") private var paint: Paint? = null
+    @Suppress("UNUSED_VARIABLE") private var stroke: Stroke? = null
+    @Suppress("UNUSED_VARIABLE") private var clip: Shape? = null
+    private val transformsStack = Stack<AffineTransform>()
+
     
 
-	private fun innerPaint(g : Graphics2D) {
-        @Suppress("UNUSED_VARIABLE") var shape: Shape?
-        @Suppress("UNUSED_VARIABLE") var paint: Paint?
-        @Suppress("UNUSED_VARIABLE") var stroke: Stroke?
-        @Suppress("UNUSED_VARIABLE") var clip: Shape?
+	private fun _paint0(g : Graphics2D,origAlpha : Float) {
+transformsStack.push(g.transform)
+// 
+g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
+transformsStack.push(g.transform)
+g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, -0.0f, -0.0f))
+// _0
+g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
+transformsStack.push(g.transform)
+g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
+// _0_0
+g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
+transformsStack.push(g.transform)
+g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
+// _0_0_0
+g.transform = transformsStack.pop()
+g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
+transformsStack.push(g.transform)
+g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
+// _0_0_1
+g.transform = transformsStack.pop()
+g.transform = transformsStack.pop()
+g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
+transformsStack.push(g.transform)
+g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
+// _0_1
+g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
+transformsStack.push(g.transform)
+g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
+// _0_1_0
+g.transform = transformsStack.pop()
+g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
+transformsStack.push(g.transform)
+g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
+// _0_1_1
+if (generalPath == null) {
+   generalPath = GeneralPath()
+} else {
+   generalPath!!.reset()
+}
+generalPath!!.moveTo(14.06f, 9.02f)
+generalPath!!.lineTo(14.9800005f, 9.940001f)
+generalPath!!.lineTo(5.92f, 19.0f)
+generalPath!!.lineTo(5.0f, 19.0f)
+generalPath!!.lineTo(5.0f, 18.08f)
+generalPath!!.lineTo(14.06f, 9.02f)
+generalPath!!.moveTo(17.66f, 3.0f)
+generalPath!!.curveTo(17.41f, 3.0f, 17.15f, 3.1f, 16.96f, 3.29f)
+generalPath!!.lineTo(15.129999f, 5.12f)
+generalPath!!.lineTo(18.88f, 8.87f)
+generalPath!!.lineTo(20.71f, 7.04f)
+generalPath!!.curveTo(21.099998f, 6.65f, 21.099998f, 6.02f, 20.71f, 5.63f)
+generalPath!!.lineTo(18.369999f, 3.2900002f)
+generalPath!!.curveTo(18.17f, 3.09f, 17.92f, 3.0f, 17.66f, 3.0f)
+generalPath!!.lineTo(17.66f, 3.0f)
+generalPath!!.closePath()
+generalPath!!.moveTo(14.06f, 6.19f)
+generalPath!!.lineTo(3.0f, 17.25f)
+generalPath!!.lineTo(3.0f, 21.0f)
+generalPath!!.lineTo(6.75f, 21.0f)
+generalPath!!.lineTo(17.81f, 9.94f)
+generalPath!!.lineTo(14.06f, 6.19f)
+generalPath!!.lineTo(14.06f, 6.19f)
+generalPath!!.closePath()
+shape = generalPath
+paint = Color(0, 0, 0, 255)
+g.paint = paint
+g.fill(shape)
+g.transform = transformsStack.pop()
+g.transform = transformsStack.pop()
+g.transform = transformsStack.pop()
+g.transform = transformsStack.pop()
 
+}
+
+
+
+	private fun innerPaint(g : Graphics2D) {
         var origAlpha = 1.0f
         val origComposite = g.composite
         if (origComposite is AlphaComposite) {
@@ -35,73 +115,14 @@ class outline_edit_24px private constructor(private var width: Int, private var 
             }
         }
         
-	    val defaultTransform_ = g.transform
-// 
-g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
-val defaultTransform__0 = g.transform
-g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, -0.0f, -0.0f))
-// _0
-g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
-val defaultTransform__0_0 = g.transform
-g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
-// _0_0
-g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
-val defaultTransform__0_0_0 = g.transform
-g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
-// _0_0_0
-g.transform = defaultTransform__0_0_0
-g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
-val defaultTransform__0_0_1 = g.transform
-g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
-// _0_0_1
-g.transform = defaultTransform__0_0_1
-g.transform = defaultTransform__0_0
-g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
-val defaultTransform__0_1 = g.transform
-g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
-// _0_1
-g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
-val defaultTransform__0_1_0 = g.transform
-g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
-// _0_1_0
-g.transform = defaultTransform__0_1_0
-g.composite = AlphaComposite.getInstance(3, 1.0f * origAlpha)
-val defaultTransform__0_1_1 = g.transform
-g.transform(AffineTransform(1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f))
-// _0_1_1
-shape = GeneralPath()
-shape.moveTo(14.06, 9.02)
-shape.lineTo(14.9800005, 9.940001)
-shape.lineTo(5.92, 19.0)
-shape.lineTo(5.0, 19.0)
-shape.lineTo(5.0, 18.08)
-shape.lineTo(14.06, 9.02)
-shape.moveTo(17.66, 3.0)
-shape.curveTo(17.41, 3.0, 17.15, 3.1, 16.96, 3.29)
-shape.lineTo(15.129999, 5.12)
-shape.lineTo(18.88, 8.87)
-shape.lineTo(20.71, 7.04)
-shape.curveTo(21.099998, 6.65, 21.099998, 6.02, 20.71, 5.63)
-shape.lineTo(18.369999, 3.2900002)
-shape.curveTo(18.17, 3.09, 17.92, 3.0, 17.66, 3.0)
-shape.lineTo(17.66, 3.0)
-shape.closePath()
-shape.moveTo(14.06, 6.19)
-shape.lineTo(3.0, 17.25)
-shape.lineTo(3.0, 21.0)
-shape.lineTo(6.75, 21.0)
-shape.lineTo(17.81, 9.94)
-shape.lineTo(14.06, 6.19)
-shape.lineTo(14.06, 6.19)
-shape.closePath()
-paint = Color(0, 0, 0, 255)
-g.paint = paint
-g.fill(shape)
-g.transform = defaultTransform__0_1_1
-g.transform = defaultTransform__0_1
-g.transform = defaultTransform__0
-g.transform = defaultTransform_
+	    _paint0(g, origAlpha)
 
+
+	    shape = null
+	    generalPath = null
+	    paint = null
+	    stroke = null
+	    clip = null
 	}
 	
     companion object {
@@ -181,12 +202,12 @@ g.transform = defaultTransform_
         return height
     }
 
-    override fun setDimension(newDimension: Dimension) {
+    override @Synchronized fun setDimension(newDimension: Dimension) {
         width = newDimension.width
         height = newDimension.height
     }
 
-    override fun paintIcon(c: Component?, g: Graphics, x: Int, y: Int) {
+    override @Synchronized fun paintIcon(c: Component?, g: Graphics, x: Int, y: Int) {
         val g2d = g.create() as Graphics2D
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON)

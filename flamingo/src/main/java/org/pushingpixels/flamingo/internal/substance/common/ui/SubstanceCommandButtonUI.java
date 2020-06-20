@@ -303,7 +303,7 @@ public class SubstanceCommandButtonUI extends BasicCommandButtonUI
         this.glowingIcon = new GlowingResizableIcon(currIcon, tracker.getIconGlowTracker());
     }
 
-    private void paintButtonBackground(Graphics graphics, Rectangle toFill) {
+    private void paintButtonBackground(Graphics graphics) {
         if (SubstanceCoreUtilities.isButtonNeverPainted(this.commandButton)) {
             return;
         }
@@ -368,6 +368,8 @@ public class SubstanceCommandButtonUI extends BasicCommandButtonUI
             Graphics2D g2d = (Graphics2D) graphics.create();
             g2d.setComposite(
                     WidgetUtilities.getAlphaComposite(this.commandButton, extraAlpha, graphics));
+            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
             NeonCortex.drawImage(g2d, fullAlphaBackground, 0, 0);
             g2d.dispose();
         }
@@ -536,8 +538,7 @@ public class SubstanceCommandButtonUI extends BasicCommandButtonUI
                 this::getPopupTransitionTracker,
                 (SubstanceColorScheme scheme, int width, int height) -> {
                     CommandButtonPresentationModel.PopupOrientationKind orientation =
-                            ((JCommandButton) commandButton)
-                                    .getPopupOrientationKind();
+                            ((JCommandButton) commandButton).getPopupOrientationKind();
                     int direction =
                             (orientation == CommandButtonPresentationModel.PopupOrientationKind.DOWNWARD)
                                     ? SwingConstants.SOUTH
@@ -562,7 +563,7 @@ public class SubstanceCommandButtonUI extends BasicCommandButtonUI
         commandButton.putClientProperty("icon.bounds", layoutInfo.iconRect);
 
         if (this.isPaintingBackground()) {
-            this.paintButtonBackground(g2d, new Rectangle(0, 0, c.getWidth(), c.getHeight()));
+            this.paintButtonBackground(g2d);
         }
 
         // decide which command button model should be used to
