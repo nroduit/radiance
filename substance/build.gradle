@@ -59,18 +59,18 @@ configurations {
     extraLibs
 }
 jar {
-    manifest {
-        attributes("Radiance-Version": "${version}",    \
-                 "Built-JDK": System.getProperty('java.version'),    \
-                 "Built-JDK-Vendor": System.getProperty('java.vendor'),    \
-                 "Build-Time": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"))
-    }
-    baseName = "${rootProject.name}-substance-all"
     from {
         configurations.runtimeClasspath.collect {
             it.isDirectory() ? it : zipTree(it)
         }
     }
+
+    manifest {
+        attributes("Radiance-Version": "${version}",    \
+                 "Build-Time": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"))
+    }
+
+    archiveBaseName = "${rootProject.name}-substance-all"
 }
 
 apply plugin: 'com.bmuschko.nexus'
@@ -78,43 +78,43 @@ apply plugin: 'com.bmuschko.nexus'
 archivesBaseName = 'radiance'
 group = 'org.pushing-pixels'
 
-modifyPom {
-    project {
-        name 'substance'
-        description 'Substance look-and-feel'
-        url 'https://github.com/kirill-grouchnikov/radiance'
-        inceptionYear '2018'
-        scm {
-            url 'https://github.com/kirill-grouchnikov/radiance'
-            connection 'scm:https://github.com/kirill-grouchnikov/radiance.git'
-            developerConnection 'scm:git://github.com/kirill-grouchnikov/radiance.git'
-        }
-        licenses {
-            license {
-                name 'BSD 3-Clause License'
-                url 'https://opensource.org/licenses/BSD-3-Clause'
-                distribution 'repo'
-            }
-        }
-        developers {
-            developer {
-                id 'kirill-grouchnikov'
-                name 'Kirill Grouchnikov'
-                email 'kirill.grouchnikov@gmail.com'
-            }
-        }
-        dependencies {
-        }
-    }
-}
-
 publishing {
     publications {
-        testing(MavenPublication) {
+        mavenJava(MavenPublication) {
+            artifactId = 'radiance-substance-all'
             from components.java
-                afterEvaluate {
-                    artifact sourcesJar
+            afterEvaluate {
+                artifact sourcesJar
+            }
+            pom {
+                name = 'substance'
+                description = 'Substance look-and-feel'
+                url = 'https://github.com/kirill-grouchnikov/radiance'
+                inceptionYear = '2018'
+                scm {
+                    url = 'https://github.com/kirill-grouchnikov/radiance'
+                    connection = 'scm:https://github.com/kirill-grouchnikov/radiance.git'
+                    developerConnection = 'scm:git://github.com/kirill-grouchnikov/radiance.git'
                 }
+                licenses {
+                    license {
+                        name = 'BSD 3-Clause License'
+                        url = 'https://opensource.org/licenses/BSD-3-Clause'
+                        distribution = 'repo'
+                    }
+                }
+                developers {
+                    developer {
+                        id ='kirill-grouchnikov'
+                        name = 'Kirill Grouchnikov'
+                        email = 'kirill.grouchnikov@gmail.com'
+                    }
+                }
+            }
+            pom.withXml {
+                Node pomNode = asNode()
+                pomNode.remove(pomNode.get("dependencies"))
+            }
         }
     }
 }
