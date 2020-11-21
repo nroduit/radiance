@@ -34,6 +34,8 @@ import org.pushingpixels.substance.api.SubstanceColorSchemeBundle;
 import org.pushingpixels.substance.api.SubstanceSkin;
 import org.pushingpixels.substance.api.SubstanceSlices.ColorSchemeAssociationKind;
 import org.pushingpixels.substance.api.SubstanceSlices.DecorationAreaType;
+import org.pushingpixels.substance.api.colorscheme.ColorSchemeSingleColorQuery;
+import org.pushingpixels.substance.api.colorscheme.ColorTransform;
 import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.api.painter.border.ClassicBorderPainter;
 import org.pushingpixels.substance.api.painter.border.CompositeBorderPainter;
@@ -44,7 +46,6 @@ import org.pushingpixels.substance.api.painter.highlight.ClassicHighlightPainter
 import org.pushingpixels.substance.api.painter.overlay.BottomLineOverlayPainter;
 import org.pushingpixels.substance.api.painter.overlay.TopLineOverlayPainter;
 import org.pushingpixels.substance.api.shaper.ClassicButtonShaper;
-import org.pushingpixels.substance.internal.utils.SubstanceColorUtilities;
 
 /**
  * Base class for accented <code>Dust</code> skins. This class is part of officially supported API.
@@ -136,23 +137,21 @@ public abstract class DustAccentedSkin extends SubstanceSkin.Accented {
 
 		// add two overlay painters to create a bezel line between menu bar and toolbars
 		BottomLineOverlayPainter menuOverlayPainter = new BottomLineOverlayPainter(
-				(SubstanceColorScheme scheme) -> SubstanceColorUtilities.deriveByBrightness(
-						scheme.getUltraDarkColor(), -0.5f));
+				ColorSchemeSingleColorQuery.composite(ColorSchemeSingleColorQuery.ULTRADARK,
+						ColorTransform.brightness(-0.5f)));
 		TopLineOverlayPainter toolbarOverlayPainter = new TopLineOverlayPainter(
-				(SubstanceColorScheme scheme) -> SubstanceColorUtilities.getAlphaColor(
-						scheme.getForegroundColor(), 32));
+				ColorSchemeSingleColorQuery.composite(ColorSchemeSingleColorQuery.FOREGROUND,
+						ColorTransform.alpha(32)));
 		this.addOverlayPainter(menuOverlayPainter, DecorationAreaType.HEADER);
 		this.addOverlayPainter(toolbarOverlayPainter, DecorationAreaType.TOOLBAR);
 
 		this.buttonShaper = new ClassicButtonShaper();
-		this.watermark = null;
 		this.fillPainter = new MatteFillPainter();
 		this.decorationPainter = new MatteDecorationPainter();
 		this.highlightPainter = new ClassicHighlightPainter();
 		this.borderPainter = new CompositeBorderPainter("Dust", new ClassicBorderPainter(),
 				new DelegateBorderPainter("Dust Inner", new ClassicBorderPainter(),
-						0x60FFFFFF, 0x30FFFFFF, 0x18FFFFFF, 
-						(SubstanceColorScheme scheme) -> scheme.shiftBackground(
-								scheme.getUltraLightColor(), 0.8).tint(0.6).saturate(0.2)));
+						0x60FFFFFF, 0x30FFFFFF, 0x18FFFFFF,
+						scheme -> scheme.shiftBackground(scheme.getUltraLightColor(), 0.8).tint(0.6).saturate(0.2)));
 	}
 }

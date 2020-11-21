@@ -184,15 +184,15 @@ public class SubstanceCommandButtonUI extends BasicCommandButtonUI
 
         this.substanceVisualStateTracker.installListeners(this.commandButton);
 
-        this.substancePropertyListener = (PropertyChangeEvent evt) -> {
-            if ("actionModel".equals(evt.getPropertyName())) {
+        this.substancePropertyListener = propertyChangeEvent -> {
+            if ("actionModel".equals(propertyChangeEvent.getPropertyName())) {
                 if (substanceModelChangeListener != null)
                     substanceModelChangeListener.unregisterListeners();
                 substanceModelChangeListener = new GhostingListener(commandButton,
                         commandButton.getActionModel());
                 substanceModelChangeListener.registerListeners();
             }
-            if ("icon".equals(evt.getPropertyName())) {
+            if ("icon".equals(propertyChangeEvent.getPropertyName())) {
                 trackGlowingIcon();
             }
         };
@@ -536,9 +536,9 @@ public class SubstanceCommandButtonUI extends BasicCommandButtonUI
         int arrowIconWidth = (int) SubstanceSizeUtils.getArrowIconWidth(fontSize);
         return new TransitionAwareResizableIcon(this.commandButton,
                 this::getPopupTransitionTracker,
-                (SubstanceColorScheme scheme, int width, int height) -> {
+                (scheme, width, height) -> {
                     CommandButtonPresentationModel.PopupOrientationKind orientation =
-                            ((JCommandButton) commandButton).getPopupOrientationKind();
+                            commandButton.getPopupOrientationKind();
                     int direction =
                             (orientation == CommandButtonPresentationModel.PopupOrientationKind.DOWNWARD)
                                     ? SwingConstants.SOUTH
@@ -580,7 +580,7 @@ public class SubstanceCommandButtonUI extends BasicCommandButtonUI
             for (CommandButtonLayoutManager.TextLayoutInfo mainTextLayoutInfo :
                     layoutInfo.textLayoutInfoList) {
                 if (mainTextLayoutInfo.text != null) {
-                    SubstanceTextUtilities.paintText(g2d, c, mainTextLayoutInfo.textRect,
+                    SubstanceTextUtilities.paintText(g2d, mainTextLayoutInfo.textRect,
                             mainTextLayoutInfo.text, -1, g2d.getFont(), fgColor,
                             g2d.getClipBounds());
                 }
@@ -607,7 +607,7 @@ public class SubstanceCommandButtonUI extends BasicCommandButtonUI
             for (CommandButtonLayoutManager.TextLayoutInfo extraTextLayoutInfo :
                     layoutInfo.extraTextLayoutInfoList) {
                 if (extraTextLayoutInfo.text != null) {
-                    SubstanceTextUtilities.paintText(g2d, c, extraTextLayoutInfo.textRect,
+                    SubstanceTextUtilities.paintText(g2d, extraTextLayoutInfo.textRect,
                             extraTextLayoutInfo.text, -1, g2d.getFont(), disabledFgColor,
                             g2d.getClipBounds());
                 }
@@ -716,7 +716,7 @@ public class SubstanceCommandButtonUI extends BasicCommandButtonUI
 
     @Override
     public Dimension getPreferredSize(JComponent c) {
-        AbstractCommandButton button = (AbstractCommandButton) c;
+        JCommandButton button = (JCommandButton) c;
         SubstanceButtonShaper shaper = SubstanceCoreUtilities.getButtonShaper(button);
 
         Dimension superPref = super.getPreferredSize(button);
@@ -736,8 +736,8 @@ public class SubstanceCommandButtonUI extends BasicCommandButtonUI
                 && (SwingUtilities.getAncestorOfClass(JRibbon.class, button) == null)
                 && (SwingUtilities.getAncestorOfClass(JBreadcrumbBar.class, button) == null)
                 && (SwingUtilities.getAncestorOfClass(JCommandPopupMenu.class, button) == null)) {
-            JButton dummy = new JButton(button.getText(), button.getIcon());
-            Dimension result = shaper.getPreferredSize(dummy, superPref);
+            JButton forSizing = new JButton(button.getText(), button.getIcon());
+            Dimension result = shaper.getPreferredSize(forSizing, superPref);
             if (FlamingoUtilities.hasPopupAction(button)) {
                 result.width = superPref.width;
             }
@@ -812,7 +812,7 @@ public class SubstanceCommandButtonUI extends BasicCommandButtonUI
     }
 
 
-    private static Color getMenuButtonForegroundColor(AbstractCommandButton menuButton,
+    private static Color getMenuButtonForegroundColor(JCommandButton menuButton,
             StateTransitionTracker.ModelStateInfo modelStateInfo) {
         ComponentState currState = modelStateInfo.getCurrModelStateNoSelection();
         Map<ComponentState, StateTransitionTracker.StateContributionInfo> activeStates = modelStateInfo

@@ -178,7 +178,7 @@ this.addOverlayPainter(TopShadowOverlayPainter.getInstance(),
 // add an overlay painter to paint separator lines along the bottom
 // edges of title panes and menu bars
 this.bottomLineOverlayPainter = new BottomLineOverlayPainter(
-    (SubstanceColorScheme scheme) -> SubstanceColorUtilities.getAlphaColor(
+    scheme -> SubstanceColorUtilities.getAlphaColor(
         scheme.getDarkColor(), 160));
 this.addOverlayPainter(this.bottomLineOverlayPainter,
     DecorationAreaType.PRIMARY_TITLE_PANE,
@@ -231,7 +231,7 @@ and this is how it looks like:
 
 <img alt="Creme" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/creme1.png" width="340" height="258">
 
-All the other settings (watermark, painters, watermark color scheme) are set in the skin constructor. Here is sample code from the [Office Silver 2007 skin](toneddown.md#office-silver-2007):
+All the other settings (painters, additional color schemes) are set in the skin constructor. Here is sample code from the [Office Silver 2007 skin](toneddown.md#office-silver-2007):
 
 ```java
 this.buttonShaper = new ClassicButtonShaper();
@@ -253,7 +253,7 @@ FractionBasedBorderPainter outerBorderPainter = new FractionBasedBorderPainter(
 SubstanceBorderPainter innerBorderPainter = new DelegateFractionBasedBorderPainter(
     "Office Silver 2007 Inner", outerBorderPainter,
     new int[] { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF },
-    (SubstanceColorScheme scheme) -> scheme.tint(0.8f));
+    scheme -> scheme.tint(0.8f));
 this.borderPainter = new CompositeBorderPainter("Office Silver 2007",
     outerBorderPainter, innerBorderPainter);
 
@@ -386,7 +386,7 @@ public class SubstanceSkinComboSelector extends JComboBox {
     });
     // add an action listener to change skin based on user selection
     this.addActionListener(
-            (ActionEvent e) -> SwingUtilities.invokeLater(() -> SubstanceCortex.GlobalScope
+            actionEvent -> SwingUtilities.invokeLater(() -> SubstanceCortex.GlobalScope
                     .setSkin(((SkinInfo) SubstanceSkinComboSelector.this.getSelectedItem())
                             .getClassName())));
   }

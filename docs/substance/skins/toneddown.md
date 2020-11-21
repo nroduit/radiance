@@ -285,9 +285,25 @@ Available in the `org.pushingpixels.substance.api.skin.CeruleanSkin`. In additio
 <img alt="Cerulean" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/cerulean2.png" width="340" height="258">
 </p>
 
+### Green Magic
+
+Available in the `org.pushingpixels.substance.api.skin.GreenMagicSkin`. In addition, the `org.pushingpixels.substance.api.skin.SubstanceGreenMagicLookAndFeel` can be used with one of the following options:
+
+* `SubstanceCortex.GlobalScope.setSkin(new GreenMagicSkin())`
+* `SubstanceCortex.GlobalScope.setSkin("org.pushingpixels.substance.api.skin.GreenMagicSkin")`
+* `-Dswing.defaultlaf=org.pushingpixels.substance.api.skin.SubstanceGreenMagicLookAndFeel`
+* `UIManager.setLookAndFeel(new SubstanceGreenMagicLookAndFeel())`
+* `UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceGreenMagicLookAndFeel");`
+
+<p align="left">
+<img alt="Green Magic" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/greenmagic1.png" width="340" height="258">
+<img alt="Green Magic" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance/skins/greenmagic2.png" width="340" height="258">
+</p>
+
+
 ## Office 2007 skins
 
-Note that while these skins were originally designed for the [Flamingo ribbon component](../../flamingo/flamingo.md), they can be used in regular Swing applications as any other Substance skin. Since version 2.0 of Radiance, these skins are part of the [extras pack](../extras.md).
+Note that while these skins were originally designed for the [Flamingo ribbon component](../../flamingo/flamingo.md), they can be used in regular Swing applications as any other Substance skin. Since version 2.0 of Radiance, these skins are part of the [extras pack](skins-extras.md).
 
 ### Office Silver 2007
 
@@ -333,3 +349,7 @@ Available in the `org.pushingpixels.substance.extras.api.skinpack.OfficeBlack200
 <img alt="Office Black 2007" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance-extras/skins/officeblack20071.png" width="340" height="258">
 <img alt="Office Black 2007" src="https://raw.githubusercontent.com/kirill-grouchnikov/radiance/master/docs/images/substance-extras/skins/officeblack20072.png" width="340" height="258">
 </p>
+
+### Additional skins
+
+Additional skins can be found in the [extras pack](skins-extras.md).

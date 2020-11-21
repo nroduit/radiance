@@ -30,10 +30,7 @@
 package org.pushingpixels.demo.substance.main.check;
 
 import org.pushingpixels.demo.substance.main.check.svg.flags.*;
-import org.pushingpixels.substance.api.ComponentState;
-import org.pushingpixels.substance.api.SubstanceColorSchemeBundle;
-import org.pushingpixels.substance.api.SubstanceCortex;
-import org.pushingpixels.substance.api.SubstanceSkin;
+import org.pushingpixels.substance.api.*;
 import org.pushingpixels.substance.api.SubstanceSlices.DecorationAreaType;
 import org.pushingpixels.substance.api.colorscheme.*;
 import org.pushingpixels.substance.api.painter.border.ClassicBorderPainter;
@@ -41,10 +38,12 @@ import org.pushingpixels.substance.api.painter.decoration.ArcDecorationPainter;
 import org.pushingpixels.substance.api.painter.fill.GlassFillPainter;
 import org.pushingpixels.substance.api.painter.highlight.GlassHighlightPainter;
 import org.pushingpixels.substance.api.shaper.ClassicButtonShaper;
+import org.pushingpixels.substance.api.skin.GraphiteSkin;
 import org.pushingpixels.substance.api.skin.NebulaAccentedSkin;
 import org.pushingpixels.substance.api.skin.SkinInfo;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -223,7 +222,7 @@ public class SampleMenuFactory {
         Map<String, SkinInfo> skinMap = SubstanceCortex.GlobalScope.getAllSkins();
         for (final Map.Entry<String, SkinInfo> entry : skinMap.entrySet()) {
             JMenuItem jmiSkin = new JMenuItem(entry.getValue().getDisplayName());
-            jmiSkin.addActionListener((ActionEvent e) -> {
+            jmiSkin.addActionListener(actionEvent -> {
                 String skinClassName = entry.getValue().getClassName();
                 boolean status = SubstanceCortex.GlobalScope.setSkin(skinClassName);
                 if (!status) {
@@ -237,15 +236,17 @@ public class SampleMenuFactory {
         jmSkin.addSeparator();
         final CustomSkin customSkin = new CustomSkin();
         JMenuItem jmiSkin = new JMenuItem(customSkin.getDisplayName());
-        jmiSkin.addActionListener(
-                (ActionEvent e) -> SubstanceCortex.GlobalScope.setSkin(customSkin));
+        jmiSkin.addActionListener(actionEvent -> SubstanceCortex.GlobalScope.setSkin(customSkin));
         final CustomAccentedSkin customAccentedSkin = new CustomAccentedSkin();
         JMenuItem jmiAccentedSkin = new JMenuItem(customAccentedSkin.getDisplayName());
-        jmiAccentedSkin.addActionListener(
-                (ActionEvent e) -> SubstanceCortex.GlobalScope.setSkin(customAccentedSkin));
+        jmiAccentedSkin.addActionListener(actionEvent -> SubstanceCortex.GlobalScope.setSkin(customAccentedSkin));
+        final CustomFocusSkin customFocusSkin = new CustomFocusSkin();
+        JMenuItem jmiFocusSkin = new JMenuItem(customFocusSkin.getDisplayName());
+        jmiFocusSkin.addActionListener(actionEvent -> SubstanceCortex.GlobalScope.setSkin(customFocusSkin));
 
         jmSkin.add(jmiSkin);
         jmSkin.add(jmiAccentedSkin);
+        jmSkin.add(jmiFocusSkin);
 
         return jmSkin;
     }
@@ -258,6 +259,20 @@ public class SampleMenuFactory {
         @Override
         public String getDisplayName() {
             return "Nebula Olive";
+        }
+    }
+
+    protected static class CustomFocusSkin extends GraphiteSkin {
+        public CustomFocusSkin() {
+            super();
+
+            this.setOverlayColor(Color.red, SubstanceSlices.ColorOverlayType.FOCUS_INDICATION,
+                    DecorationAreaType.NONE, ComponentState.getAllStates());
+        }
+
+        @Override
+        public String getDisplayName() {
+            return "Graphite Red Focus";
         }
     }
 
@@ -306,32 +321,32 @@ public class SampleMenuFactory {
 
         JMenuItem itemShade = new JMenuItem("Shade 10%");
         itemShade.addActionListener(new SkinChanger(
-                (SubstanceColorScheme scheme) -> scheme.shade(0.1), "Shaded current"));
+                scheme -> scheme.shade(0.1), "Shaded current"));
         jmTransform.add(itemShade);
 
         JMenuItem itemTone = new JMenuItem("Tone 10%");
         itemTone.addActionListener(new SkinChanger(
-                (SubstanceColorScheme scheme) -> scheme.tone(0.1), "Toned current"));
+                scheme -> scheme.tone(0.1), "Toned current"));
         jmTransform.add(itemTone);
 
         JMenuItem itemTint = new JMenuItem("Tint 10%");
         itemTint.addActionListener(new SkinChanger(
-                (SubstanceColorScheme scheme) -> scheme.tint(0.1), "Tinted current"));
+                scheme -> scheme.tint(0.1), "Tinted current"));
         jmTransform.add(itemTint);
 
         JMenuItem itemHueShift = new JMenuItem("Hue shift 10%");
         itemHueShift.addActionListener(new SkinChanger(
-                (SubstanceColorScheme scheme) -> scheme.hueShift(0.1), "Hue shifted current"));
+                scheme -> scheme.hueShift(0.1), "Hue shifted current"));
         jmTransform.add(itemHueShift);
 
         JMenuItem itemSaturate = new JMenuItem("Saturate 10%");
         itemSaturate.addActionListener(new SkinChanger(
-                (SubstanceColorScheme scheme) -> scheme.saturate(0.1), "Saturated current"));
+                scheme -> scheme.saturate(0.1), "Saturated current"));
         jmTransform.add(itemSaturate);
 
         JMenuItem itemDesaturate = new JMenuItem("Desaturate 10%");
         itemDesaturate.addActionListener(new SkinChanger(
-                (SubstanceColorScheme scheme) -> scheme.saturate(-0.1), "Desaturated current"));
+                scheme -> scheme.saturate(-0.1), "Desaturated current"));
         jmTransform.add(itemDesaturate);
 
         JMenuItem itemNegate = new JMenuItem("Negate");

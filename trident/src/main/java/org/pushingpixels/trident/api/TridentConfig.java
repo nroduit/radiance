@@ -30,9 +30,9 @@
 package org.pushingpixels.trident.api;
 
 import org.pushingpixels.trident.api.TimelineEngine.TridentAnimationThread;
-import org.pushingpixels.trident.internal.interpolator.CorePropertyInterpolators;
 import org.pushingpixels.trident.api.interpolator.PropertyInterpolator;
 import org.pushingpixels.trident.api.interpolator.PropertyInterpolatorSource;
+import org.pushingpixels.trident.internal.interpolator.CorePropertyInterpolators;
 import org.pushingpixels.trident.internal.swing.AWTPropertyInterpolators;
 
 import java.util.Collection;
@@ -118,8 +118,7 @@ public class TridentConfig {
         this.propertyInterpolators.add(pInterpolator);
     }
 
-    public synchronized void addPropertyInterpolatorSource(
-            PropertyInterpolatorSource pInterpolatorSource) {
+    public synchronized void addPropertyInterpolatorSource(PropertyInterpolatorSource pInterpolatorSource) {
         this.propertyInterpolators.addAll(pInterpolatorSource.getPropertyInterpolators());
     }
 
@@ -130,8 +129,7 @@ public class TridentConfig {
     public synchronized void setPulseSource(PulseSource pulseSource) {
         TridentAnimationThread current = TimelineEngine.getInstance().animatorThread;
         if ((current != null) && current.isAlive())
-            throw new IllegalStateException(
-                    "Cannot replace the pulse source thread once it's running");
+            throw new IllegalStateException("Cannot replace the pulse source thread once it's running");
         this.pulseSource = pulseSource;
     }
 

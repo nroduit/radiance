@@ -54,7 +54,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashSet;
 import java.util.Set;
@@ -68,7 +67,7 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
     /**
      * The associated command button.
      */
-    protected AbstractCommandButton commandButton;
+    protected JCommandButton commandButton;
 
     /**
      * Property change listener.
@@ -130,7 +129,7 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
 
     @Override
     public void installUI(JComponent c) {
-        this.commandButton = (AbstractCommandButton) c;
+        this.commandButton = (JCommandButton) c;
         installDefaults();
         installComponents();
         installListeners();
@@ -227,9 +226,7 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
             });
         }
 
-        if (this.commandButton instanceof JCommandButton) {
-            this.popupActionIcon = this.createPopupActionIcon();
-        }
+        this.popupActionIcon = this.createPopupActionIcon();
     }
 
     /**
@@ -244,9 +241,9 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
             this.commandButton.addChangeListener(this.basicPopupButtonListener);
         }
 
-        this.propertyChangeListener = (PropertyChangeEvent evt) -> {
-            if (AbstractButton.ICON_CHANGED_PROPERTY.equals(evt.getPropertyName())) {
-                Icon newIcon = (Icon) evt.getNewValue();
+        this.propertyChangeListener = propertyChangeEvent -> {
+            if (AbstractButton.ICON_CHANGED_PROPERTY.equals(propertyChangeEvent.getPropertyName())) {
+                Icon newIcon = (Icon) propertyChangeEvent.getNewValue();
                 if (newIcon instanceof AsynchronousLoading) {
                     AsynchronousLoading async = (AsynchronousLoading) newIcon;
                     async.addAsynchronousLoadListener((boolean success) -> {
@@ -270,26 +267,26 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
                     commandButton.repaint();
                 }
             }
-            if ("commandButtonKind".equals(evt.getPropertyName())) {
+            if ("commandButtonKind".equals(propertyChangeEvent.getPropertyName())) {
                 updatePopupActionIcon();
             }
-            if ("popupOrientationKind".equals(evt.getPropertyName())) {
+            if ("popupOrientationKind".equals(propertyChangeEvent.getPropertyName())) {
                 updatePopupActionIcon();
             }
-            if ("iconDimension".equals(evt.getPropertyName())) {
+            if ("iconDimension".equals(propertyChangeEvent.getPropertyName())) {
                 updateIconDimension();
             }
-            if ("hgapScaleFactor".equals(evt.getPropertyName())) {
+            if ("hgapScaleFactor".equals(propertyChangeEvent.getPropertyName())) {
                 updateBorder();
             }
-            if ("vgapScaleFactor".equals(evt.getPropertyName())) {
+            if ("vgapScaleFactor".equals(propertyChangeEvent.getPropertyName())) {
                 updateBorder();
             }
 
-            if ("popupModel".equals(evt.getPropertyName())) {
+            if ("popupModel".equals(propertyChangeEvent.getPropertyName())) {
                 // rewire the popup action listener on the new popup model
-                PopupButtonModel oldModel = (PopupButtonModel) evt.getOldValue();
-                PopupButtonModel newModel = (PopupButtonModel) evt.getNewValue();
+                PopupButtonModel oldModel = (PopupButtonModel) propertyChangeEvent.getOldValue();
+                PopupButtonModel newModel = (PopupButtonModel) propertyChangeEvent.getNewValue();
 
                 if (oldModel != null) {
                     oldModel.removePopupActionListener(popupActionListener);
@@ -301,7 +298,7 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
                     newModel.addPopupActionListener(popupActionListener);
                 }
             }
-            if ("presentationState".equals(evt.getPropertyName())) {
+            if ("presentationState".equals(propertyChangeEvent.getPropertyName())) {
                 syncIconDimension();
                 syncDisabledIcon();
 
@@ -312,10 +309,10 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
 
             // pass the event to the layout manager
             if (layoutManager != null) {
-                layoutManager.propertyChange(evt);
+                layoutManager.propertyChange(propertyChangeEvent);
             }
 
-            if ("componentOrientation".equals(evt.getPropertyName())) {
+            if ("componentOrientation".equals(propertyChangeEvent.getPropertyName())) {
                 updatePopupActionIcon();
                 commandButton.repaint();
             }
@@ -323,77 +320,65 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
         this.commandButton.addPropertyChangeListener(this.propertyChangeListener);
 
         Command command = this.commandButton.getProjection().getContentModel();
-        this.projectionPropertyChangeListener = (PropertyChangeEvent evt) -> {
-            if ("text".equals(evt.getPropertyName())) {
-                commandButton.setText((String) evt.getNewValue());
+        this.projectionPropertyChangeListener = propertyChangeEvent -> {
+            if ("text".equals(propertyChangeEvent.getPropertyName())) {
+                commandButton.setText((String) propertyChangeEvent.getNewValue());
             }
-            if ("extraText".equals(evt.getPropertyName())) {
-                commandButton.setExtraText((String) evt.getNewValue());
+            if ("extraText".equals(propertyChangeEvent.getPropertyName())) {
+                commandButton.setExtraText((String) propertyChangeEvent.getNewValue());
             }
-            if ("iconFactory".equals(evt.getPropertyName())) {
-                ResizableIcon.Factory factory = (ResizableIcon.Factory) evt.getNewValue();
+            if ("iconFactory".equals(propertyChangeEvent.getPropertyName())) {
+                ResizableIcon.Factory factory = (ResizableIcon.Factory) propertyChangeEvent.getNewValue();
                 commandButton.setIcon((factory != null) ? factory.createNewIcon() : null);
             }
-            if ("disabledIconFactory".equals(evt.getPropertyName())) {
-                ResizableIcon.Factory factory = (ResizableIcon.Factory) evt.getNewValue();
+            if ("disabledIconFactory".equals(propertyChangeEvent.getPropertyName())) {
+                ResizableIcon.Factory factory = (ResizableIcon.Factory) propertyChangeEvent.getNewValue();
                 commandButton.setDisabledIcon((factory != null) ? factory.createNewIcon() : null);
             }
-            if ("isToggleSelected".equals(evt.getPropertyName())) {
-                commandButton.getActionModel().setSelected((Boolean) evt.getNewValue());
+            if ("isToggleSelected".equals(propertyChangeEvent.getPropertyName())) {
+                commandButton.getActionModel().setSelected((Boolean) propertyChangeEvent.getNewValue());
                 if (command.getToggleGroupModel() != null) {
-                    command.getToggleGroupModel().setSelected(command, (Boolean) evt.getNewValue());
+                    command.getToggleGroupModel().setSelected(command, (Boolean) propertyChangeEvent.getNewValue());
                 }
             }
-            if ("action".equals(evt.getPropertyName())) {
-                commandButton.removeCommandListener((CommandAction) evt.getOldValue());
-                commandButton.addCommandListener((CommandAction) evt.getNewValue());
+            if ("action".equals(propertyChangeEvent.getPropertyName())) {
+                commandButton.removeCommandListener((CommandAction) propertyChangeEvent.getOldValue());
+                commandButton.addCommandListener((CommandAction) propertyChangeEvent.getNewValue());
             }
-            if ("actionPreview".equals(evt.getPropertyName())) {
-                syncActionPreview(command, ((Command.CommandActionPreview) evt.getNewValue()));
+            if ("actionPreview".equals(propertyChangeEvent.getPropertyName())) {
+                syncActionPreview(command, ((Command.CommandActionPreview) propertyChangeEvent.getNewValue()));
             }
-            if ("actionRichTooltip".equals(evt.getPropertyName())) {
-                commandButton.setActionRichTooltip((RichTooltip) evt.getNewValue());
+            if ("actionRichTooltip".equals(propertyChangeEvent.getPropertyName())) {
+                commandButton.setActionRichTooltip((RichTooltip) propertyChangeEvent.getNewValue());
             }
-            if ("secondaryRichTooltip".equals(evt.getPropertyName())) {
-                if (commandButton instanceof JCommandButton) {
-                    ((JCommandButton) commandButton).setPopupRichTooltip(
-                            (RichTooltip) evt.getNewValue());
-                }
+            if ("secondaryRichTooltip".equals(propertyChangeEvent.getPropertyName())) {
+                commandButton.setPopupRichTooltip((RichTooltip) propertyChangeEvent.getNewValue());
             }
-            if ("isAutoRepeatAction".equals(evt.getPropertyName())) {
-                if (commandButton instanceof JCommandButton) {
-                    ((JCommandButton) commandButton).setAutoRepeatAction(
-                            (Boolean) evt.getNewValue());
-                }
+            if ("isAutoRepeatAction".equals(propertyChangeEvent.getPropertyName())) {
+                commandButton.setAutoRepeatAction((Boolean) propertyChangeEvent.getNewValue());
             }
-            if ("isFireActionOnRollover".equals(evt.getPropertyName())) {
-                if (commandButton instanceof JCommandButton) {
-                    ((JCommandButton) commandButton).setFireActionOnRollover(
-                            (Boolean) evt.getNewValue());
-                }
+            if ("isFireActionOnRollover".equals(propertyChangeEvent.getPropertyName())) {
+                commandButton.setFireActionOnRollover((Boolean) propertyChangeEvent.getNewValue());
             }
-            if ("isFireActionOnPress".equals(evt.getPropertyName())) {
-                commandButton.getActionModel().setFireActionOnPress((Boolean) evt.getNewValue());
+            if ("isFireActionOnPress".equals(propertyChangeEvent.getPropertyName())) {
+                commandButton.getActionModel().setFireActionOnPress((Boolean) propertyChangeEvent.getNewValue());
             }
-            if ("actionEnabled".equals(evt.getPropertyName())) {
-                commandButton.getActionModel().setEnabled((Boolean) evt.getNewValue());
+            if ("actionEnabled".equals(propertyChangeEvent.getPropertyName())) {
+                commandButton.getActionModel().setEnabled((Boolean) propertyChangeEvent.getNewValue());
                 syncDisabledIcon();
                 commandButton.repaint();
             }
-            if ("secondaryEnabled".equals(evt.getPropertyName())) {
-                if (commandButton instanceof JCommandButton) {
-                    ((JCommandButton) commandButton).getPopupModel().setEnabled(
-                            (Boolean) evt.getNewValue());
-                    syncDisabledIcon();
-                    commandButton.repaint();
-                }
+            if ("secondaryEnabled".equals(propertyChangeEvent.getPropertyName())) {
+                commandButton.getPopupModel().setEnabled((Boolean) propertyChangeEvent.getNewValue());
+                syncDisabledIcon();
+                commandButton.repaint();
             }
         };
         command.addPropertyChangeListener(this.projectionPropertyChangeListener);
 
         syncActionPreview(command, command.getActionPreview());
 
-        this.disposePopupsActionListener = (CommandActionEvent e) -> {
+        this.disposePopupsActionListener = commandActionEvent -> {
             boolean toDismiss = !Boolean.TRUE
                     .equals(commandButton.getClientProperty(DONT_DISPOSE_POPUPS));
             if (toDismiss) {
@@ -422,11 +407,8 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
         };
         this.commandButton.addCommandListener(this.disposePopupsActionListener);
 
-        if (this.commandButton instanceof JCommandButton) {
-            this.popupActionListener = this.createPopupActionListener();
-            ((JCommandButton) this.commandButton).getPopupModel()
-                    .addPopupActionListener(this.popupActionListener);
-        }
+        this.popupActionListener = this.createPopupActionListener();
+        this.commandButton.getPopupModel().addPopupActionListener(this.popupActionListener);
 
         this.focusListener = new FocusListener() {
             @Override
@@ -457,7 +439,7 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
      * @param b Command button.
      * @return The button listener for the specified command button.
      */
-    protected BasicCommandButtonListener createButtonListener(AbstractCommandButton b) {
+    protected BasicCommandButtonListener createButtonListener(JCommandButton b) {
         return new BasicCommandButtonListener();
     }
 
@@ -504,11 +486,8 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
         this.commandButton.removeCommandListener(this.disposePopupsActionListener);
         this.disposePopupsActionListener = null;
 
-        if (this.commandButton instanceof JCommandButton) {
-            ((JCommandButton) this.commandButton).getPopupModel()
-                    .removePopupActionListener(this.popupActionListener);
-            this.popupActionListener = null;
-        }
+        commandButton.getPopupModel().removePopupActionListener(this.popupActionListener);
+        this.popupActionListener = null;
 
         if (this.actionPreviewChangeListener != null) {
             this.commandButton.getActionModel().removeChangeListener(
@@ -551,9 +530,8 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
         // special case for command buttons with POPUP_ONLY kind -
         // check the popup model
         boolean toUseDisabledIcon;
-        if (this.commandButton instanceof JCommandButton && ((JCommandButton) this.commandButton)
-                .getCommandButtonKind() == JCommandButton.CommandButtonKind.POPUP_ONLY) {
-            toUseDisabledIcon = !((JCommandButton) this.commandButton).getPopupModel().isEnabled();
+        if (this.commandButton.getCommandButtonKind() == JCommandButton.CommandButtonKind.POPUP_ONLY) {
+            toUseDisabledIcon = !this.commandButton.getPopupModel().isEnabled();
         } else {
             toUseDisabledIcon = !this.commandButton.getActionModel().isEnabled();
         }
@@ -595,7 +573,7 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
 
     @Override
     public Dimension getPreferredSize(JComponent c) {
-        AbstractCommandButton button = (AbstractCommandButton) c;
+        JCommandButton button = (JCommandButton) c;
         return this.layoutManager.getPreferredSize(button);
     }
 
@@ -632,9 +610,7 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
      * @return <code>true</code> if the action-popup areas separator is painted.
      */
     protected boolean isPaintingSeparators() {
-        PopupButtonModel popupModel = (this.commandButton instanceof JCommandButton)
-                ? ((JCommandButton) this.commandButton).getPopupModel()
-                : null;
+        PopupButtonModel popupModel = this.commandButton.getPopupModel();
         boolean isActionRollover = this.commandButton.getActionModel().isRollover();
         boolean isPopupRollover = (popupModel != null) && popupModel.isRollover();
         return isActionRollover || isPopupRollover;
@@ -646,9 +622,7 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
      * @return <code>true</code> if the button background is painted.
      */
     protected boolean isPaintingBackground() {
-        PopupButtonModel popupModel = (this.commandButton instanceof JCommandButton)
-                ? ((JCommandButton) this.commandButton).getPopupModel()
-                : null;
+        PopupButtonModel popupModel = this.commandButton.getPopupModel();
         boolean isActionSelected = this.commandButton.getActionModel().isSelected();
         boolean isPopupSelected = (popupModel != null) && popupModel.isSelected();
         boolean isActionRollover = this.commandButton.getActionModel().isRollover();
@@ -667,36 +641,26 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
      * @return Popup action listener for this command button.
      */
     protected PopupActionListener createPopupActionListener() {
-        return (ActionEvent e) -> processPopupAction();
+        return event -> processPopupAction();
     }
 
     public void processPopupAction() {
-        boolean wasPopupShowing = false;
-        if (this.commandButton instanceof JCommandButton) {
-            wasPopupShowing = ((JCommandButton) this.commandButton).getPopupModel()
-                    .isPopupShowing();
-        }
+        boolean wasPopupShowing = this.commandButton.getPopupModel().isPopupShowing();
 
         // dismiss all the popups that are currently showing
         // up until <this> button.
         PopupPanelManager.defaultManager().hidePopups(commandButton);
 
-        if (!(commandButton instanceof JCommandButton)) {
-            return;
-        }
-
         if (wasPopupShowing) {
             return;
         }
 
-        JCommandButton jcb = (JCommandButton) this.commandButton;
-
         // check if the command button has an associated popup panel
-        PopupPanelCallback popupCallback = jcb.getPopupCallback();
+        PopupPanelCallback popupCallback = this.commandButton.getPopupCallback();
         final JPopupPanel popupPanel =
-                (popupCallback != null) ? popupCallback.getPopupPanel(jcb) : null;
+                (popupCallback != null) ? popupCallback.getPopupPanel(this.commandButton) : null;
         if (popupPanel != null) {
-            popupPanel.applyComponentOrientation(jcb.getComponentOrientation());
+            popupPanel.applyComponentOrientation(this.commandButton.getComponentOrientation());
             SwingUtilities.invokeLater(() -> {
                 if ((commandButton == null) || (popupPanel == null)) {
                     return;
@@ -714,10 +678,10 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
                 JPopupPanel.PopupPanelCustomizer customizer = popupPanel.getCustomizer();
                 boolean ltr = commandButton.getComponentOrientation().isLeftToRight();
                 if (customizer == null) {
-                    switch (jcb.getPopupOrientationKind()) {
+                    switch (this.commandButton.getPopupOrientationKind()) {
                         case DOWNWARD:
                             CommandButtonPresentationModel.PopupHorizontalGravity popupHorizontalGravity =
-                                    jcb.getPopupHorizontalGravity();
+                                    this.commandButton.getPopupHorizontalGravity();
                             boolean isLeftAligned =
                                     (ltr && (popupHorizontalGravity == CommandButtonPresentationModel.PopupHorizontalGravity.START)) ||
                                             (!ltr && (popupHorizontalGravity == CommandButtonPresentationModel.PopupHorizontalGravity.END));
@@ -733,11 +697,9 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
                             if (ltr) {
                                 x = commandButton.getLocationOnScreen().x + commandButton.getWidth();
                             } else {
-                                x = commandButton.getLocationOnScreen().x
-                                        - popupPanel.getPreferredSize().width;
+                                x = commandButton.getLocationOnScreen().x - popupPanel.getPreferredSize().width;
                             }
-                            y = commandButton.getLocationOnScreen().y
-                                    + getLayoutInfo().popupClickArea.y;
+                            y = commandButton.getLocationOnScreen().y + getLayoutInfo().popupClickArea.y;
                             break;
                     }
                 } else {
@@ -764,8 +726,7 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
                     popupPanel.setPreferredSize(
                             new Dimension(placementRect.width, placementRect.height));
                 }
-                Popup popup = PopupFactory.getSharedInstance().getPopup(commandButton, popupPanel,
-                        x, y);
+                Popup popup = PopupFactory.getSharedInstance().getPopup(commandButton, popupPanel, x, y);
                 // System.out.println("Showing the popup panel");
                 PopupPanelManager.defaultManager().addPopup(commandButton, popup, popupPanel);
             });
@@ -835,14 +796,7 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
     }
 
     private void syncInitialInnerFocus() {
-        if (!(this.commandButton instanceof JCommandButton)) {
-            this.isInnerFocusOnAction = true;
-            // Only JCommandButton can have two areas
-            return;
-        }
-
-        JCommandButton jcb = (JCommandButton) this.commandButton;
-        switch (jcb.getCommandButtonKind()) {
+        switch (this.commandButton.getCommandButtonKind()) {
             case ACTION_ONLY:
                 this.isInnerFocusOnAction = true;
                 break;
@@ -850,25 +804,19 @@ public abstract class BasicCommandButtonUI extends CommandButtonUI {
                 this.isInnerFocusOnAction = false;
                 break;
             default:
-                this.isInnerFocusOnAction = jcb.getActionModel().isEnabled();
+                this.isInnerFocusOnAction = this.commandButton.getActionModel().isEnabled();
         }
     }
 
     private void toggleInnerFocus() {
-        if (!(this.commandButton instanceof JCommandButton)) {
-            // Only JCommandButton can have two areas
-            return;
-        }
-
-        JCommandButton jcb = (JCommandButton) this.commandButton;
-        JCommandButton.CommandButtonKind commandButtonKind = jcb.getCommandButtonKind();
+        JCommandButton.CommandButtonKind commandButtonKind = this.commandButton.getCommandButtonKind();
         if ((commandButtonKind == JCommandButton.CommandButtonKind.ACTION_ONLY) ||
                 (commandButtonKind == JCommandButton.CommandButtonKind.POPUP_ONLY)) {
             // Only one area
             return;
         }
 
-        if (!jcb.getActionModel().isEnabled() || !jcb.getPopupModel().isEnabled()) {
+        if (!this.commandButton.getActionModel().isEnabled() || !this.commandButton.getPopupModel().isEnabled()) {
             // Can transfer inner focus only if both areas are enabled
             return;
         }

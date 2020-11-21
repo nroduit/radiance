@@ -33,8 +33,11 @@
 package org.pushingpixels.flamingo.internal.ui.bcb;
 
 import org.pushingpixels.flamingo.api.bcb.*;
-import org.pushingpixels.flamingo.api.common.*;
+import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
+import org.pushingpixels.flamingo.api.common.JScrollablePanel;
+import org.pushingpixels.flamingo.api.common.StringValuePair;
 import org.pushingpixels.flamingo.api.common.icon.EmptyResizableIcon;
 import org.pushingpixels.flamingo.api.common.model.*;
 import org.pushingpixels.flamingo.api.common.popup.model.CommandPopupMenuPresentationModel;
@@ -48,7 +51,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.UIResource;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -78,7 +80,7 @@ public abstract class BasicBreadcrumbBarUI extends BreadcrumbBarUI {
 
     private ComponentListener componentListener;
 
-    private AbstractCommandButton dummy;
+    private JCommandButton forSizing;
 
     /**
      * Contains the item path.
@@ -133,14 +135,14 @@ public abstract class BasicBreadcrumbBarUI extends BreadcrumbBarUI {
             worker.execute();
         }
 
-        this.dummy = Command.builder()
-                .setText("Dummy")
+        this.forSizing = Command.builder()
+                .setText("Text")
                 .setIconFactory(EmptyResizableIcon.factory())
-                .setAction((CommandActionEvent e) -> {})
+                .setAction(commandActionEvent -> {})
                 .build().project(CommandButtonPresentationModel.builder()
                         .setPresentationState(CommandButtonPresentationState.SMALL).build())
                 .buildComponent();
-        int preferredHeight = dummy.getPreferredSize().height;
+        int preferredHeight = forSizing.getPreferredSize().height;
         this.circularProgress.setBorder(
                 new EmptyBorder((preferredHeight - 12) / 2, 10, (preferredHeight - 12) / 2, 10));
         this.circularProgress.setPreferredSize(new Dimension(32, preferredHeight));
@@ -159,8 +161,7 @@ public abstract class BasicBreadcrumbBarUI extends BreadcrumbBarUI {
     protected void installDefaults(JBreadcrumbBar<?> bar) {
         Font currFont = bar.getFont();
         if ((currFont == null) || (currFont instanceof UIResource)) {
-            bar.setFont(SubstanceCortex.GlobalScope.getFontPolicy().getFontSet()
-                    .getControlFont());
+            bar.setFont(SubstanceCortex.GlobalScope.getFontPolicy().getFontSet().getControlFont());
         }
     }
 
@@ -170,7 +171,7 @@ public abstract class BasicBreadcrumbBarUI extends BreadcrumbBarUI {
         this.mainPanel = new JPanel(mainPanelLayout);
         this.mainPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
         this.mainPanel.setOpaque(false);
-        this.scrollerPanel = new JScrollablePanel<JPanel>(this.mainPanel,
+        this.scrollerPanel = new JScrollablePanel<>(this.mainPanel,
                 JScrollablePanel.ScrollType.HORIZONTALLY);
         this.circularProgress = new JCircularProgress();
         this.circularProgress.setPreferredSize(new Dimension(12, 12));
@@ -307,7 +308,7 @@ public abstract class BasicBreadcrumbBarUI extends BreadcrumbBarUI {
 
     private synchronized void startLoadingTimer() {
         if (this.loadingTimer == null) {
-            this.loadingTimer = new Timer(100, (ActionEvent e) -> {
+            this.loadingTimer = new Timer(100, actionEvent -> {
                 this.loadingTimer.stop();
 
                 this.circularProgress.setVisible(false);
@@ -372,7 +373,7 @@ public abstract class BasicBreadcrumbBarUI extends BreadcrumbBarUI {
             // The height of breadcrumb bar is
             // computed based on the preferred height of a command
             // button in MEDIUM state.
-            int buttonHeight = dummy.getPreferredSize().height;
+            int buttonHeight = forSizing.getPreferredSize().height;
 
             Insets ins = c.getInsets();
             return new Dimension(c.getWidth(), buttonHeight + ins.top + ins.bottom);
@@ -380,7 +381,7 @@ public abstract class BasicBreadcrumbBarUI extends BreadcrumbBarUI {
 
         @Override
         public Dimension minimumLayoutSize(Container c) {
-            int buttonHeight = dummy.getPreferredSize().height;
+            int buttonHeight = forSizing.getPreferredSize().height;
 
             return new Dimension(10, buttonHeight);
         }
@@ -517,7 +518,7 @@ public abstract class BasicBreadcrumbBarUI extends BreadcrumbBarUI {
     }
 
     private void configureMainAction(Command command, final BreadcrumbItem<Object> bi) {
-        command.setAction((CommandActionEvent e) ->
+        command.setAction(commandActionEvent ->
                 SwingUtilities.invokeLater(() -> {
                     BreadcrumbBarModel<Object> barModel = breadcrumbBar.getModel();
                     int itemIndex = barModel.indexOf(bi);
@@ -577,7 +578,7 @@ public abstract class BasicBreadcrumbBarUI extends BreadcrumbBarUI {
 
             final int biIndex = i;
 
-            commandBuilder.setAction((CommandActionEvent e) -> SwingUtilities.invokeLater(() -> {
+            commandBuilder.setAction(commandActionEvent -> SwingUtilities.invokeLater(() -> {
                 BreadcrumbBarModel<Object> barModel = breadcrumbBar.getModel();
                 barModel.setCumulative(true);
                 int itemIndex = barModel.indexOf(bic.getAncestor());
@@ -645,7 +646,7 @@ public abstract class BasicBreadcrumbBarUI extends BreadcrumbBarUI {
     }
 
     private void configureBreadcrumbButton(final JCommandButton button) {
-        button.getPopupModel().addChangeListener((ChangeEvent e) -> {
+        button.getPopupModel().addChangeListener(changeEvent -> {
             PopupButtonModel model = button.getPopupModel();
             boolean displayDownwards = model.isRollover() || model.isPopupShowing();
             CommandButtonPresentationModel.PopupOrientationKind popupOrientationKind =

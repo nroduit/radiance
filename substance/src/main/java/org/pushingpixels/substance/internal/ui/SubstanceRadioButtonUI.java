@@ -52,7 +52,6 @@ import javax.swing.text.View;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Map;
 
@@ -94,11 +93,11 @@ public class SubstanceRadioButtonUI extends BasicRadioButtonUI implements Transi
         this.stateTransitionTracker.registerModelListeners();
         this.stateTransitionTracker.registerFocusListeners();
 
-        this.substancePropertyListener = (PropertyChangeEvent evt) -> {
-            if (AbstractButton.MODEL_CHANGED_PROPERTY.equals(evt.getPropertyName())) {
-                stateTransitionTracker.setModel((ButtonModel) evt.getNewValue());
+        this.substancePropertyListener = propertyChangeEvent -> {
+            if (AbstractButton.MODEL_CHANGED_PROPERTY.equals(propertyChangeEvent.getPropertyName())) {
+                stateTransitionTracker.setModel((ButtonModel) propertyChangeEvent.getNewValue());
             }
-            if ("font".equals(evt.getPropertyName())) {
+            if ("font".equals(propertyChangeEvent.getPropertyName())) {
                 SwingUtilities.invokeLater(b::updateUI);
             }
         };
@@ -327,18 +326,6 @@ public class SubstanceRadioButtonUI extends BasicRadioButtonUI implements Transi
         // g2d.drawRect(0, 0, button.getWidth() - 1, button.getHeight() - 1);
 
         g2d.dispose();
-    }
-
-    /**
-     * Returns memory usage string.
-     * 
-     * @return Memory usage string.
-     */
-    public static String getMemoryUsage() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("SubstanceRadioButtonUI: \n");
-        sb.append("\t" + SubstanceRadioButtonUI.icons.size() + " icons");
-        return sb.toString();
     }
 
     /**

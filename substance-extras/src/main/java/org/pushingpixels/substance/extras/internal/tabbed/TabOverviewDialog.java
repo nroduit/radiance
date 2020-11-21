@@ -508,8 +508,8 @@ public class TabOverviewDialog extends JDialog {
                     };
 
             this.caroselMenu = new JCarouselMenu(null);
-            JList<Object> dummyList = new JList<>();
-            ListCellRenderer<Object> lcr = dummyList.getCellRenderer();
+            JList<Object> someList = new JList<>();
+            ListCellRenderer<Object> lcr = someList.getCellRenderer();
             this.caroselMenu.setCellRenderer(new MenuCarouselListCellRenderer(lcr));
             this.caroselMenu.setMenuScrollColor(UIManager.getColor("Panel.background"));
             this.caroselMenu.setUpDownColor(UIManager.getColor("Label.foreground"));
@@ -541,8 +541,8 @@ public class TabOverviewDialog extends JDialog {
         public void updateUI() {
             super.updateUI();
             if (this.caroselMenu != null) {
-                JList<Object> dummyList = new JList<>();
-                ListCellRenderer<Object> lcr = dummyList.getCellRenderer();
+                JList<Object> someList = new JList<>();
+                ListCellRenderer<Object> lcr = someList.getCellRenderer();
                 this.caroselMenu.setCellRenderer(new MenuCarouselListCellRenderer(lcr));
                 this.caroselMenu.setMenuScrollColor(UIManager.getColor("Panel.background"));
                 this.caroselMenu.setUpDownColor(UIManager.getColor("Label.foreground"));
@@ -932,8 +932,8 @@ public class TabOverviewDialog extends JDialog {
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setResizable(false);
 
-        this.lafSwitchListener = (PropertyChangeEvent evt) -> {
-            if ("lookAndFeel".equals(evt.getPropertyName())) {
+        this.lafSwitchListener = propertyChangeEvent -> {
+            if ("lookAndFeel".equals(propertyChangeEvent.getPropertyName())) {
                 SwingUtilities.invokeLater(
                         () -> SwingUtilities.updateComponentTreeUI(TabOverviewDialog.this));
             }
@@ -992,11 +992,10 @@ public class TabOverviewDialog extends JDialog {
         overviewDialog.setLocation(dialogScreenBounds.x, dialogScreenBounds.y);
         overviewDialog.setSize(dialogScreenBounds.width, dialogScreenBounds.height);
 
-        // make sure that the tab overview dialog is disposed when
-        // it loses focus
-        final PropertyChangeListener activeWindowListener = (PropertyChangeEvent evt) -> {
-            if ("activeWindow".equals(evt.getPropertyName())) {
-                if (overviewDialog == evt.getOldValue()) {
+        // make sure that the tab overview dialog is disposed when it loses focus
+        final PropertyChangeListener activeWindowListener = propertyChangeEvent -> {
+            if ("activeWindow".equals(propertyChangeEvent.getPropertyName())) {
+                if (overviewDialog == propertyChangeEvent.getOldValue()) {
                     if (previewPainter.toDisposeOverviewOnFocusLoss()) {
                         overviewDialog.dispose();
                     }

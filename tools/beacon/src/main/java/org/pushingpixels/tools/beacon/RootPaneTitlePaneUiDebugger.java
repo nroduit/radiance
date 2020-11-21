@@ -31,8 +31,10 @@ package org.pushingpixels.tools.beacon;
 
 import org.pushingpixels.substance.api.*;
 import org.pushingpixels.substance.api.SubstanceSlices.FocusKind;
-import org.pushingpixels.substance.api.colorscheme.*;
-import org.pushingpixels.substance.internal.utils.*;
+import org.pushingpixels.substance.api.colorscheme.ColorSchemeTransform;
+import org.pushingpixels.substance.api.text.SubstanceTextArea;
+import org.pushingpixels.substance.internal.utils.LazyResettableHashMap;
+import org.pushingpixels.substance.internal.utils.SubstanceCoreUtilities;
 import org.pushingpixels.substance.internal.widget.animation.effects.GhostPaintingUtils;
 
 import javax.swing.*;
@@ -91,20 +93,26 @@ public class RootPaneTitlePaneUiDebugger extends SubstanceWidget<JRootPane> {
                         }
 
                         JPopupMenu popup = new JPopupMenu();
+                        // Mark the popup menu to be HEADER decoration area type for visual
+                        // consistency with the popup menu displayed on clicking the application
+                        // icon (from SubstanceTitlePane.SubstanceMenuBar)
+                        SubstanceCortex.ComponentOrParentChainScope.setDecorationType(popup,
+                                SubstanceSlices.DecorationAreaType.HEADER);
+
                         JMenu cbMenu = new JMenu("Color blindness");
                         JMenuItem protanopiaCurrent = new JMenuItem("Protanopia current");
                         protanopiaCurrent.addActionListener(new SkinChanger(
-                                (SubstanceColorScheme scheme) -> new ProtanopiaColorScheme(scheme),
+                                ProtanopiaColorScheme::new,
                                 "Protanopia current"));
                         cbMenu.add(protanopiaCurrent);
                         JMenuItem deuteranopiaCurrent = new JMenuItem("Deuteranopia current");
-                        deuteranopiaCurrent.addActionListener(new SkinChanger((
-                                SubstanceColorScheme scheme) -> new DeuteranopiaColorScheme(scheme),
+                        deuteranopiaCurrent.addActionListener(new SkinChanger(
+                                DeuteranopiaColorScheme::new,
                                 "Deuteranopia current"));
                         cbMenu.add(deuteranopiaCurrent);
                         JMenuItem tritanopiaCurrent = new JMenuItem("Tritanopia current");
                         tritanopiaCurrent.addActionListener(new SkinChanger(
-                                (SubstanceColorScheme scheme) -> new TritanopiaColorScheme(scheme),
+                                TritanopiaColorScheme::new,
                                 "Tritanopia current"));
                         cbMenu.add(tritanopiaCurrent);
 
@@ -114,7 +122,7 @@ public class RootPaneTitlePaneUiDebugger extends SubstanceWidget<JRootPane> {
                         if (SubstanceCortex.GlobalScope.getCurrentSkin().getColorScheme(null,
                                 ComponentState.ENABLED) instanceof ColorBlindColorScheme) {
                             restoreOriginal.addActionListener(
-                                    new SkinChanger((SubstanceColorScheme scheme) -> {
+                                    new SkinChanger(scheme -> {
                                         if (scheme instanceof ColorBlindColorScheme) {
                                             return ((ColorBlindColorScheme) scheme).getOrigScheme();
                                         }
@@ -198,7 +206,7 @@ public class RootPaneTitlePaneUiDebugger extends SubstanceWidget<JRootPane> {
                         JMenuItem showCacheStats = new JMenuItem("Show cache stats");
                         showCacheStats.addActionListener(
                                 (ActionEvent event) -> SwingUtilities.invokeLater(() -> {
-                                    final JTextArea textArea = new JTextArea();
+                                    final JTextArea textArea = new SubstanceTextArea();
                                     java.util.List<String> stats = LazyResettableHashMap.getStats();
                                     if (stats != null) {
                                         for (String stat : stats) {
@@ -212,9 +220,9 @@ public class RootPaneTitlePaneUiDebugger extends SubstanceWidget<JRootPane> {
                                     dialog.setLayout(new BorderLayout());
                                     dialog.add(new JScrollPane(textArea), BorderLayout.CENTER);
                                     JButton dismiss = new JButton("Dismiss");
-                                    dismiss.addActionListener((ActionEvent ae) -> dialog.dispose());
+                                    dismiss.addActionListener(actionEvent -> dialog.dispose());
                                     JButton copyToClipboard = new JButton("Copy to clipboard");
-                                    copyToClipboard.addActionListener((ActionEvent ae) -> {
+                                    copyToClipboard.addActionListener(actionEvent -> {
                                         textArea.selectAll();
                                         TransferHandler.getCopyAction()
                                                 .actionPerformed(new ActionEvent(textArea,

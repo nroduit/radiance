@@ -29,7 +29,7 @@
  */
 package org.pushingpixels.flamingo.api.common.projection;
 
-import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
 import org.pushingpixels.flamingo.api.common.model.ContentModel;
@@ -40,21 +40,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public abstract class Projection<T extends JComponent, C extends ContentModel,
-        P extends PresentationModel> extends BlackboxProjection<C, P> {
+public abstract class Projection<T extends JComponent, C extends ContentModel, P extends PresentationModel>
+        extends BlackboxProjection<C, P> {
     private ComponentSupplier<T, C, P> componentSupplier;
     private ComponentCustomizer<T> componentCustomizer;
 
-    private Map<Command, ComponentCustomizer<AbstractCommandButton>> commandComponentCustomizers;
-    private Map<Command, ComponentSupplier<AbstractCommandButton, Command,
-            CommandButtonPresentationModel>>
-            commandComponentSuppliers;
+    private Map<Command, ComponentCustomizer<JCommandButton>> commandComponentCustomizers;
+    private Map<Command, ComponentSupplier<JCommandButton, Command,
+            CommandButtonPresentationModel>> commandComponentSuppliers;
 
     /**
      * This interface can be used as part of {@link #setComponentSupplier(ComponentSupplier)}
      * to return your own supplier of {@link TC} to be used before the
      * {@link #configureComponent(JComponent)} call.
      */
+    @FunctionalInterface
     public interface ComponentSupplier<TC extends JComponent, CC extends ContentModel,
             PC extends PresentationModel> {
         /**
@@ -67,7 +67,7 @@ public abstract class Projection<T extends JComponent, C extends ContentModel,
          * used to configure the projected component in {@link #configureComponent(JComponent)}
          * call.
          */
-        Function<Projection, TC> getComponentSupplier(Projection<TC, CC, PC> projection);
+        Function<Projection<TC, CC, PC>, TC> getComponentSupplier(Projection<TC, CC, PC> projection);
     }
 
     /**
@@ -76,6 +76,7 @@ public abstract class Projection<T extends JComponent, C extends ContentModel,
      * {@link #buildComponent()} with additional functionality not exposed via
      * {@link #getContentModel()} or {@link #getPresentationModel()}.
      */
+    @FunctionalInterface
     public interface ComponentCustomizer<TC extends JComponent> {
         /**
          * Customizes the result of {@link #buildComponent()} just before it is returned
@@ -88,8 +89,7 @@ public abstract class Projection<T extends JComponent, C extends ContentModel,
         void customizeComponent(TC component);
     }
 
-    protected Projection(C contentModel, P presentationModel,
-            ComponentSupplier<T, C, P> componentSupplier) {
+    protected Projection(C contentModel, P presentationModel, ComponentSupplier<T, C, P> componentSupplier) {
         super(contentModel, presentationModel);
         this.componentSupplier = componentSupplier;
         this.commandComponentCustomizers = new HashMap<>();
@@ -108,12 +108,12 @@ public abstract class Projection<T extends JComponent, C extends ContentModel,
     }
 
     public void setCommandComponentCustomizers(Map<Command,
-            ComponentCustomizer<AbstractCommandButton>> commandComponentCustomizers) {
+            ComponentCustomizer<JCommandButton>> commandComponentCustomizers) {
         this.commandComponentCustomizers = commandComponentCustomizers;
     }
 
     public void setCommandComponentSuppliers(Map<Command,
-            ComponentSupplier<AbstractCommandButton, Command, CommandButtonPresentationModel>> commandComponentSuppliers) {
+            ComponentSupplier<JCommandButton, Command, CommandButtonPresentationModel>> commandComponentSuppliers) {
         this.commandComponentSuppliers = commandComponentSuppliers;
     }
 
@@ -125,12 +125,12 @@ public abstract class Projection<T extends JComponent, C extends ContentModel,
         return this.componentCustomizer;
     }
 
-    public final Map<Command, ComponentSupplier<AbstractCommandButton, Command,
+    public final Map<Command, ComponentSupplier<JCommandButton, Command,
             CommandButtonPresentationModel>> getCommandComponentSuppliers() {
         return this.commandComponentSuppliers;
     }
 
-    public final Map<Command, ComponentCustomizer<AbstractCommandButton>> getCommandComponentCustomizers() {
+    public final Map<Command, ComponentCustomizer<JCommandButton>> getCommandComponentCustomizers() {
         return this.commandComponentCustomizers;
     }
 

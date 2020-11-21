@@ -39,19 +39,20 @@ import kotlinx.coroutines.withContext
 import org.jdesktop.jxlayer.JXLayer
 import org.jdesktop.jxlayer.plaf.ext.MouseScrollableUI
 import org.jdesktop.jxlayer.plaf.ext.SpotLightUI
+import org.pushingpixels.demo.rainbow.svg.ic_search_black_24px
+import org.pushingpixels.demo.rainbow.svg.ic_zoom_in_black_24px
+import org.pushingpixels.demo.rainbow.svg.ic_zoom_out_black_24px
 import org.pushingpixels.ember.setDecorationType
 import org.pushingpixels.flamingo.api.bcb.JBreadcrumbBar
 import org.pushingpixels.flamingo.api.common.ProgressEvent
 import org.pushingpixels.flamingo.api.layout.TransitionLayout
 import org.pushingpixels.flamingo.api.layout.TransitionLayoutEvent
 import org.pushingpixels.meteor.addDelayedChangeListener
-import org.pushingpixels.demo.rainbow.svg.ic_search_black_24px
-import org.pushingpixels.demo.rainbow.svg.ic_zoom_in_black_24px
-import org.pushingpixels.demo.rainbow.svg.ic_zoom_out_black_24px
 import org.pushingpixels.substance.api.SubstanceSlices.DecorationAreaType
 import java.awt.BorderLayout
 import java.awt.geom.RoundRectangle2D
 import javax.swing.*
+import javax.swing.border.EmptyBorder
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
@@ -98,7 +99,7 @@ class RainbowViewer<T>(title: String, private val bar: JBreadcrumbBar<T>) : JFra
      */
     private var currIconSize: Int = 0
 
-    var iconSize: Int
+    private var iconSize: Int
         get() = this.currIconSize
         set(iconSize) {
             this.currIconSize = iconSize
@@ -106,7 +107,6 @@ class RainbowViewer<T>(title: String, private val bar: JBreadcrumbBar<T>) : JFra
         }
 
     init {
-
         val initialSize = 64
         this.currIconSize = initialSize
         this.statusLabel = JLabel()
@@ -115,21 +115,22 @@ class RainbowViewer<T>(title: String, private val bar: JBreadcrumbBar<T>) : JFra
         this.svgFileViewPanel = RainbowFileViewPanel(bar, initialSize)
         this.svgFileViewPanel.setProgressListener { evt: ProgressEvent ->
             GlobalScope.launch(Dispatchers.Swing) {
-                val min = evt.minimum
-                val max = evt.maximum
-                val progress = evt.progress
-                if (progress == 0) {
-                    // started
-                    statusProgressBar.minimum = min
-                    statusProgressBar.maximum = max
-                    statusProgressBar.value = 0
-                    statusProgressBar.isVisible = true
-                } else if (progress == max) {
-                    // ended
-                    statusProgressBar.isVisible = false
-                    statusProgressBar.value = 0
-                } else {
-                    statusProgressBar.value = progress
+                when (evt.progress) {
+                    0 -> {
+                        // started
+                        statusProgressBar.minimum = evt.minimum
+                        statusProgressBar.maximum = evt.maximum
+                        statusProgressBar.value = 0
+                        statusProgressBar.isVisible = true
+                    }
+                    evt.maximum -> {
+                        // ended
+                        statusProgressBar.isVisible = false
+                        statusProgressBar.value = 0
+                    }
+                    else -> {
+                        statusProgressBar.value = evt.progress
+                    }
                 }
             }
         }
@@ -192,11 +193,9 @@ class RainbowViewer<T>(title: String, private val bar: JBreadcrumbBar<T>) : JFra
 
         val panelLm = this.svgFileViewPanel.layout as TransitionLayout
         panelLm.addTransitionLayoutListener { event: TransitionLayoutEvent ->
-            if (event.id == TransitionLayoutEvent.TRANSITION_STARTED) {
-                spotLightLayerUI.reset()
-            }
-            if (event.id == TransitionLayoutEvent.TRANSITION_ENDED) {
-                updateSpotLightPainter()
+            when (event.id) {
+                TransitionLayoutEvent.TRANSITION_STARTED -> spotLightLayerUI.reset()
+                TransitionLayoutEvent.TRANSITION_ENDED -> updateSpotLightPainter()
             }
         }
 
@@ -207,6 +206,7 @@ class RainbowViewer<T>(title: String, private val bar: JBreadcrumbBar<T>) : JFra
         val statusBarBuilder = FormBuilder.create().columns(
                 "fill:pref:grow(1), 1dlu, fill:min(pref;100px):grow(1), " + "1dlu, fill:min(pref;200px):grow(1)")
                 .rows("p")
+                .border(EmptyBorder(2, 4, 2, 4))
 
         statusBarBuilder.add(this.statusLabel).xy(1, 1)
 
@@ -234,11 +234,13 @@ class RainbowViewer<T>(title: String, private val bar: JBreadcrumbBar<T>) : JFra
             spotLightLayerUI.reset()
             this.matchingFileCount = this.svgFileViewPanel.projection.contentModel.commandCount
         } else {
-            val buttonMapping = svgFileViewPanel.buttonMap
+            // No grouping, so we're always looking at the first group (index 0)
+            val buttonGroups = svgFileViewPanel.getGroupButtons(0)
             // System.out.println("Matching:");
             spotLightLayerUI.reset()
-            for ((key, value) in buttonMapping) {
-                if (key.contains(text)) {
+            for (value in buttonGroups) {
+                val buttonText = value.text
+                if (buttonText.contains(text)) {
                     this.matchingFileCount++
                     val bounds = value.bounds
                     // System.out.println("\t" + buttonEntry.getKey() + ":"
@@ -272,7 +274,7 @@ class RainbowViewer<T>(title: String, private val bar: JBreadcrumbBar<T>) : JFra
 
     }
 
-    fun getPanel(initialSize: Int): JPanel {
+    private fun getPanel(initialSize: Int): JPanel {
         val builder = FormBuilder.create()
                 .columns("left:pref, 8dlu, fill:pref, 0dlu, fill:min:grow, 0dlu, fill:pref, 4dlu")
                 .rows("p")

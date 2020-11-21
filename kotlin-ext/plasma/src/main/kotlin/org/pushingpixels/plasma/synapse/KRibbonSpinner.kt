@@ -33,7 +33,7 @@ import org.pushingpixels.flamingo.api.ribbon.synapse.model.RibbonSpinnerDateCont
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.RibbonSpinnerNumberContentModel
 import org.pushingpixels.flamingo.api.ribbon.synapse.projection.RibbonSpinnerProjection
 import org.pushingpixels.neon.api.icon.ResizableIcon
-import org.pushingpixels.plasma.FlamingoElementMarker
+import org.pushingpixels.plasma.PlasmaElementMarker
 import org.pushingpixels.plasma.KRichTooltip
 import org.pushingpixels.plasma.NonNullDelegate
 import org.pushingpixels.plasma.NullableDelegate
@@ -43,27 +43,27 @@ import org.pushingpixels.plasma.ribbon.KRibbonBandGroup
 import org.pushingpixels.plasma.ribbon.KRibbonTaskbar
 import java.util.*
 
-@FlamingoElementMarker
-class KRibbonSpinnerNumberContentModel {
+@PlasmaElementMarker
+public class KRibbonSpinnerNumberContentModel {
     private val builder = RibbonSpinnerNumberContentModel.builder()
     internal lateinit var javaContentModel: RibbonSpinnerNumberContentModel
     internal var hasBeenConverted: Boolean = false
 
     internal var richTooltip: KRichTooltip? by NullableDelegate { false }
-    var iconFactory: ResizableIcon.Factory? by NullableDelegate { false }
-    var caption: String? by NullableDelegate { false }
-    var value : Int by NonNullDelegate { false }
-    var minimum : Int by NonNullDelegate { false }
-    var maximum : Int by NonNullDelegate { false }
-    var stepSize : Int by NonNullDelegate { false }
-    var selectionChangeListener: ((oldSelection: Any?, newSelection: Any?) -> Unit)? by NullableDelegate { false }
+    public var iconFactory: ResizableIcon.Factory? by NullableDelegate { false }
+    public var caption: String? by NullableDelegate { false }
+    public var value : Int by NonNullDelegate { false }
+    public var minimum : Int by NonNullDelegate { false }
+    public var maximum : Int by NonNullDelegate { false }
+    public var stepSize : Int by NonNullDelegate { false }
+    public var selectionChangeListener: ((oldSelection: Any?, newSelection: Any?) -> Unit)? by NullableDelegate { false }
 
     // The "isEnabled" property can be modified even after [KRibbonSpinnerNumber.toJavaProjection] has
     // been called multiple times. Internally, the setter propagates the new value to the underlying
     // builder and the cached [RibbonSpinnerNumberContentModel] instance, which then gets
     // propagated to be reflected in all spinners created from this content model.
     private var _isEnabled: Boolean = true
-    var isEnabled: Boolean
+    public var isEnabled: Boolean
         get() = _isEnabled
         set(value) {
             _isEnabled = value
@@ -80,14 +80,14 @@ class KRibbonSpinnerNumberContentModel {
         stepSize = 0
     }
 
-    fun richTooltip(init: KRichTooltip.() -> Unit) {
+    public fun richTooltip(init: KRichTooltip.() -> Unit) {
         if (richTooltip == null) {
             richTooltip = KRichTooltip()
         }
-        (richTooltip as KRichTooltip).init()
+        richTooltip!!.init()
     }
 
-    fun asJavaSpinnerNumberContentModel(): RibbonSpinnerNumberContentModel {
+    internal fun asJavaSpinnerNumberContentModel(): RibbonSpinnerNumberContentModel {
         if (hasBeenConverted) {
             return javaContentModel
         }
@@ -106,82 +106,82 @@ class KRibbonSpinnerNumberContentModel {
 
 }
 
-@FlamingoElementMarker
-class KRibbonSpinnerNumber {
+@PlasmaElementMarker
+public class KRibbonSpinnerNumber {
     internal var content: KRibbonSpinnerNumberContentModel = KRibbonSpinnerNumberContentModel()
     internal val presentation: KComponentPresentation = KComponentPresentation()
 
-    fun content(init: KRibbonSpinnerNumberContentModel.() -> Unit) {
+    public fun content(init: KRibbonSpinnerNumberContentModel.() -> Unit) {
         content.init()
     }
 
-    operator fun KRibbonSpinnerNumberContentModel.unaryPlus() {
+    public operator fun KRibbonSpinnerNumberContentModel.unaryPlus() {
         this@KRibbonSpinnerNumber.content = this
     }
 
-    fun presentation(init: KComponentPresentation.() -> Unit) {
+    public fun presentation(init: KComponentPresentation.() -> Unit) {
         presentation.init()
     }
 
-    fun toJavaProjection(): RibbonSpinnerProjection {
+    internal fun toJavaProjection(): RibbonSpinnerProjection {
         val javaContent = content.asJavaSpinnerNumberContentModel()
         val javaPresentation = presentation.toComponentPresentation()
         return RibbonSpinnerProjection(javaContent, javaPresentation)
     }
 }
 
-fun spinnerNumberContentModel(init: KRibbonSpinnerNumberContentModel.() -> Unit): KRibbonSpinnerNumberContentModel {
+public fun spinnerNumberContentModel(init: KRibbonSpinnerNumberContentModel.() -> Unit): KRibbonSpinnerNumberContentModel {
     val result = KRibbonSpinnerNumberContentModel()
     result.init()
     return result
 }
 
-fun KRibbonBand.spinnerNumber(init: KRibbonSpinnerNumber.() -> Unit) {
+public fun KRibbonBand.spinnerNumber(init: KRibbonSpinnerNumber.() -> Unit) {
     val ribbonSpinner = KRibbonSpinnerNumber()
     ribbonSpinner.init()
     this.component(ribbonSpinner.toJavaProjection())
 }
 
-fun KFlowRibbonBand.flowSpinnerNumber(init: KRibbonSpinnerNumber.() -> Unit) {
+public fun KFlowRibbonBand.flowSpinnerNumber(init: KRibbonSpinnerNumber.() -> Unit) {
     val ribbonSpinner = KRibbonSpinnerNumber()
     ribbonSpinner.init()
     this.flowComponent(ribbonSpinner.toJavaProjection())
 }
 
-fun KRibbonBandGroup.spinnerNumber(init: KRibbonSpinnerNumber.() -> Unit) {
+public fun KRibbonBandGroup.spinnerNumber(init: KRibbonSpinnerNumber.() -> Unit) {
     val ribbonSpinner = KRibbonSpinnerNumber()
     ribbonSpinner.init()
     this.component(ribbonSpinner.toJavaProjection())
 }
 
-fun KRibbonTaskbar.spinnerNumber(init: KRibbonSpinnerNumber.() -> Unit) {
+public fun KRibbonTaskbar.spinnerNumber(init: KRibbonSpinnerNumber.() -> Unit) {
     val ribbonSpinner = KRibbonSpinnerNumber()
     ribbonSpinner.init()
     this.component(ribbonSpinner.toJavaProjection())
 }
 
-@FlamingoElementMarker
-class KRibbonSpinnerDateContentModel {
+@PlasmaElementMarker
+public class KRibbonSpinnerDateContentModel {
     private val builder = RibbonSpinnerDateContentModel.builder()
     internal lateinit var javaContentModel: RibbonSpinnerDateContentModel
     internal var hasBeenConverted: Boolean = false
 
     internal var richTooltip: KRichTooltip? by NullableDelegate { false }
-    var iconFactory: ResizableIcon.Factory? by NullableDelegate { false }
-    var caption: String? by NullableDelegate { false }
+    public var iconFactory: ResizableIcon.Factory? by NullableDelegate { false }
+    public var caption: String? by NullableDelegate { false }
 
-    var value : Date? by NullableDelegate { false }
-    var start : Comparable<Date>? by NullableDelegate { false }
-    var end : Comparable<Date>? by NullableDelegate { false }
-    var calendarField : Int? by NullableDelegate { false }
-    var selectionChangeListener: ((oldSelection: Any?, newSelection: Any?) -> Unit)? by NullableDelegate { false }
+    public var value : Date? by NullableDelegate { false }
+    public var start : Comparable<Date>? by NullableDelegate { false }
+    public var end : Comparable<Date>? by NullableDelegate { false }
+    public var calendarField : Int? by NullableDelegate { false }
+    public var selectionChangeListener: ((oldSelection: Any?, newSelection: Any?) -> Unit)? by NullableDelegate { false }
 
     // The "isEnabled" property can be modified even after [KRibbonSpinnerNumber.toJavaProjection] has
     // been called multiple times. Internally, the setter propagates the new value to the underlying
     // builder and the cached [RibbonSpinnerNumberContentModel] instance, which then gets
     // propagated to be reflected in all spinners created from this content model.
     private var _isEnabled: Boolean = true
-    var isEnabled: Boolean
+    public var isEnabled: Boolean
         get() = _isEnabled
         set(value) {
             _isEnabled = value
@@ -191,14 +191,14 @@ class KRibbonSpinnerDateContentModel {
             }
         }
 
-    fun richTooltip(init: KRichTooltip.() -> Unit) {
+    public fun richTooltip(init: KRichTooltip.() -> Unit) {
         if (richTooltip == null) {
             richTooltip = KRichTooltip()
         }
-        (richTooltip as KRichTooltip).init()
+        richTooltip!!.init()
     }
 
-    fun asJavaSpinnerDateContentModel(): RibbonSpinnerDateContentModel {
+    internal fun asJavaSpinnerDateContentModel(): RibbonSpinnerDateContentModel {
         if (hasBeenConverted) {
             return javaContentModel
         }
@@ -221,55 +221,55 @@ class KRibbonSpinnerDateContentModel {
 
 }
 
-@FlamingoElementMarker
-class KRibbonSpinnerDate {
+@PlasmaElementMarker
+public class KRibbonSpinnerDate {
     internal var content: KRibbonSpinnerDateContentModel = KRibbonSpinnerDateContentModel()
     internal val presentation: KComponentPresentation = KComponentPresentation()
 
-    fun content(init: KRibbonSpinnerDateContentModel.() -> Unit) {
+    public fun content(init: KRibbonSpinnerDateContentModel.() -> Unit) {
         content.init()
     }
 
-    operator fun KRibbonSpinnerDateContentModel.unaryPlus() {
+    public operator fun KRibbonSpinnerDateContentModel.unaryPlus() {
         this@KRibbonSpinnerDate.content = this
     }
 
-    fun presentation(init: KComponentPresentation.() -> Unit) {
+    public fun presentation(init: KComponentPresentation.() -> Unit) {
         presentation.init()
     }
 
-    fun toJavaProjection(): RibbonSpinnerProjection {
+    internal fun toJavaProjection(): RibbonSpinnerProjection {
         val javaContent = content.asJavaSpinnerDateContentModel()
         val javaPresentation = presentation.toComponentPresentation()
         return RibbonSpinnerProjection(javaContent, javaPresentation)
     }
 }
 
-fun spinnerNumberDateModel(init: KRibbonSpinnerDateContentModel.() -> Unit): KRibbonSpinnerDateContentModel {
+public fun spinnerNumberDateModel(init: KRibbonSpinnerDateContentModel.() -> Unit): KRibbonSpinnerDateContentModel {
     val result = KRibbonSpinnerDateContentModel()
     result.init()
     return result
 }
 
-fun KRibbonBand.spinnerDate(init: KRibbonSpinnerDate.() -> Unit) {
+public fun KRibbonBand.spinnerDate(init: KRibbonSpinnerDate.() -> Unit) {
     val ribbonSpinner = KRibbonSpinnerDate()
     ribbonSpinner.init()
     this.component(ribbonSpinner.toJavaProjection())
 }
 
-fun KFlowRibbonBand.flowSpinnerDate(init: KRibbonSpinnerDate.() -> Unit) {
+public fun KFlowRibbonBand.flowSpinnerDate(init: KRibbonSpinnerDate.() -> Unit) {
     val ribbonSpinner = KRibbonSpinnerDate()
     ribbonSpinner.init()
     this.flowComponent(ribbonSpinner.toJavaProjection())
 }
 
-fun KRibbonBandGroup.spinnerDate(init: KRibbonSpinnerDate.() -> Unit) {
+public fun KRibbonBandGroup.spinnerDate(init: KRibbonSpinnerDate.() -> Unit) {
     val ribbonSpinner = KRibbonSpinnerDate()
     ribbonSpinner.init()
     this.component(ribbonSpinner.toJavaProjection())
 }
 
-fun KRibbonTaskbar.spinnerDate(init: KRibbonSpinnerDate.() -> Unit) {
+public fun KRibbonTaskbar.spinnerDate(init: KRibbonSpinnerDate.() -> Unit) {
     val ribbonSpinner = KRibbonSpinnerDate()
     ribbonSpinner.init()
     this.component(ribbonSpinner.toJavaProjection())

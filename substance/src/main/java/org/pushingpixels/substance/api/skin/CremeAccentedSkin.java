@@ -32,8 +32,8 @@ package org.pushingpixels.substance.api.skin;
 import org.pushingpixels.substance.api.SubstanceColorSchemeBundle;
 import org.pushingpixels.substance.api.SubstanceSkin;
 import org.pushingpixels.substance.api.SubstanceSlices.DecorationAreaType;
+import org.pushingpixels.substance.api.colorscheme.ColorSchemeSingleColorQuery;
 import org.pushingpixels.substance.api.colorscheme.CremeColorScheme;
-import org.pushingpixels.substance.api.colorscheme.SchemeBaseColors;
 import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.api.painter.border.ClassicBorderPainter;
 import org.pushingpixels.substance.api.painter.border.CompositeBorderPainter;
@@ -81,7 +81,7 @@ public abstract class CremeAccentedSkin extends SubstanceSkin.Accented {
 
         // add an overlay painter to paint a dark line along the bottom edge of toolbars
         SubstanceOverlayPainter toolbarBottomLineOverlayPainter = new BottomLineOverlayPainter(
-                SchemeBaseColors::getMidColor);
+                ColorSchemeSingleColorQuery.MID);
         this.addOverlayPainter(toolbarBottomLineOverlayPainter, DecorationAreaType.TOOLBAR);
 
         this.buttonShaper = new ClassicButtonShaper();
@@ -91,6 +91,6 @@ public abstract class CremeAccentedSkin extends SubstanceSkin.Accented {
         this.borderPainter = new CompositeBorderPainter("Creme",
                 new ClassicBorderPainter(), new DelegateBorderPainter(
                 "Creme Inner", new ClassicBorderPainter(),
-                (SubstanceColorScheme scheme) -> scheme.tint(0.9f)));
+                scheme -> scheme.tint(0.9f)));
     }
 }

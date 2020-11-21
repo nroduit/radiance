@@ -31,7 +31,10 @@ package org.pushingpixels.substance.internal.utils;
 
 import org.pushingpixels.neon.api.NeonCortex;
 import org.pushingpixels.neon.api.UiThreadingViolationException;
-import org.pushingpixels.substance.api.*;
+import org.pushingpixels.substance.api.ComponentState;
+import org.pushingpixels.substance.api.SubstanceCortex;
+import org.pushingpixels.substance.api.SubstanceSkin;
+import org.pushingpixels.substance.api.SubstanceSlices;
 import org.pushingpixels.substance.api.SubstanceSlices.*;
 import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.api.combo.ComboPopupPrototypeCallback;
@@ -291,51 +294,6 @@ public class SubstanceCoreUtilities {
             return (FocusKind) globalFocusKind;
         }
         return FocusKind.ALL_INNER;
-    }
-
-    /**
-     * Returns indication whether the watermark should be drawn on the specified component.
-     *
-     * @param component Component.
-     * @return <code>true</code> if the watermark should be drawn on the specified component,
-     * <code>false</code> otherwise.
-     * @see SubstanceCortex.GlobalScope#setWatermarkVisible(Boolean)
-     */
-    public static boolean toDrawWatermark(Component component) {
-        Component c = component;
-        while (c != null) {
-            if (c instanceof JComponent) {
-                JComponent jcomp = (JComponent) component;
-                Object obj = jcomp.getClientProperty(SubstanceSynapse.WATERMARK_VISIBLE);
-                if (obj != null) {
-                    if (Boolean.TRUE.equals(obj)) {
-                        return true;
-                    }
-                    if (Boolean.FALSE.equals(obj)) {
-                        return false;
-                    }
-                }
-            }
-            c = c.getParent();
-        }
-        Object obj = UIManager.get(SubstanceSynapse.WATERMARK_VISIBLE);
-        if (Boolean.TRUE.equals(obj))
-            return true;
-        if (Boolean.FALSE.equals(obj))
-            return false;
-
-        // special cases - lists, tables and trees that show watermarks only
-        // when the WATERMARK_VISIBLE is set to Boolean.TRUE
-        if (component instanceof JList)
-            return false;
-        if (component instanceof JTree)
-            return false;
-        if (component instanceof JTable)
-            return false;
-        if (component instanceof JTextComponent)
-            return false;
-
-        return true;
     }
 
     /**
@@ -762,25 +720,6 @@ public class SubstanceCoreUtilities {
             for (int i = 0; i < cont.getComponentCount(); i++)
                 restoreOpaque(cont.getComponent(i), opacitySnapshot);
         }
-    }
-
-    /**
-     * Creates a compatible image (for efficient processing and drawing).
-     *
-     * @param image The original image.
-     * @return Compatible version of the original image.
-     * @author Romain Guy
-     */
-    public static BufferedImage createCompatibleImage(BufferedImage image) {
-        GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice d = e.getDefaultScreenDevice();
-        GraphicsConfiguration c = d.getDefaultConfiguration();
-        BufferedImage compatibleImage = c.createCompatibleImage(image.getWidth(), image.getHeight(),
-                Transparency.TRANSLUCENT);
-        Graphics g = compatibleImage.getGraphics();
-        g.drawImage(image, 0, 0, null);
-        g.dispose();
-        return compatibleImage;
     }
 
     /**
@@ -1602,23 +1541,6 @@ public class SubstanceCoreUtilities {
     }
 
     /**
-     * Retrieves a single parameter from the VM flags.
-     *
-     * @param parameterName Parameter name.
-     * @return Parameter value.
-     */
-    public static String getVmParameter(String parameterName) {
-        String paramValue = null;
-        try {
-            paramValue = System.getProperty(parameterName);
-            return paramValue;
-        } catch (Exception exc) {
-            // probably running in unsecure JNLP - ignore
-            return null;
-        }
-    }
-
-    /**
      * Tests UI threading violations on creating the specified component.
      *
      * @param comp Component.
@@ -1967,5 +1889,49 @@ public class SubstanceCoreUtilities {
 
     public synchronized static List<AWTEventListener> getAwtEventListeners() {
         return awtEventListeners;
+    }
+
+    public static Color getBackgroundFill(SubstanceSkin skin, DecorationAreaType decorationAreaType) {
+        Color overlay = skin.getOverlayColor(ColorOverlayType.BACKGROUND_FILL,
+                decorationAreaType, ComponentState.ENABLED);
+        if (overlay != null) {
+            return overlay;
+        }
+        return skin.getBackgroundColorScheme(decorationAreaType).getBackgroundFillColor();
+    }
+
+    public static Color getTextBackgroundFill(Component component, ComponentState componentState) {
+        SubstanceSkin skin = SubstanceCoreUtilities.getSkin(component);
+        DecorationAreaType decorationAreaType = DecorationPainterUtils.getDecorationType(component);
+        Color overlay = skin.getOverlayColor(ColorOverlayType.TEXT_BACKGROUND_FILL,
+                decorationAreaType, componentState);
+        if (overlay != null) {
+            return overlay;
+        }
+        return SubstanceColorSchemeUtilities.getColorScheme(component, componentState).getTextBackgroundFillColor();
+    }
+
+    public static Color getTextSelectionBackground(Component component, ComponentState componentState) {
+        SubstanceSkin skin = SubstanceCoreUtilities.getSkin(component);
+        DecorationAreaType decorationAreaType = DecorationPainterUtils.getDecorationType(component);
+        Color overlay = skin.getOverlayColor(ColorOverlayType.SELECTION_BACKGROUND_FILL,
+                decorationAreaType, componentState);
+        if (overlay != null) {
+            return overlay;
+        }
+        return SubstanceColorSchemeUtilities.getColorScheme(
+                component, ColorSchemeAssociationKind.HIGHLIGHT_TEXT, componentState).getSelectionBackgroundColor();
+    }
+
+    public static Color getTextSelectionForeground(Component component, ComponentState componentState) {
+        SubstanceSkin skin = SubstanceCoreUtilities.getSkin(component);
+        DecorationAreaType decorationAreaType = DecorationPainterUtils.getDecorationType(component);
+        Color overlay = skin.getOverlayColor(ColorOverlayType.SELECTION_FOREGROUND,
+                decorationAreaType, componentState);
+        if (overlay != null) {
+            return overlay;
+        }
+        return SubstanceColorSchemeUtilities.getColorScheme(
+                component, ColorSchemeAssociationKind.HIGHLIGHT_TEXT, componentState).getSelectionForegroundColor();
     }
 }

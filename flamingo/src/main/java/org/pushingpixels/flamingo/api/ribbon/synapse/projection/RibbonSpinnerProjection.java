@@ -29,23 +29,21 @@
  */
 package org.pushingpixels.flamingo.api.ribbon.synapse.projection;
 
-import org.pushingpixels.flamingo.api.common.projection.Projection;
 import org.pushingpixels.flamingo.api.ribbon.synapse.JRibbonSpinner;
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.RibbonSpinnerContentModel;
 
-public class RibbonSpinnerProjection extends ComponentProjection<JRibbonSpinner,
-        RibbonSpinnerContentModel> {
-
-    @SuppressWarnings("unchecked")
-    private static ComponentSupplier<JRibbonSpinner,
-            RibbonSpinnerContentModel, ComponentPresentationModel> DEFAULT_SUPPLIER =
-            (Projection<JRibbonSpinner, RibbonSpinnerContentModel,
-                    ComponentPresentationModel> projection) -> JRibbonSpinner::new;
-
+/**
+ * Projection that allows using a {@link javax.swing.JSpinner} as a ribbon component.
+ *
+ * @see org.pushingpixels.flamingo.api.ribbon.JRibbonBand#addRibbonComponent(ComponentProjection)
+ * @see org.pushingpixels.flamingo.api.ribbon.JFlowRibbonBand#addFlowComponent(ComponentProjection)
+ * @see org.pushingpixels.flamingo.api.ribbon.JRibbon#addTaskbarComponent(ComponentProjection)
+ */
+public class RibbonSpinnerProjection extends ComponentProjection<JRibbonSpinner, RibbonSpinnerContentModel> {
     public RibbonSpinnerProjection(RibbonSpinnerContentModel contentModel,
             ComponentPresentationModel presentationModel) {
-        super(contentModel, presentationModel, DEFAULT_SUPPLIER);
+        super(contentModel, presentationModel, projection -> JRibbonSpinner::new);
     }
 
     @Override

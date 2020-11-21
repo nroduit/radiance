@@ -29,9 +29,8 @@
  */
 package org.pushingpixels.flamingo.api.ribbon;
 
-import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
-import org.pushingpixels.flamingo.api.common.RichTooltipManager;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.model.CommandMenuContentModel;
 import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
@@ -56,6 +55,7 @@ import org.pushingpixels.neon.api.AsynchronousLoading;
 import org.pushingpixels.neon.api.NeonCortex;
 import org.pushingpixels.neon.api.icon.ResizableIcon;
 import org.pushingpixels.substance.internal.utils.SubstanceCoreUtilities;
+import org.pushingpixels.substance.internal.utils.SubstancePopupContainer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -292,8 +292,7 @@ public class JRibbonFrame extends JFrame {
         public boolean contains(int x, int y) {
             // pass the mouse events to the underlying layers for
             // showing the correct cursor. See
-            // http://weblogs.java.net/blog/alexfromsun/archive/2006/09/
-            // a_wellbehaved_g.html
+            // https://community.oracle.com/blogs/alexfromsun/2006/09/20/well-behaved-glasspane
             return false;
         }
     }
@@ -389,8 +388,7 @@ public class JRibbonFrame extends JFrame {
                             switch (keyEvent.getID()) {
                                 case KeyEvent.KEY_RELEASED:
                                     boolean wasAltModif = prevAltModif;
-                                    prevAltModif =
-                                            keyEvent.getModifiersEx() == InputEvent.ALT_DOWN_MASK;
+                                    prevAltModif = (keyEvent.getModifiersEx() == InputEvent.ALT_DOWN_MASK);
                                     if (wasAltModif && keyEvent.getKeyCode() == KeyEvent.VK_ALT) {
                                         break;
                                     }
@@ -532,13 +530,10 @@ public class JRibbonFrame extends JFrame {
             }
         };
 
-        RichTooltipManager.sharedInstance();
-
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 
-        super.setIconImages(Collections.singletonList(
-                SubstanceCoreUtilities.getBlankImage(16, 16)));
+        super.setIconImages(Collections.singletonList(SubstanceCoreUtilities.getBlankImage(16, 16)));
     }
 
     @Override
@@ -636,6 +631,7 @@ public class JRibbonFrame extends JFrame {
         }
     }
 
+    @SubstancePopupContainer
     public static class GlobalPopupMenu extends JCommandPopupMenu {
         public GlobalPopupMenu(Projection<JCommandPopupMenu, CommandMenuContentModel,
                 CommandPopupMenuPresentationModel> projection) {
@@ -680,16 +676,9 @@ public class JRibbonFrame extends JFrame {
                 CommandButtonProjection<? extends Command> commandButtonProjection =
                         (CommandButtonProjection<? extends Command>) projection;
                 menuContentModel = onShowContextualMenuListener.getContextualMenuContentModel(
-                        commandButtonProjection.getContentModel());
+                        commandButtonProjection);
             } else {
-                Command command = (Command) ((JComponent) c).getClientProperty(
-                        FlamingoUtilities.TASKBAR_COMMAND);
-                if (command != null) {
-                    menuContentModel = onShowContextualMenuListener.getContextualMenuContentModel(
-                            command);
-                } else {
-                    menuContentModel = onShowContextualMenuListener.getContextualMenuContentModel();
-                }
+                menuContentModel = onShowContextualMenuListener.getContextualMenuContentModel();
             }
         } else {
             // Special case - popup trigger in a ribbon gallery
@@ -706,12 +695,11 @@ public class JRibbonFrame extends JFrame {
                     menuContentModel = onShowContextualMenuListener.getContextualMenuContentModel(
                             component.getProjection());
                 } else {
-                    if ((c instanceof AbstractCommandButton) &&
+                    if ((c instanceof JCommandButton) &&
                             (!(c instanceof FlamingoInternalButton))) {
                         menuContentModel =
                                 onShowContextualMenuListener.getContextualMenuContentModel(
-                                        ((AbstractCommandButton) c).getProjection()
-                                                .getContentModel());
+                                        ((JCommandButton) c).getProjection());
                     }
                 }
             }

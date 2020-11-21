@@ -29,6 +29,10 @@
  */
 package org.pushingpixels.tools.hyperion
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.swing.Swing
 import org.pushingpixels.meteor.addDelayedMouseListener
 import org.pushingpixels.meteor.addDelayedMouseMotionListener
 import org.pushingpixels.meteor.awt.render
@@ -185,8 +189,7 @@ class ShapeEditor : JFrame() {
         }
 
         fun translate(relative: Point2D): Point2D {
-            return Point2D.Double(relative.x * this.width,
-                    relative.y * this.height)
+            return Point2D.Double(relative.x * this.width, relative.y * this.height)
         }
 
         fun getMajorPointIndex(point: Point): Int {
@@ -211,8 +214,7 @@ class ShapeEditor : JFrame() {
 
         override fun paint(g: Graphics) {
             g.render {
-                it.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON)
+                it.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
                 val controlFont = SubstanceCortex.GlobalScope.getFontPolicy().getFontSet().controlFont
                 it.font = controlFont.deriveFont(10f)
                 NeonCortex.installDesktopHints(it, it.font)
@@ -377,8 +379,7 @@ class ShapeEditor : JFrame() {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 val selected = chooser.selectedFile
                 try {
-                    val path = CanonicalPath(majorPoints!!, minorPoints!!,
-                            shapePanel.ratio)
+                    val path = CanonicalPath(majorPoints!!, minorPoints!!, shapePanel.ratio)
                     ShaperRepository.write(FileOutputStream(selected), path)
                 } catch (exc: Exception) {
                 }
@@ -453,14 +454,15 @@ class ShapeEditor : JFrame() {
     }
 }
 
-fun main(args: Array<String>) {
-    SwingUtilities.invokeLater {
+fun main() {
+    GlobalScope.launch(Dispatchers.Swing) {
         SubstanceCortex.GlobalScope.setSkin(BusinessBlackSteelSkin())
 
         val editor = ShapeEditor()
         editor.preferredSize = Dimension(600, 400)
         editor.size = editor.preferredSize
         editor.setLocationRelativeTo(null)
+
         editor.isVisible = true
     }
 }

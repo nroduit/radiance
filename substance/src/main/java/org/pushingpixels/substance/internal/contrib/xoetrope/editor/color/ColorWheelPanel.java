@@ -194,8 +194,7 @@ public class ColorWheelPanel extends SubstanceColorChooserPanel implements
         // Create a transition-aware wrapper around our icon so that it is colorized
         // based on the color scheme that matches the current state of our toggle button
         resetBtn.setIcon(new TransitionAwareIcon(resetBtn,
-                (SubstanceColorScheme scheme) -> SubstanceCortex.GlobalScope.getIconPack()
-                        .getRefreshIcon(10, scheme),
+                scheme -> SubstanceCortex.GlobalScope.getIconPack().getRefreshIcon(10, scheme),
                 "Color wheel reset"));
 
 		resetBtn.setToolTipText(getLabel("Xoetrope.reset",
@@ -241,8 +240,7 @@ public class ColorWheelPanel extends SubstanceColorChooserPanel implements
 		baseColorLabel.setBounds(10, 268, 160, 20);
 		baseColorLabel.setBackground(Color.red);
 		baseColorLabel.setOpaque(true);
-		baseColorLabel.setToolTipText(getLabel("Xoetrope.systemColorsTooltip",
-				"Right click for system colours"));
+		baseColorLabel.setToolTipText(getLabel("Xoetrope.systemColorsTooltip",  "Right click for system colours"));
 		baseColorLabel.putClientProperty(SubstanceTextUtilities.ENFORCE_FG_COLOR, Boolean.TRUE);
 		fixedPanel.add(baseColorLabel);
 		baseColorLabel.addMouseListener(new MouseAdapter() {

@@ -28,12 +28,14 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 @file:Suppress("NOTHING_TO_INLINE")
+
 package org.pushingpixels.meteor.awt
 
 import java.awt.Component
 import java.awt.Window
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import javax.swing.ActionMap
 import javax.swing.JPopupMenu
 import javax.swing.JRootPane
 import javax.swing.SwingUtilities
@@ -42,8 +44,8 @@ import javax.swing.SwingUtilities
  * Wires the [popup] to this component, with the optional [popupMenuAction] to be invoked right before the popup
  * is shown.
  */
-fun Component.wirePopup(popup: JPopupMenu, popupMenuAction: ((JPopupMenu) -> Unit)? = null) {
-    this.addMouseListener(object: MouseAdapter() {
+public fun Component.wirePopup(popup: JPopupMenu, popupMenuAction: ((JPopupMenu) -> Unit)? = null) {
+    this.addMouseListener(object : MouseAdapter() {
         override fun mousePressed(e: MouseEvent) {
             maybeShowPopup(e)
         }
@@ -61,5 +63,8 @@ fun Component.wirePopup(popup: JPopupMenu, popupMenuAction: ((JPopupMenu) -> Uni
     })
 }
 
-val Component.windowAncestor: Window?
+public val Component.windowAncestor: Window?
     get() = SwingUtilities.getWindowAncestor(this)
+
+public val Component.rootPane: JRootPane?
+    get() = SwingUtilities.getRootPane(this)

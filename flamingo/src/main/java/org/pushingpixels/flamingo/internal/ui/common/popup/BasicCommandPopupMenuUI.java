@@ -29,7 +29,10 @@
  */
 package org.pushingpixels.flamingo.internal.ui.common.popup;
 
-import org.pushingpixels.flamingo.api.common.*;
+import org.pushingpixels.flamingo.api.common.CommandButtonLayoutManager;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandButtonPanel;
+import org.pushingpixels.flamingo.api.common.JScrollablePanel;
 import org.pushingpixels.flamingo.api.common.model.CommandPanelPresentationModel;
 import org.pushingpixels.flamingo.api.common.popup.AbstractPopupMenu;
 import org.pushingpixels.flamingo.api.common.popup.JColorSelectorPopupMenu;
@@ -45,7 +48,6 @@ import org.pushingpixels.substance.internal.utils.SubstanceSizeUtils;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 
@@ -109,7 +111,7 @@ public abstract class BasicCommandPopupMenuUI extends BasicPopupPanelUI {
             int maxButtonHeight = 0;
             int groupCount = iconPanel.getGroupCount();
             for (int i = 0; i < groupCount; i++) {
-                for (AbstractCommandButton button : iconPanel.getGroupButtons(i)) {
+                for (JCommandButton button : iconPanel.getGroupButtons(i)) {
                     maxButtonWidth = Math.max(maxButtonWidth, button.getPreferredSize().width);
                     maxButtonHeight = Math.max(maxButtonHeight, button.getPreferredSize().height);
                 }
@@ -390,7 +392,7 @@ public abstract class BasicCommandPopupMenuUI extends BasicPopupPanelUI {
     protected void installListeners() {
         super.installListeners();
 
-        this.popupMenuChangeListener = (ChangeEvent e) -> {
+        this.popupMenuChangeListener = changeEvent -> {
             popupMenu.removeAll();
             syncComponents();
         };
@@ -507,7 +509,7 @@ public abstract class BasicCommandPopupMenuUI extends BasicPopupPanelUI {
             if (menuComponents != null) {
                 for (Component menuComponent : menuComponents) {
                     if (menuComponent instanceof JCommandButton) {
-                        AbstractCommandButton button = (AbstractCommandButton) menuComponent;
+                        JCommandButton button = (JCommandButton) menuComponent;
                         if (!Boolean.TRUE.equals(button.getClientProperty(FORCE_ICON))) {
                             continue;
                         }

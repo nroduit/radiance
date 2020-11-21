@@ -28,6 +28,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 @file:Suppress("NOTHING_TO_INLINE")
+
 package org.pushingpixels.meteor.awt
 
 import java.awt.Color
@@ -37,30 +38,30 @@ import java.awt.Color
  * declarations such as:
  *
  * ```
- * val (red, green, blue) = color
+ * val (red, green, blue, alpha) = color
  * ```
  */
-inline operator fun Color.component1() = this.red
+public inline operator fun Color.component1(): Int = this.red
 
 /**
  * Returns the green component of the color. This method enables the usage of destructuring
  * declarations such as:
  *
  * ```
- * val (red, green, blue) = color
+ * val (red, green, blue, alpha) = color
  * ```
  */
-inline operator fun Color.component2() = this.green
+public inline operator fun Color.component2(): Int = this.green
 
 /**
  * Returns the blue component of the color. This method enables the usage of destructuring
  * declarations such as:
  *
  * ```
- * val (red, green, blue) = color
+ * val (red, green, blue, alpha) = color
  * ```
  */
-inline operator fun Color.component3() = this.blue
+public inline operator fun Color.component3(): Int = this.blue
 
 /**
  * Returns the alpha component of the color. This method enables the usage of destructuring
@@ -70,41 +71,41 @@ inline operator fun Color.component3() = this.blue
  * val (red, green, blue, alpha) = color
  * ```
  */
-inline operator fun Color.component4() = this.alpha
+public inline operator fun Color.component4(): Int = this.alpha
 
 /**
  * Returns the hue of the color. This is a shortcut for calling [Color.HSBtoRGB] and
  * returning the first component of the result.
  */
-inline fun Color.hue() = Color.RGBtoHSB(this.red, this.green, this.blue, null)[0]
+public inline fun Color.hue(): Float = Color.RGBtoHSB(this.red, this.green, this.blue, null)[0]
 
 /**
  * Returns the saturation of the color. This is a shortcut for calling [Color.HSBtoRGB] and
  * returning the second component of the result.
  */
-inline fun Color.saturation() = Color.RGBtoHSB(this.red, this.green, this.blue, null)[1]
+public inline fun Color.saturation(): Float = Color.RGBtoHSB(this.red, this.green, this.blue, null)[1]
 
 /**
  * Returns the brightness of the color. This is a shortcut for calling [Color.HSBtoRGB] and
  * returning the third component of the result.
  */
-inline fun Color.brightness() = Color.RGBtoHSB(this.red, this.green, this.blue, null)[2]
+public inline fun Color.brightness(): Float = Color.RGBtoHSB(this.red, this.green, this.blue, null)[2]
 
 /**
  * Returns a derived color based on the passed alpha.
  */
-inline fun Color.withAlpha(alpha: Int) : Color {
+public inline fun Color.withAlpha(alpha: Int): Color {
     return Color(this.red, this.green, this.blue, alpha)
 }
 
 /**
  * Returns a derived color based on the passed brightness factor.
+ * [brightnessFactor] should be in -1.0...1.0 range. Negative values are treated as darkening
+ * and positive values are treated as brightening - leaving the hue and saturation intact.
  */
-inline fun Color.deriveByBrightness(brightnessFactor: Double) : Color {
+public inline fun Color.deriveByBrightness(brightnessFactor: Double): Color {
     val hsb = Color.RGBtoHSB(this.red, this.green, this.blue, null)
 
-    // Brightness factor is in -1.0...1.0 range. Negative values are treated as darkening
-    // and positive values are treated as brightening - leaving the hue and saturation intact
     val newBrightness = if (brightnessFactor > 0.0f) {
         hsb[2] + (1.0f - hsb[2]) * brightnessFactor
     } else {

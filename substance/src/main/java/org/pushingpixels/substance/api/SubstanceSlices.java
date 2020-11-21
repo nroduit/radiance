@@ -41,7 +41,6 @@ import org.pushingpixels.substance.internal.utils.SubstanceSizeUtils;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.geom.GeneralPath;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,6 +56,7 @@ public final class SubstanceSlices {
      *
      * @author Kirill Grouchnikov
      */
+    @FunctionalInterface
     public interface LocaleChangeListener {
         /**
          * Called when the locale is changed.
@@ -380,7 +380,7 @@ public final class SubstanceSlices {
          * @param fontSize The font size of the component for focus painting.
          * @return DPI-aware dash length for dash-based focus painting.
          */
-        protected static float getDashLength(int fontSize) {
+        protected final float getDashLength(int fontSize) {
             return 2.0f + SubstanceSizeUtils.getExtraPadding(fontSize);
         }
 
@@ -390,7 +390,7 @@ public final class SubstanceSlices {
          * @param fontSize The font size of the component for focus painting.
          * @return DPI-aware dash gap for dash-based focus painting.
          */
-        protected static float getDashGap(int fontSize) {
+        protected final float getDashGap(int fontSize) {
             return getDashLength(fontSize) / 2.0f;
         }
 
@@ -404,40 +404,6 @@ public final class SubstanceSlices {
         public boolean isAnimated() {
             return false;
         }
-    }
-
-    /**
-     * Enumerates of image-based watermarks kinds.
-     *
-     * @author Kirill Grouchnikov
-     * @see org.pushingpixels.substance.api.watermark.SubstanceImageWatermark#setKind(SubstanceSlices.ImageWatermarkKind)
-     */
-    public enum ImageWatermarkKind {
-        /**
-         * The default behaviour. The image is centered in the screen and scaled down if necessary.
-         */
-        SCREEN_CENTER_SCALE,
-
-        /**
-         * The image is tiled starting from the screen top-left corner and not scaled.
-         */
-        SCREEN_TILE,
-
-        /**
-         * The image is anchored to the top-left corner of the application frame and not scaled.
-         */
-        APP_ANCHOR,
-
-        /**
-         * The image is anchored to the center of the application frame and not scaled.
-         */
-        APP_CENTER,
-
-        /**
-         * The image is tiled starting from the top-left corner of the application frame and not
-         * scaled.
-         */
-        APP_TILE
     }
 
     /**
@@ -726,14 +692,12 @@ public final class SubstanceSlices {
         /**
          * Pressing a component.
          */
-        public static final AnimationFacet PRESS = new AnimationFacet("substancelaf.core.press",
-                true);
+        public static final AnimationFacet PRESS = new AnimationFacet("substancelaf.core.press", true);
 
         /**
          * Focusing a component.
          */
-        public static final AnimationFacet FOCUS = new AnimationFacet("substancelaf.core.focus",
-                true);
+        public static final AnimationFacet FOCUS = new AnimationFacet("substancelaf.core.focus", true);
 
         /**
          * <p>
@@ -748,14 +712,12 @@ public final class SubstanceSlices {
         /**
          * Rollover a component.
          */
-        public static final AnimationFacet ROLLOVER = new AnimationFacet(
-                "substancelaf.core.rollover", true);
+        public static final AnimationFacet ROLLOVER = new AnimationFacet("substancelaf.core.rollover", true);
 
         /**
          * Selecting a component.
          */
-        public static final AnimationFacet SELECTION = new AnimationFacet(
-                "substancelaf.core.selection", true);
+        public static final AnimationFacet SELECTION = new AnimationFacet("substancelaf.core.selection", true);
 
         /**
          * <i>Ghosting image</i> effects on button icons when the button is rolled-over. Disabled by
@@ -824,14 +786,12 @@ public final class SubstanceSlices {
         /**
          * Title pane of top-level windows (frames, dialogs).
          */
-        public final static DecorationAreaType PRIMARY_TITLE_PANE = new DecorationAreaType(
-                "Primary title pane");
+        public final static DecorationAreaType PRIMARY_TITLE_PANE = new DecorationAreaType("Primary title pane");
 
         /**
          * Title pane of non top-level windows (internal frames, desktop icons).
          */
-        public final static DecorationAreaType SECONDARY_TITLE_PANE = new DecorationAreaType(
-                "Secondary title pane");
+        public final static DecorationAreaType SECONDARY_TITLE_PANE = new DecorationAreaType("Secondary title pane");
 
         /**
          * Tool bar.
@@ -863,6 +823,20 @@ public final class SubstanceSlices {
         public String getDisplayName() {
             return this.displayName;
         }
+    }
+
+    /**
+     * Enumeration of available color overlay types. This class is part of officially supported API.
+     *
+     * @author Kirill Grouchnikov
+     */
+    public enum ColorOverlayType {
+        LINE,
+        FOCUS_INDICATION,
+        BACKGROUND_FILL,
+        TEXT_BACKGROUND_FILL,
+        SELECTION_BACKGROUND_FILL,
+        SELECTION_FOREGROUND
     }
 
     /**
@@ -955,6 +929,11 @@ public final class SubstanceSlices {
          * Visual area of mark boxes. Used for painting the box of checkboxes and radio buttons.
          */
         public static final ColorSchemeAssociationKind MARK_BOX = new ColorSchemeAssociationKind("markBox", FILL);
+
+        /**
+         * Visual area of focus indication.
+         */
+        public static final ColorSchemeAssociationKind FOCUS = new ColorSchemeAssociationKind("focus", MARK);
 
         /**
          * Border visual area of the tabs.

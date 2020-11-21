@@ -40,7 +40,7 @@ import org.pushingpixels.substance.internal.painter.SimplisticFillPainter;
 import org.pushingpixels.substance.internal.utils.filters.ColorFilter;
 import org.pushingpixels.substance.internal.utils.filters.ColorSchemeFilter;
 import org.pushingpixels.substance.internal.utils.filters.GrayscaleFilter;
-import org.pushingpixels.substance.internal.utils.filters.TranslucentFilter;
+import org.pushingpixels.substance.internal.utils.filters.AlphaFilter;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -447,7 +447,7 @@ public final class SubstanceImageCreator {
      *            transparent resulting image will be.
      * @return Transparent version of the specified icon.
      */
-    public static Icon makeTransparent(Component c, Icon icon, double alpha) {
+    public static Icon withAlpha(Component c, Icon icon, double alpha) {
         if (icon == null) {
             return null;
         }
@@ -457,7 +457,7 @@ public final class SubstanceImageCreator {
 
         BufferedImage result = SubstanceCoreUtilities.getBlankImage(width, height);
         icon.paintIcon(c, result.getGraphics(), 0, 0);
-        return new ImageWrapperIcon(new TranslucentFilter(alpha).filter(result, null));
+        return new ImageWrapperIcon(new AlphaFilter(alpha).filter(result, null));
     }
 
     /**
@@ -893,7 +893,7 @@ public final class SubstanceImageCreator {
      *            if <code>true</code>, the gradient will be vertical, if <code>false</code>, the
      *            gradient will be horizontal.
      */
-    public static void paintRectangularBackground(Component c, Graphics g, int startX, int startY,
+    public static void paintRectangularBackground(Graphics g, int startX, int startY,
             int width, int height, SubstanceColorScheme colorScheme, float borderAlpha,
             boolean isVertical) {
         Graphics2D graphics = (Graphics2D) g.create();
@@ -921,7 +921,7 @@ public final class SubstanceImageCreator {
             Graphics2D g2d = (Graphics2D) graphics.create();
             g2d.setComposite(WidgetUtilities.getAlphaComposite(null, borderAlpha, graphics));
 
-            paintSimpleBorderAliased(c, g2d, width, height, colorScheme);
+            paintSimpleBorderAliased(g2d, width, height, colorScheme);
 
             g2d.dispose();
         }
@@ -955,7 +955,7 @@ public final class SubstanceImageCreator {
                 width - borderThickness, height - borderThickness));
     }
 
-    public static void paintSimpleBorderAliased(Component c, Graphics2D g2d, int width, int height,
+    public static void paintSimpleBorderAliased(Graphics2D g2d, int width, int height,
             SubstanceColorScheme colorScheme) {
         float borderThickness = SubstanceSizeUtils.getBorderStrokeWidth();
 
@@ -993,7 +993,7 @@ public final class SubstanceImageCreator {
      * @param isVertical
      *            Indication of horizontal / vertical orientation.
      */
-    public static void paintRectangularStripedBackground(Component c, Graphics g, int startX,
+    public static void paintRectangularStripedBackground(Graphics g, int startX,
             int startY, int width, int height, SubstanceColorScheme colorScheme,
             BufferedImage stripeImage, int stripeOffset, float borderAlpha, boolean isVertical) {
         Graphics2D graphics = (Graphics2D) g.create(startX, startY, width, height);
@@ -1044,7 +1044,7 @@ public final class SubstanceImageCreator {
             Graphics2D g2d = (Graphics2D) graphics.create();
             g2d.setComposite(WidgetUtilities.getAlphaComposite(null, borderAlpha, graphics));
 
-            paintSimpleBorderAliased(c, g2d, width, height, colorScheme);
+            paintSimpleBorderAliased(g2d, width, height, colorScheme);
             g2d.dispose();
         }
         graphics.dispose();
@@ -1209,59 +1209,6 @@ public final class SubstanceImageCreator {
             }
         }
         graphics.dispose();
-    }
-
-    /**
-     * Returns resize grip image.
-     * 
-     * @param c
-     *            Component.
-     * @param colorScheme
-     *            Color scheme.
-     * @param dimension
-     *            Resize grip width.
-     * @param isCrowded
-     *            Indicates whether the grips should be painted closely.
-     * @return Resize grip image.
-     */
-    public static BufferedImage getResizeGripImage(Component c, SubstanceColorScheme colorScheme,
-            int dimension, boolean isCrowded) {
-        BufferedImage result = SubstanceCoreUtilities.getBlankImage(dimension, dimension);
-        Graphics2D graphics = (Graphics2D) result.getGraphics();
-
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-
-        boolean isDark = colorScheme.isDark();
-        Color back1 = isDark ? colorScheme.getLightColor()
-                : SubstanceColorUtilities.getInterpolatedColor(colorScheme.getLightColor(),
-                        colorScheme.getDarkColor(), 0.8);
-        Color back2 = isDark ? colorScheme.getExtraLightColor()
-                : SubstanceColorUtilities.getInterpolatedColor(colorScheme.getMidColor(),
-                        colorScheme.getDarkColor(), 0.4);
-        Color fore = isDark ? colorScheme.getDarkColor() : colorScheme.getUltraLightColor();
-
-        int bumpDotDiameter = SubstanceSizeUtils
-                .getDragBumpDiameter(SubstanceSizeUtils.getComponentFontSize(c));
-        int bumpCellSize = (int) (1.5 * bumpDotDiameter + 1);
-        if (isCrowded)
-            bumpCellSize--;
-        int bumpLines = dimension / bumpCellSize;
-
-        int bumpOffset = (dimension - bumpCellSize * bumpLines) / 2;
-
-        for (int col = 0; col < bumpLines; col++) {
-            int cx = bumpOffset + col * bumpCellSize;
-            for (int row = (bumpLines - col - 1); row < bumpLines; row++) {
-                int cy = bumpOffset + row * bumpCellSize;
-                graphics.setColor(fore);
-                graphics.fillOval(cx + 1, cy + 1, bumpDotDiameter, bumpDotDiameter);
-                graphics.setPaint(new GradientPaint(cx, cy, back1, cx + bumpDotDiameter - 1,
-                        cy + bumpDotDiameter - 1, back2));
-                graphics.fillOval(cx, cy, bumpDotDiameter, bumpDotDiameter);
-            }
-        }
-        return result;
     }
 
     /**

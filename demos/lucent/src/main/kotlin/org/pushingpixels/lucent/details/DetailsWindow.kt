@@ -32,16 +32,13 @@ package org.pushingpixels.lucent.details
 import org.pushingpixels.lucent.BackendConnector
 import org.pushingpixels.lucent.data.SearchResultRelease
 import org.pushingpixels.lucent.data.Track
+import org.pushingpixels.meteor.awt.MeteorLayoutManager
 import org.pushingpixels.torch.componentTimeline
 import org.pushingpixels.torch.from
 import org.pushingpixels.torch.fromCurrentTo
 import org.pushingpixels.trident.api.TimelineRunnable
 import org.pushingpixels.trident.api.TimelineScenario
 import org.pushingpixels.trident.api.swing.TimelineSwingWorker
-import java.awt.Component
-import java.awt.Container
-import java.awt.Dimension
-import java.awt.LayoutManager
 import java.awt.image.BufferedImage
 import java.util.*
 import javax.swing.JWindow
@@ -90,32 +87,19 @@ class DetailsWindow : JWindow() {
         this.trackListingScroller = TrackListingScroller()
 
         val contentPane = this.contentPane
-        contentPane.layout = object : LayoutManager {
-            override fun addLayoutComponent(name: String, comp: Component) {}
+        contentPane.layout = MeteorLayoutManager(
+                onLayout = { parent ->
+                    val w = parent.width
+                    val h = parent.height
 
-            override fun removeLayoutComponent(comp: Component) {}
-
-            override fun minimumLayoutSize(parent: Container): Dimension? {
-                return null
-            }
-
-            override fun preferredLayoutSize(parent: Container): Dimension? {
-                return null
-            }
-
-            override fun layoutContainer(parent: Container) {
-                val w = parent.width
-                val h = parent.height
-
-                // respect the current overlay position to implement the sliding
-                // effect in steps 1 and 7 of currentShowAlbumDetailsScenario
-                val dim = BigAlbumArt.TOTAL_DIM
-                val dx = (overlayPosition * dim / 2).toInt()
-                albumArt.setBounds((w - dim) / 2 - dx, (h - dim) / 2, dim, dim)
-                trackListingScroller.setBounds((w - dim) / 2 + dx,
-                        (h - dim) / 2 + 2, dim, dim - 4)
-            }
-        }
+                    // respect the current overlay position to implement the sliding
+                    // effect in steps 1 and 7 of currentShowAlbumDetailsScenario
+                    val dim = BigAlbumArt.TOTAL_DIM
+                    val dx = (overlayPosition * dim / 2).toInt()
+                    albumArt.setBounds((w - dim) / 2 - dx, (h - dim) / 2, dim, dim)
+                    trackListingScroller.setBounds((w - dim) / 2 + dx,
+                            (h - dim) / 2 + 2, dim, dim - 4)
+                })
         contentPane.add(albumArt)
         contentPane.add(trackListingScroller)
 
@@ -203,7 +187,6 @@ class DetailsWindow : JWindow() {
 
         // step 6 (wait for steps 4 and 5) - cross fade album art from old to new
         val albumArtCrossfadeTimeline = this.albumArt.componentTimeline {
-            property(albumArt::oldImageAlpha from 1.0f to 0.0f)
             property(albumArt::imageAlpha from 0.0f to 1.0f)
             repaintCallback()
             duration = 400

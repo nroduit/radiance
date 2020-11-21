@@ -31,9 +31,9 @@ package org.pushingpixels.demo.flamingo.common;
 
 import org.pushingpixels.demo.flamingo.LocaleSwitcher;
 import org.pushingpixels.demo.flamingo.svg.logo.RadianceLogo;
-import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.model.ColorSelectorCommand;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
@@ -117,7 +117,7 @@ public class TestColorSelector extends JFrame {
         selectorBuilder.addCommand(Command.builder()
                 .setText(resourceBundle.getString("ColorSelector.textAutomatic"))
                 .setIconFactory(ColorIcon.factory(defaultPanelColor))
-                .setAction((CommandActionEvent e) -> {
+                .setAction(commandActionEvent -> {
                     colorActivationListener.onColorActivated(defaultPanelColor);
                     JColorSelectorPopupMenu.addColorToRecentlyUsed(defaultPanelColor);
                 })
@@ -162,7 +162,7 @@ public class TestColorSelector extends JFrame {
 
         selectorBuilder.addCommand(Command.builder()
                 .setText(resourceBundle.getString("ColorSelector.textMoreColor"))
-                .setAction((CommandActionEvent e) -> SwingUtilities.invokeLater(() -> {
+                .setAction(commandActionEvent -> SwingUtilities.invokeLater(() -> {
                     Color color = JColorChooser.showDialog(TestColorSelector.this,
                             "Color chooser", backgroundColor);
                     if (color != null) {
@@ -182,7 +182,7 @@ public class TestColorSelector extends JFrame {
                 .setIconFactory(ColorIcon.factory(backgroundColor))
                 .setColorSelectorPopupMenuContentModel(selectorModel)
                 .build();
-        AbstractCommandButton colorButton = new ColorSelectorCommandButtonProjection(
+        JCommandButton colorButton = new ColorSelectorCommandButtonProjection(
                 this.colorSelectorCommand,
                 CommandButtonPresentationModel.builder()
                         .setPresentationState(CommandButtonPresentationState.SMALL)

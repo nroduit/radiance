@@ -32,7 +32,6 @@ package org.pushingpixels.substance.internal.widget.text;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.SubstanceSlices.ComponentStateFacet;
 import org.pushingpixels.substance.api.SubstanceWidget;
-import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.internal.animation.TransitionAwareUI;
 import org.pushingpixels.substance.internal.utils.WidgetUtilities;
 import org.pushingpixels.substance.internal.utils.icon.HighlightableTransitionAwareIcon;
@@ -42,7 +41,6 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -56,7 +54,7 @@ public class EditContextMenuWidget extends SubstanceWidget<JTextComponent> {
     /**
      * Mouse listener for showing the edit context menu.
      */
-    protected MouseListener menuMouseListener;
+    private MouseListener menuMouseListener;
 
     private static final int ICON_SIZE = 14;
 
@@ -91,9 +89,14 @@ public class EditContextMenuWidget extends SubstanceWidget<JTextComponent> {
                 editMenu.addSeparator();
                 editMenu.add(getDeleteItem());
                 editMenu.add(getSelectAllItem());
+                editMenu.applyComponentOrientation(jcomp.getComponentOrientation());
 
                 Point pt = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), jcomp);
-                editMenu.show(jcomp, pt.x, pt.y);
+                if (jcomp.getComponentOrientation().isLeftToRight()) {
+                    editMenu.show(jcomp, pt.x, pt.y);
+                } else {
+                    editMenu.show(jcomp, pt.x - editMenu.getPreferredSize().width, pt.y);
+                }
             }
         };
         jcomp.addMouseListener(this.menuMouseListener);
@@ -113,13 +116,12 @@ public class EditContextMenuWidget extends SubstanceWidget<JTextComponent> {
 
         HighlightableTransitionAwareIcon icon = new HighlightableTransitionAwareIcon(result,
                 () -> (TransitionAwareUI) result.getUI(),
-                (SubstanceColorScheme scheme) -> SubstanceCortex.GlobalScope.getIconPack()
-                        .getTextCutActionIcon(ICON_SIZE, scheme),
+                scheme -> SubstanceCortex.GlobalScope.getIconPack().getTextCutActionIcon(ICON_SIZE, scheme),
                 ComponentStateFacet.ARM, "substance.widget.editcontext.cut");
         result.setIcon(icon);
         result.setDisabledIcon(icon);
 
-        result.addActionListener((ActionEvent e) -> jcomp.cut());
+        result.addActionListener(actionEvent -> jcomp.cut());
         return result;
     }
 
@@ -130,13 +132,12 @@ public class EditContextMenuWidget extends SubstanceWidget<JTextComponent> {
 
         HighlightableTransitionAwareIcon icon = new HighlightableTransitionAwareIcon(result,
                 () -> (TransitionAwareUI) result.getUI(),
-                (SubstanceColorScheme scheme) -> SubstanceCortex.GlobalScope.getIconPack()
-                        .getTextCopyActionIcon(ICON_SIZE, scheme),
+                scheme -> SubstanceCortex.GlobalScope.getIconPack().getTextCopyActionIcon(ICON_SIZE, scheme),
                 ComponentStateFacet.ARM, "substance.widget.editcontext.copy");
         result.setIcon(icon);
         result.setDisabledIcon(icon);
 
-        result.addActionListener((ActionEvent e) -> jcomp.copy());
+        result.addActionListener(actionEvent -> jcomp.copy());
         return result;
     }
 
@@ -153,13 +154,12 @@ public class EditContextMenuWidget extends SubstanceWidget<JTextComponent> {
 
         HighlightableTransitionAwareIcon icon = new HighlightableTransitionAwareIcon(result,
                 () -> (TransitionAwareUI) result.getUI(),
-                (SubstanceColorScheme scheme) -> SubstanceCortex.GlobalScope.getIconPack()
-                        .getTextPasteActionIcon(ICON_SIZE, scheme),
+                scheme -> SubstanceCortex.GlobalScope.getIconPack().getTextPasteActionIcon(ICON_SIZE, scheme),
                 ComponentStateFacet.ARM, "substance.widget.editcontext.paste");
         result.setIcon(icon);
         result.setDisabledIcon(icon);
 
-        result.addActionListener((ActionEvent e) -> jcomp.paste());
+        result.addActionListener(actionEvent -> jcomp.paste());
         return result;
     }
 
@@ -171,13 +171,12 @@ public class EditContextMenuWidget extends SubstanceWidget<JTextComponent> {
 
         HighlightableTransitionAwareIcon icon = new HighlightableTransitionAwareIcon(result,
                 () -> (TransitionAwareUI) result.getUI(),
-                (SubstanceColorScheme scheme) -> SubstanceCortex.GlobalScope.getIconPack()
-                        .getTextDeleteActionIcon(ICON_SIZE, scheme),
+                scheme -> SubstanceCortex.GlobalScope.getIconPack().getTextDeleteActionIcon(ICON_SIZE, scheme),
                 ComponentStateFacet.ARM, "substance.widget.editcontext.delete");
         result.setIcon(icon);
         result.setDisabledIcon(icon);
 
-        result.addActionListener((ActionEvent e) -> jcomp.replaceSelection(null));
+        result.addActionListener(actionEvent -> jcomp.replaceSelection(null));
         return result;
     }
 
@@ -188,13 +187,12 @@ public class EditContextMenuWidget extends SubstanceWidget<JTextComponent> {
 
         HighlightableTransitionAwareIcon icon = new HighlightableTransitionAwareIcon(result,
                 () -> (TransitionAwareUI) result.getUI(),
-                (SubstanceColorScheme scheme) -> SubstanceCortex.GlobalScope.getIconPack()
-                        .getTextSelectAllActionIcon(ICON_SIZE, scheme),
+                scheme -> SubstanceCortex.GlobalScope.getIconPack().getTextSelectAllActionIcon(ICON_SIZE, scheme),
                 ComponentStateFacet.ARM, "substance.widget.editcontext.selectall");
         result.setIcon(icon);
         result.setDisabledIcon(icon);
 
-        result.addActionListener((ActionEvent e) -> jcomp.selectAll());
+        result.addActionListener(actionEvent -> jcomp.selectAll());
         return result;
     }
 }

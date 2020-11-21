@@ -31,13 +31,14 @@ package org.pushingpixels.substance.internal.utils;
 
 import org.pushingpixels.substance.api.ComponentState;
 import org.pushingpixels.substance.api.SubstanceCortex;
-import org.pushingpixels.substance.api.SubstanceCortex.ComponentOrParentChainScope;
 import org.pushingpixels.substance.api.SubstanceSkin;
+import org.pushingpixels.substance.api.SubstanceSlices;
 import org.pushingpixels.substance.api.SubstanceSlices.ColorSchemeAssociationKind;
 import org.pushingpixels.substance.api.SubstanceSlices.DecorationAreaType;
 import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.internal.animation.StateTransitionTracker;
 import org.pushingpixels.substance.internal.animation.TransitionAwareUI;
+import org.pushingpixels.substance.internal.painter.DecorationPainterUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
@@ -48,15 +49,14 @@ import java.util.Map;
 
 /**
  * Various color-related utilities. This class is <b>for internal use only</b>.
- * 
+ *
  * @author Kirill Grouchnikov
  */
 public class SubstanceColorUtilities {
     /**
      * Returns the color of the top portion of border in control backgrounds.
      *
-     * @param scheme
-     *            The color scheme.
+     * @param scheme The color scheme.
      * @return The color of the top portion of border in control backgrounds.
      */
     public static Color getTopBorderColor(SubstanceColorScheme scheme) {
@@ -66,8 +66,7 @@ public class SubstanceColorUtilities {
     /**
      * Returns the color of the middle portion of border in control backgrounds.
      *
-     * @param scheme
-     *            The color scheme.
+     * @param scheme The color scheme.
      * @return The color of the middle portion of border in control backgrounds.
      */
     public static Color getMidBorderColor(SubstanceColorScheme scheme) {
@@ -77,8 +76,7 @@ public class SubstanceColorUtilities {
     /**
      * Returns the color of the bottom portion of border in control backgrounds.
      *
-     * @param scheme
-     *            The color scheme.
+     * @param scheme The color scheme.
      * @return The color of the bottom portion of border in control backgrounds.
      */
     public static Color getBottomBorderColor(SubstanceColorScheme scheme) {
@@ -89,8 +87,7 @@ public class SubstanceColorUtilities {
     /**
      * Returns the color of the top portion of fill in control backgrounds.
      *
-     * @param scheme
-     *            The color scheme.
+     * @param scheme The color scheme.
      * @return The color of the top portion of fill in control backgrounds.
      */
     public static Color getTopFillColor(SubstanceColorScheme scheme) {
@@ -101,8 +98,7 @@ public class SubstanceColorUtilities {
     /**
      * Returns the color of the middle portion of fill in control backgrounds.
      *
-     * @param scheme
-     *            The color scheme.
+     * @param scheme The color scheme.
      * @return The color of the middle portion of fill in control backgrounds.
      */
     public static Color getMidFillColor(SubstanceColorScheme scheme) {
@@ -112,8 +108,7 @@ public class SubstanceColorUtilities {
     /**
      * Returns the color of the bottom portion of fill in control backgrounds.
      *
-     * @param scheme
-     *            The color scheme.
+     * @param scheme The color scheme.
      * @return The color of the bottom portion of fill in control backgrounds.
      */
     public static Color getBottomFillColor(SubstanceColorScheme scheme) {
@@ -123,8 +118,7 @@ public class SubstanceColorUtilities {
     /**
      * Returns the color of the top portion of shine in control backgrounds.
      *
-     * @param scheme
-     *            The color scheme.
+     * @param scheme The color scheme.
      * @return The color of the top portion of shine in control backgrounds.
      */
     public static Color getTopShineColor(SubstanceColorScheme scheme) {
@@ -134,8 +128,7 @@ public class SubstanceColorUtilities {
     /**
      * Returns the color of the bottom portion of shine in control backgrounds.
      *
-     * @param scheme
-     *            The color scheme.
+     * @param scheme The color scheme.
      * @return The color of the bottom portion of shine in control backgrounds.
      */
     public static Color getBottomShineColor(SubstanceColorScheme scheme) {
@@ -145,13 +138,10 @@ public class SubstanceColorUtilities {
     /**
      * Interpolates color.
      *
-     * @param color1
-     *            The first color
-     * @param color2
-     *            The second color
-     * @param color1Likeness
-     *            The closer this value is to 0.0, the closer the resulting
-     *            color will be to <code>color2</code>.
+     * @param color1         The first color
+     * @param color2         The second color
+     * @param color1Likeness The closer this value is to 0.0, the closer the resulting
+     *                       color will be to <code>color2</code>.
      * @return Interpolated RGB value.
      */
     public static int getInterpolatedRGB(Color color1, Color color2,
@@ -219,20 +209,17 @@ public class SubstanceColorUtilities {
     // Electro-optical conversion function for the sRGB color space
     // Takes a linear sRGB value and converts it to a gamma-encoded sRGB value
     private static double EOCF_sRGB(double srgb) {
-    // IEC 61966-2-1:1999
+        // IEC 61966-2-1:1999
         return srgb <= 0.04045f ? srgb / 12.92f : Math.pow((srgb + 0.055f) / 1.055f, 2.4f);
     }
 
     /**
      * Interpolates color.
      *
-     * @param color1
-     *            The first color
-     * @param color2
-     *            The second color
-     * @param color1Likeness
-     *            The closer this value is to 0.0, the closer the resulting
-     *            color will be to <code>color2</code>.
+     * @param color1         The first color
+     * @param color2         The second color
+     * @param color1Likeness The closer this value is to 0.0, the closer the resulting
+     *                       color will be to <code>color2</code>.
      * @return Interpolated color.
      */
     public static Color getInterpolatedColor(Color color1, Color color2,
@@ -252,8 +239,7 @@ public class SubstanceColorUtilities {
     /**
      * Inverts the specified color.
      *
-     * @param color
-     *            The original color.
+     * @param color The original color.
      * @return The inverted color.
      */
     public static Color invertColor(Color color) {
@@ -264,8 +250,7 @@ public class SubstanceColorUtilities {
     /**
      * Returns a negative of the specified color.
      *
-     * @param rgb
-     *            Color RGB.
+     * @param rgb Color RGB.
      * @return Negative of the specified color.
      */
     public static int getNegativeColor(int rgb) {
@@ -280,12 +265,10 @@ public class SubstanceColorUtilities {
     /**
      * Returns a translucent of the specified color.
      *
-     * @param color
-     *            Color.
-     * @param alpha
-     *            Alpha channel value.
+     * @param color Color.
+     * @param alpha Alpha channel value.
      * @return Translucent of the specified color that matches the requested
-     *         alpha channel value.
+     * alpha channel value.
      */
     public static Color getAlphaColor(Color color, int alpha) {
         return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
@@ -294,10 +277,8 @@ public class SubstanceColorUtilities {
     /**
      * Returns saturated version of the specified color.
      *
-     * @param color
-     *            Color.
-     * @param factor
-     *            Saturation factor.
+     * @param color  Color.
+     * @param factor Saturation factor.
      * @return Saturated color.
      */
     public static Color getSaturatedColor(Color color, double factor) {
@@ -323,10 +304,8 @@ public class SubstanceColorUtilities {
     /**
      * Returns hue-shifted (in HSV space) version of the specified color.
      *
-     * @param color
-     *            Color.
-     * @param hueShift
-     *            hue shift factor.
+     * @param color    Color.
+     * @param hueShift hue shift factor.
      * @return Hue-shifted (in HSV space) color.
      */
     public static Color getHueShiftedColor(Color color, double hueShift) {
@@ -350,13 +329,11 @@ public class SubstanceColorUtilities {
      * source. Thus, a light red color shifted towards dark green will become
      * dark red.
      *
-     * @param original
-     *            Original color.
-     * @param brightnessSource
-     *            Brightness source.
+     * @param original         Original color.
+     * @param brightnessSource Brightness source.
      * @return Derived color that has the same hue and saturation as the
-     *         original color, but its brightness is shifted towards the
-     *         brightness of the brightness source.
+     * original color, but its brightness is shifted towards the
+     * brightness of the brightness source.
      */
     public static Color deriveByBrightness(Color original, Color brightnessSource) {
         float[] hsbvalsOrig = new float[3];
@@ -373,7 +350,7 @@ public class SubstanceColorUtilities {
         Color.RGBtoHSB(original.getRed(), original.getGreen(), original.getBlue(), hsbvalsOrig);
 
         // Brightness factor is in -1.0...1.0 range. Negative values are treated as darkening
-		// and positive values are treated as brightening - leaving the hue and saturation intact
+        // and positive values are treated as brightening - leaving the hue and saturation intact
         float newBrightness = (brightnessFactor > 0.0f)
                 ? hsbvalsOrig[2] + (1.0f - hsbvalsOrig[2]) * brightnessFactor
                 : hsbvalsOrig[2] + hsbvalsOrig[2] * brightnessFactor;
@@ -383,8 +360,7 @@ public class SubstanceColorUtilities {
     /**
      * Returns the foreground color of the specified color scheme.
      *
-     * @param scheme
-     *            Color scheme.
+     * @param scheme Color scheme.
      * @return Color scheme foreground color.
      */
     public static ColorUIResource getForegroundColor(SubstanceColorScheme scheme) {
@@ -394,11 +370,9 @@ public class SubstanceColorUtilities {
     /**
      * Returns lighter version of the specified color.
      *
-     * @param color
-     *            Color.
-     * @param diff
-     *            Difference factor (values closer to 1.0 will produce results
-     *            closer to white color).
+     * @param color Color.
+     * @param diff  Difference factor (values closer to 1.0 will produce results
+     *              closer to white color).
      * @return Lighter version of the specified color.
      */
     public static Color getLighterColor(Color color, double diff) {
@@ -408,11 +382,9 @@ public class SubstanceColorUtilities {
     /**
      * Returns darker version of the specified color.
      *
-     * @param color
-     *            Color.
-     * @param diff
-     *            Difference factor (values closer to 1.0 will produce results
-     *            closer to black color).
+     * @param color Color.
+     * @param diff  Difference factor (values closer to 1.0 will produce results
+     *              closer to black color).
      * @return Darker version of the specified color.
      */
     public static Color getDarkerColor(Color color, double diff) {
@@ -422,8 +394,7 @@ public class SubstanceColorUtilities {
     /**
      * Returns the brightness of the specified color.
      *
-     * @param rgb
-     *            RGB value of a color.
+     * @param rgb RGB value of a color.
      * @return The brightness of the specified color.
      */
     public static int getColorBrightness(int rgb) {
@@ -438,12 +409,10 @@ public class SubstanceColorUtilities {
     /**
      * Returns the color of the focus ring for the specified component.
      *
-     * @param comp
-     *            Component.
+     * @param comp Component.
      * @return The color of the focus ring for the specified component.
      */
-    public static Color getFocusColor(Component comp,
-            TransitionAwareUI transitionAwareUI) {
+    public static Color getFocusColor(Component comp, TransitionAwareUI transitionAwareUI) {
         StateTransitionTracker stateTransitionTracker = transitionAwareUI.getTransitionTracker();
         StateTransitionTracker.ModelStateInfo modelStateInfo =
                 stateTransitionTracker.getModelStateInfo();
@@ -452,9 +421,17 @@ public class SubstanceColorUtilities {
         Map<ComponentState, StateTransitionTracker.StateContributionInfo> activeStates =
                 modelStateInfo.getStateContributionMap();
 
-        SubstanceColorScheme colorScheme = SubstanceColorSchemeUtilities.getColorScheme(
-                comp, ColorSchemeAssociationKind.MARK, currState);
+        SubstanceSkin skin = SubstanceCoreUtilities.getSkin(comp);
+        DecorationAreaType decorationAreaType = DecorationPainterUtils.getDecorationType(comp);
+
         if (currState.isDisabled() || (activeStates == null) || (activeStates.size() == 1)) {
+            Color overlay = skin.getOverlayColor(SubstanceSlices.ColorOverlayType.FOCUS_INDICATION,
+                    decorationAreaType, currState);
+            if (overlay != null) {
+                return overlay;
+            }
+            SubstanceColorScheme colorScheme = SubstanceColorSchemeUtilities.getColorScheme(
+                    comp, ColorSchemeAssociationKind.FOCUS, currState);
             return colorScheme.getFocusRingColor();
         }
 
@@ -465,12 +442,14 @@ public class SubstanceColorUtilities {
                 activeStates.entrySet()) {
             ComponentState activeState = activeEntry.getKey();
             float alpha = activeEntry.getValue().getContribution();
-            SubstanceColorScheme activeColorScheme = SubstanceColorSchemeUtilities
-                    .getColorScheme(comp, ColorSchemeAssociationKind.MARK, activeState);
-            Color activeForeground = activeColorScheme.getFocusRingColor();
-            aggrRed += alpha * activeForeground.getRed();
-            aggrGreen += alpha * activeForeground.getGreen();
-            aggrBlue += alpha * activeForeground.getBlue();
+            Color overlay = skin.getOverlayColor(SubstanceSlices.ColorOverlayType.FOCUS_INDICATION,
+                    decorationAreaType, currState);
+            Color active = (overlay != null) ? overlay :
+                    SubstanceColorSchemeUtilities.getColorScheme(comp, ColorSchemeAssociationKind.FOCUS, activeState).
+                            getFocusRingColor();
+            aggrRed += alpha * active.getRed();
+            aggrGreen += alpha * active.getGreen();
+            aggrBlue += alpha * active.getBlue();
         }
         return new Color((int) aggrRed, (int) aggrGreen, (int) aggrBlue);
     }
@@ -478,8 +457,7 @@ public class SubstanceColorUtilities {
     /**
      * Returns the color strength.
      *
-     * @param color
-     *            Color.
+     * @param color Color.
      * @return Color strength.
      */
     public static float getColorStrength(Color color) {
@@ -491,11 +469,9 @@ public class SubstanceColorUtilities {
      * Returns the color of mark icons (checkbox, radio button, scrollbar
      * arrows, combo arrows, menu arrows etc) for the specified color scheme.
      *
-     * @param colorScheme
-     *            Color scheme.
-     * @param isEnabled
-     *            If <code>true</code>, the mark should be painted in enabled
-     *            state.
+     * @param colorScheme Color scheme.
+     * @param isEnabled   If <code>true</code>, the mark should be painted in enabled
+     *                    state.
      * @return Color of mark icons.
      */
     public static Color getMarkColor(SubstanceColorScheme colorScheme,
@@ -515,10 +491,8 @@ public class SubstanceColorUtilities {
     /**
      * Returns the foreground text color of the specified component.
      *
-     * @param component
-     *            Component.
-     * @param modelStateInfo
-     *            Component model state info.
+     * @param component      Component.
+     * @param modelStateInfo Component model state info.
      * @return The foreground text color of the specified component.
      */
     public static Color getForegroundColor(Component component,
@@ -572,10 +546,8 @@ public class SubstanceColorUtilities {
     /**
      * Returns the foreground text color of the specified menu component.
      *
-     * @param menuComponent
-     *            Menu component.
-     * @param modelStateInfo
-     *            Model state info for the component.
+     * @param menuComponent  Menu component.
+     * @param modelStateInfo Model state info for the component.
      * @return The foreground text color of the specified menu component.
      */
     public static Color getMenuComponentForegroundColor(JMenuItem menuComponent,
@@ -620,8 +592,7 @@ public class SubstanceColorUtilities {
     /**
      * Returns the background fill color of the specified component.
      *
-     * @param component
-     *            Component.
+     * @param component Component.
      * @return The background fill color of the specified component.
      */
     public static Color getBackgroundFillColor(Component component) {
@@ -657,8 +628,7 @@ public class SubstanceColorUtilities {
             }
 
             SubstanceColorScheme scheme = SubstanceColorSchemeUtilities.getColorScheme(component,
-                    component.isEnabled() ? ComponentState.ENABLED
-                            : ComponentState.DISABLED_UNSELECTED);
+                    component.isEnabled() ? ComponentState.ENABLED : ComponentState.DISABLED_UNSELECTED);
             backgr = scheme.getBackgroundFillColor();
         } else {
             ComponentState state = component.isEnabled() ? ComponentState.ENABLED
@@ -704,71 +674,38 @@ public class SubstanceColorUtilities {
         if (state.isDisabled()) {
             float alpha = SubstanceColorSchemeUtilities.getAlpha(scrollbar, state);
             if (alpha < 1.0f) {
-                Color defaultColor = SubstanceColorUtilities
-                        .getDefaultBackgroundColor(scrollbar,
-                                ComponentState.ENABLED);
+                Color defaultColor = SubstanceColorUtilities.getDefaultBackgroundColor(
+                        scrollbar, ComponentState.ENABLED);
                 backgr = SubstanceColorUtilities.getInterpolatedColor(
                         backgr, defaultColor, 1.0f - (1.0f - alpha) / 2.0f);
             }
         }
 
-        SubstanceColorScheme colorScheme =
-                SubstanceColorSchemeUtilities.getColorScheme(scrollbar, state);
+        SubstanceColorScheme colorScheme = SubstanceColorSchemeUtilities.getColorScheme(scrollbar, state);
         float factor = colorScheme.isDark() ? 0.98f : 0.9f;
         backgr = SubstanceColorUtilities.getInterpolatedColor(backgr,
-                SubstanceColorUtilities.getAlphaColor(colorScheme.getForegroundColor(),
-                        backgr.getAlpha()),
+                SubstanceColorUtilities.getAlphaColor(colorScheme.getForegroundColor(), backgr.getAlpha()),
                 factor);
         return backgr;
     }
 
     /**
-     * Returns the default background color for the components of the specified
-     * class.
-     *
-     * @param toTreatAsTextComponent
-     *            Indication whether to treat this as a text component.
-     * @param skin
-     *            Skin.
-     * @param isDisabled
-     *            Indication whether the result should be for disabled
-     *            components.
-     * @return The default background color for the components of the specified
-     *         class.
-     */
-    public static ColorUIResource getDefaultBackgroundColor(
-            boolean toTreatAsTextComponent, SubstanceSkin skin,
-            boolean isDisabled) {
-        if (toTreatAsTextComponent || isDisabled) {
-            return new ColorUIResource(skin.getEnabledColorScheme(
-                    DecorationAreaType.NONE).getTextBackgroundFillColor());
-        }
-        return new ColorUIResource(skin.getEnabledColorScheme(
-                DecorationAreaType.NONE).getBackgroundFillColor());
-    }
-
-    /**
      * Returns the default background color for the specified component.
      *
-     * @param comp
-     *            Component.
-     * @param compState
-     *            Component state.
+     * @param comp      Component.
+     * @param compState Component state.
      * @return The default background color for the components of the specified
-     *         class.
+     * class.
      */
-    public static ColorUIResource getDefaultBackgroundColor(Component comp,
+    private static ColorUIResource getDefaultBackgroundColor(Component comp,
             ComponentState compState) {
         if (comp instanceof JTextComponent) {
             // special case for text-based components
-            return new ColorUIResource(SubstanceColorSchemeUtilities
-                    .getColorScheme(comp, compState)
-                    .getTextBackgroundFillColor());
+            return new ColorUIResource(SubstanceCoreUtilities.getTextBackgroundFill(comp, compState));
         }
-        return new ColorUIResource(SubstanceCortex.ComponentScope.getCurrentSkin(comp)
-                .getBackgroundColorScheme(
-                        ComponentOrParentChainScope.getDecorationType(comp))
-                .getBackgroundFillColor());
+        return new ColorUIResource(SubstanceCoreUtilities.getBackgroundFill(
+                SubstanceCortex.ComponentScope.getCurrentSkin(comp),
+                DecorationPainterUtils.getDecorationType(comp)));
     }
 
     /**
@@ -776,10 +713,8 @@ public class SubstanceColorUtilities {
      * is relevant for components such as trees, tables and lists that use
      * odd-even striping for the alternating rows.
      *
-     * @param component
-     *            Component.
-     * @param rowIndex
-     *            Row index.
+     * @param component Component.
+     * @param rowIndex  Row index.
      * @return The striped background for the specified component.
      */
     public static Color getStripedBackground(JComponent component, int rowIndex) {

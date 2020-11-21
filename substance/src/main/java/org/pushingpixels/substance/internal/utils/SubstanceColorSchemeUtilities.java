@@ -42,10 +42,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Utilities related to color schemes. This class is for internal use only.
@@ -294,7 +292,8 @@ public class SubstanceColorSchemeUtilities {
      */
     public final static SubstanceColorScheme GREEN = new BottleGreenColorScheme();
 
-    public static SubstanceColorScheme getLightColorScheme(String name, final Color[] colors) {
+    public static SubstanceColorScheme getLightColorScheme(String name, final Color[] colors,
+            final Map<String, Color> additionalColors) {
         if (colors == null) {
             throw new IllegalArgumentException("Color encoding cannot be null");
         }
@@ -329,10 +328,83 @@ public class SubstanceColorSchemeUtilities {
             public Color getForegroundColor() {
                 return colors[6];
             }
+
+            @Override
+            public Color getLineColor() {
+                if (additionalColors.containsKey("colorLine")) {
+                    return additionalColors.get("colorLine");
+                }
+                return super.getLineColor();
+            }
+
+            @Override
+            public Color getBackgroundFillColor() {
+                if (additionalColors.containsKey("colorBackgroundFill")) {
+                    return additionalColors.get("colorBackgroundFill");
+                }
+                return super.getBackgroundFillColor();
+            }
+
+            @Override
+            public Color getTextBackgroundFillColor() {
+                if (additionalColors.containsKey("colorTextBackgroundFill")) {
+                    return additionalColors.get("colorTextBackgroundFill");
+                }
+                return super.getTextBackgroundFillColor();
+            }
+
+            @Override
+            public Color getSelectionBackgroundColor() {
+                if (additionalColors.containsKey("colorSelectionBackground")) {
+                    return additionalColors.get("colorSelectionBackground");
+                }
+                return super.getSelectionBackgroundColor();
+            }
+
+            @Override
+            public Color getSelectionForegroundColor() {
+                if (additionalColors.containsKey("colorSelectionForeground")) {
+                    return additionalColors.get("colorSelectionForeground");
+                }
+                return super.getSelectionForegroundColor();
+            }
+
+            @Override
+            public Color getFocusRingColor() {
+                if (additionalColors.containsKey("colorFocusRing")) {
+                    return additionalColors.get("colorFocusRing");
+                }
+                return super.getFocusRingColor();
+            }
+
+            @Override
+            public Color getSeparatorLightColor() {
+                if (additionalColors.containsKey("colorSeparatorLight")) {
+                    return additionalColors.get("colorSeparatorLight");
+                }
+                return super.getSeparatorLightColor();
+            }
+
+            @Override
+            public Color getSeparatorDarkColor() {
+                if (additionalColors.containsKey("colorSeparatorDark")) {
+                    return additionalColors.get("colorSeparatorDark");
+                }
+                return super.getSeparatorDarkColor();
+            }
+
+            @Override
+            public Color getSeparatorShadowColor() {
+                if (additionalColors.containsKey("colorSeparatorShadow")) {
+                    return additionalColors.get("colorSeparatorShadow");
+                }
+                return super.getSeparatorShadowColor();
+            }
         };
     }
 
-    public static SubstanceColorScheme getDarkColorScheme(String name, final Color[] colors) {
+    public static SubstanceColorScheme getDarkColorScheme(String name, final Color[] colors,
+            final Map<String, Color> additionalColors) {
         if (colors == null) {
             throw new IllegalArgumentException("Color encoding cannot be null");
         }
@@ -367,6 +439,78 @@ public class SubstanceColorSchemeUtilities {
             public Color getForegroundColor() {
                 return colors[6];
             }
+
+            @Override
+            public Color getLineColor() {
+                if (additionalColors.containsKey("colorLine")) {
+                    return additionalColors.get("colorLine");
+                }
+                return super.getLineColor();
+            }
+
+            @Override
+            public Color getBackgroundFillColor() {
+                if (additionalColors.containsKey("colorBackgroundFill")) {
+                    return additionalColors.get("colorBackgroundFill");
+                }
+                return super.getBackgroundFillColor();
+            }
+
+            @Override
+            public Color getTextBackgroundFillColor() {
+                if (additionalColors.containsKey("colorTextBackgroundFill")) {
+                    return additionalColors.get("colorTextBackgroundFill");
+                }
+                return super.getTextBackgroundFillColor();
+            }
+
+            @Override
+            public Color getSelectionBackgroundColor() {
+                if (additionalColors.containsKey("colorSelectionBackground")) {
+                    return additionalColors.get("colorSelectionBackground");
+                }
+                return super.getSelectionBackgroundColor();
+            }
+
+            @Override
+            public Color getSelectionForegroundColor() {
+                if (additionalColors.containsKey("colorSelectionForeground")) {
+                    return additionalColors.get("colorSelectionForeground");
+                }
+                return super.getSelectionForegroundColor();
+            }
+
+            @Override
+            public Color getFocusRingColor() {
+                if (additionalColors.containsKey("colorFocusRing")) {
+                    return additionalColors.get("colorFocusRing");
+                }
+                return super.getFocusRingColor();
+            }
+
+            @Override
+            public Color getSeparatorLightColor() {
+                if (additionalColors.containsKey("colorSeparatorLight")) {
+                    return additionalColors.get("colorSeparatorLight");
+                }
+                return super.getSeparatorLightColor();
+            }
+
+            @Override
+            public Color getSeparatorDarkColor() {
+                if (additionalColors.containsKey("colorSeparatorDark")) {
+                    return additionalColors.get("colorSeparatorDark");
+                }
+                return super.getSeparatorDarkColor();
+            }
+
+            @Override
+            public Color getSeparatorShadowColor() {
+                if (additionalColors.containsKey("colorSeparatorShadow")) {
+                    return additionalColors.get("colorSeparatorShadow");
+                }
+                return super.getSeparatorShadowColor();
+            }
         };
     }
 
@@ -392,11 +536,14 @@ public class SubstanceColorSchemeUtilities {
         Color background = null;
         String name = null;
         ColorSchemeKind kind = null;
+        Map<String, Color> additionalColors = new HashMap<>();
         boolean inColorSchemeBlock = false;
         boolean inColorsBlock = false;
+        int lineNumber = 0;
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             while (true) {
                 String line = reader.readLine();
+                lineNumber++;
                 if (line == null)
                     break;
 
@@ -411,7 +558,7 @@ public class SubstanceColorSchemeUtilities {
 
                 if (line.contains("{")) {
                     if (inColorSchemeBlock || inColorsBlock) {
-                        throw new IllegalArgumentException("Already in color scheme or colors definition");
+                        throw new IllegalArgumentException("Already in color scheme or colors definition, line " + lineNumber);
                     }
                     name = line.substring(0, line.indexOf("{")).trim();
                     if (name.equals("@colors")) {
@@ -424,7 +571,7 @@ public class SubstanceColorSchemeUtilities {
 
                 if (line.contains("}")) {
                     if (!inColorSchemeBlock && !inColorsBlock) {
-                        throw new IllegalArgumentException("Not in color scheme or colors definition");
+                        throw new IllegalArgumentException("Not in color scheme or colors definition, line " + lineNumber);
                     }
 
                     if (inColorsBlock) {
@@ -439,11 +586,11 @@ public class SubstanceColorSchemeUtilities {
                         if ((name == null) || (kind == null) || (ultraLight == null)
                                 || (extraLight == null) || (light == null) || (mid == null)
                                 || (dark == null) || (ultraDark == null) || (foreground == null)) {
-                            throw new IllegalArgumentException("Incomplete specification of '" + name + "'");
+                            throw new IllegalArgumentException("Incomplete specification of '" + name + "', line " + lineNumber);
                         }
                     } else {
                         if ((name == null) || (foreground == null)) {
-                            throw new IllegalArgumentException("Incomplete specification '" + name + "'");
+                            throw new IllegalArgumentException("Incomplete specification '" + name + "', line " + lineNumber);
                         }
                     }
                     Color[] colors = (background != null)
@@ -452,9 +599,9 @@ public class SubstanceColorSchemeUtilities {
                             : new Color[] {ultraLight, extraLight, light, mid, dark, ultraDark, foreground};
 
                     if (kind == ColorSchemeKind.LIGHT) {
-                        schemes.add(getLightColorScheme(name, colors));
+                        schemes.add(getLightColorScheme(name, colors, new HashMap<>(additionalColors)));
                     } else {
-                        schemes.add(getDarkColorScheme(name, colors));
+                        schemes.add(getDarkColorScheme(name, colors, new HashMap<>(additionalColors)));
                     }
                     name = null;
                     kind = null;
@@ -466,12 +613,13 @@ public class SubstanceColorSchemeUtilities {
                     ultraDark = null;
                     foreground = null;
                     background = null;
+                    additionalColors.clear();
                     continue;
                 }
 
                 String[] split = line.split("=");
                 if (split.length != 2) {
-                    throw new IllegalArgumentException("Unsupported format in line " + line);
+                    throw new IllegalArgumentException("Unsupported format in line " + line + " [" + lineNumber + "]");
                 }
 
                 String key = split[0].trim();
@@ -492,58 +640,58 @@ public class SubstanceColorSchemeUtilities {
                             kind = ColorSchemeKind.DARK;
                             continue;
                         }
-                        throw new IllegalArgumentException("Unsupported format in line " + line);
+                        throw new IllegalArgumentException("Unsupported format in line " + line + " [" + lineNumber + "]");
                     }
-                    throw new IllegalArgumentException("'kind' should only be defined once");
+                    throw new IllegalArgumentException("'kind' should only be defined once, line " + lineNumber);
                 }
                 if ("colorUltraLight".equals(key)) {
                     if (ultraLight == null) {
                         ultraLight = decodeColor(value, colorMap);
                         continue;
                     }
-                    throw new IllegalArgumentException("'ultraLight' should only be defined once");
+                    throw new IllegalArgumentException("'ultraLight' should only be defined once, line " + lineNumber);
                 }
                 if ("colorExtraLight".equals(key)) {
                     if (extraLight == null) {
                         extraLight = decodeColor(value, colorMap);
                         continue;
                     }
-                    throw new IllegalArgumentException("'extraLight' should only be defined once");
+                    throw new IllegalArgumentException("'extraLight' should only be defined once, line " + lineNumber);
                 }
                 if ("colorLight".equals(key)) {
                     if (light == null) {
                         light = decodeColor(value, colorMap);
                         continue;
                     }
-                    throw new IllegalArgumentException("'light' should only be defined once");
+                    throw new IllegalArgumentException("'light' should only be defined once, line " + lineNumber);
                 }
                 if ("colorMid".equals(key)) {
                     if (mid == null) {
                         mid = decodeColor(value, colorMap);
                         continue;
                     }
-                    throw new IllegalArgumentException("'mid' should only be defined once");
+                    throw new IllegalArgumentException("'mid' should only be defined once, line " + lineNumber);
                 }
                 if ("colorDark".equals(key)) {
                     if (dark == null) {
                         dark = decodeColor(value, colorMap);
                         continue;
                     }
-                    throw new IllegalArgumentException("'dark' should only be defined once");
+                    throw new IllegalArgumentException("'dark' should only be defined once, line " + lineNumber);
                 }
                 if ("colorUltraDark".equals(key)) {
                     if (ultraDark == null) {
                         ultraDark = decodeColor(value, colorMap);
                         continue;
                     }
-                    throw new IllegalArgumentException("'ultraDark' should only be defined once");
+                    throw new IllegalArgumentException("'ultraDark' should only be defined once, line " + lineNumber);
                 }
                 if ("colorForeground".equals(key)) {
                     if (foreground == null) {
                         foreground = decodeColor(value, colorMap);
                         continue;
                     }
-                    throw new IllegalArgumentException("'foreground' should only be defined once");
+                    throw new IllegalArgumentException("'foreground' should only be defined once, line " + lineNumber);
                 }
                 if ("colorBackground".equals(key)) {
                     if (value.contains("->")) {
@@ -563,14 +711,30 @@ public class SubstanceColorSchemeUtilities {
                             continue;
                         }
                     }
-                    throw new IllegalArgumentException("'foreground' should only be defined once");
+                    throw new IllegalArgumentException("'foreground' should only be defined once, line " + lineNumber);
                 }
-                throw new IllegalArgumentException("Unsupported format in line " + line);
+                additionalColors.put(key, decodeColor(value, colorMap));
             }
         } catch (IOException ioe) {
             throw new IllegalArgumentException(ioe);
         }
-        return new SubstanceSkin.ColorSchemes(schemes);
+
+        return new SubstanceSkin.ColorSchemes() {
+            @Override
+            public Collection<SubstanceColorScheme> getAll() {
+                return Collections.unmodifiableCollection(schemes);
+            }
+
+            @Override
+            public SubstanceColorScheme get(String displayName) {
+                for (SubstanceColorScheme scheme : schemes) {
+                    if (scheme.getDisplayName().equals(displayName)) {
+                        return scheme;
+                    }
+                }
+                return null;
+            }
+        };
     }
 
     /**

@@ -49,10 +49,9 @@ import org.pushingpixels.substance.internal.utils.SubstanceCoreUtilities;
 import org.pushingpixels.substance.internal.utils.SubstanceSizeUtils;
 
 import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.ComponentUI;
-import javax.swing.plaf.UIResource;
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -121,6 +120,23 @@ public class SubstanceRibbonUI extends BasicRibbonUI {
 
             g2d.dispose();
         }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g.create();
+            SubstanceColorScheme compScheme = SubstanceColorSchemeUtilities.getColorScheme(
+                    this, ColorSchemeAssociationKind.SEPARATOR, ComponentState.ENABLED);
+            Color sepColor = compScheme.isDark()
+                    ? compScheme.getSeparatorShadowColor() : compScheme.getSeparatorDarkColor();
+            g2d.setColor(sepColor);
+            float separatorThickness = SubstanceSizeUtils.getBorderStrokeWidth();
+            float separatorY = this.getHeight() - separatorThickness;
+            g2d.setStroke(new BasicStroke(separatorThickness, BasicStroke.CAP_BUTT,
+                    BasicStroke.JOIN_ROUND));
+            g2d.draw(new Line2D.Double(0, separatorY, this.getWidth(), separatorY));
+            g2d.dispose();
+        }
     }
 
     public static ComponentUI createUI(JComponent comp) {
@@ -135,12 +151,6 @@ public class SubstanceRibbonUI extends BasicRibbonUI {
     protected void installDefaults() {
         super.installDefaults();
         ComponentOrParentChainScope.setDecorationType(this.ribbon, DecorationAreaType.HEADER);
-        Color backgr = this.ribbon.getBackground();
-        if ((backgr == null) || (backgr instanceof UIResource)) {
-            Color toSet = SubstanceColorSchemeUtilities
-                    .getColorScheme(this.ribbon, ComponentState.ENABLED).getBackgroundFillColor();
-            this.ribbon.setBackground(new ColorUIResource(toSet));
-        }
     }
 
     @Override
@@ -165,6 +175,19 @@ public class SubstanceRibbonUI extends BasicRibbonUI {
     @Override
     protected void paintBackground(Graphics g) {
         BackgroundPaintingUtils.update(g, this.ribbon, false);
+        Graphics2D g2d = (Graphics2D) g.create();
+        SubstanceColorScheme compScheme = SubstanceColorSchemeUtilities.getColorScheme(
+                this.ribbon, ColorSchemeAssociationKind.SEPARATOR, ComponentState.ENABLED);
+        Color sepColor = compScheme.isDark()
+                ? compScheme.getSeparatorShadowColor() : compScheme.getSeparatorDarkColor();
+        g2d.setColor(sepColor);
+        float separatorThickness = SubstanceSizeUtils.getBorderStrokeWidth();
+        float separatorY = this.taskToggleButtonsScrollablePanel.getY() +
+                this.taskToggleButtonsScrollablePanel.getHeight() - separatorThickness;
+        g2d.setStroke(new BasicStroke(separatorThickness, BasicStroke.CAP_BUTT,
+                BasicStroke.JOIN_ROUND));
+        g2d.draw(new Line2D.Double(0, separatorY, this.ribbon.getWidth(), separatorY));
+        g2d.dispose();
     }
 
     @Override

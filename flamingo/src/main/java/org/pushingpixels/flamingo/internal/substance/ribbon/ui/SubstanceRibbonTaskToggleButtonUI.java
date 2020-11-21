@@ -29,7 +29,7 @@
  */
 package org.pushingpixels.flamingo.internal.substance.ribbon.ui;
 
-import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.ribbon.RibbonContextualTaskGroup;
 import org.pushingpixels.flamingo.internal.substance.utils.CommandButtonVisualStateTracker;
 import org.pushingpixels.flamingo.internal.substance.utils.RibbonTaskToggleButtonBackgroundDelegate;
@@ -130,9 +130,9 @@ public class SubstanceRibbonTaskToggleButtonUI extends
         this.substanceVisualStateTracker = new CommandButtonVisualStateTracker();
         this.substanceVisualStateTracker.installListeners(this.commandButton);
 
-        this.substancePropertyChangeListener = (PropertyChangeEvent evt) -> {
-            if ("contextualGroupHueColor".equals(evt.getPropertyName())) {
-                Color newValue = (Color) evt.getNewValue();
+        this.substancePropertyChangeListener = propertyChangeEvent -> {
+            if ("contextualGroupHueColor".equals(propertyChangeEvent.getPropertyName())) {
+                Color newValue = (Color) propertyChangeEvent.getNewValue();
                 commandButton.setBackground(newValue);
             }
         };
@@ -215,8 +215,7 @@ public class SubstanceRibbonTaskToggleButtonUI extends
                     bgFillColor, buttonAlpha);
         }
 
-        SubstanceTextUtilities.paintText(g, this.commandButton, textRect,
-                toPaint, -1, this.commandButton.getFont(), fgColor, null);
+        SubstanceTextUtilities.paintText(g, textRect, toPaint, -1, this.commandButton.getFont(), fgColor, null);
 
         // Use foreground color for consistency - since non-active task toggle buttons use parent's
         // decoration background fill.
@@ -232,7 +231,7 @@ public class SubstanceRibbonTaskToggleButtonUI extends
                 contour, textRect, SubstanceColorUtilities.getAlphaColor(fgColor, 192), 1.0f, 0);
     }
 
-    private static Color getForegroundColor(AbstractCommandButton button,
+    private static Color getForegroundColor(JCommandButton button,
             StateTransitionTracker.ModelStateInfo modelStateInfo) {
         ComponentState currStateIgnoreSelection =
                 ComponentState.getState(button.getActionModel(), button, true);
@@ -290,10 +289,10 @@ public class SubstanceRibbonTaskToggleButtonUI extends
 
     @Override
     public Dimension getPreferredSize(JComponent c) {
-        AbstractCommandButton button = (AbstractCommandButton) c;
+        JCommandButton button = (JCommandButton) c;
 
-        JButton dummy = new JButton(button.getText(), button.getIcon());
-        Dimension result = dummy.getUI().getPreferredSize(dummy);
+        JButton forSizing = new JButton(button.getText(), button.getIcon());
+        Dimension result = forSizing.getUI().getPreferredSize(forSizing);
         Insets borderInsets = button.getBorder().getBorderInsets(button);
         result.width += (borderInsets.left + borderInsets.right);
         result.height += (borderInsets.top + borderInsets.bottom);

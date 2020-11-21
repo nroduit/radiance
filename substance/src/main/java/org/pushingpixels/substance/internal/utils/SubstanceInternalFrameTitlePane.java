@@ -49,12 +49,11 @@ import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
  * UI for internal frame title pane in <b>Substance </b> look and feel.
- * 
+ *
  * @author Kirill Grouchnikov
  */
 public class SubstanceInternalFrameTitlePane extends BasicInternalFrameTitlePane {
@@ -72,20 +71,19 @@ public class SubstanceInternalFrameTitlePane extends BasicInternalFrameTitlePane
     /**
      * Client property to mark an internal frame as being iconified.
      */
-    private static final String ICONIFYING = "substance.internal.internalTitleFramePane.iconifying";
+    private static final String ICONIFYING = "substancelaf.internal.internalTitleFramePane.iconifying";
 
     /**
      * Client property to mark a title pane as uninstalled.
      */
-    private static final String UNINSTALLED = "substance.internal.internalTitleFramePane.uninstalled";
+    private static final String UNINSTALLED = "substancelaf.internal.internalTitleFramePane.uninstalled";
 
     // protected boolean wasClosable;
 
     /**
      * Simple constructor.
-     * 
-     * @param f
-     *            Associated internal frame.
+     *
+     * @param f Associated internal frame.
      */
     public SubstanceInternalFrameTitlePane(JInternalFrame f) {
         super(f);
@@ -107,11 +105,11 @@ public class SubstanceInternalFrameTitlePane extends BasicInternalFrameTitlePane
     @Override
     protected void installListeners() {
         super.installListeners();
-        this.substancePropertyListener = (PropertyChangeEvent evt) -> {
-            if (JInternalFrame.TITLE_PROPERTY.equals(evt.getPropertyName())) {
-                SubstanceInternalFrameTitlePane.this.setToolTipText((String) evt.getNewValue());
+        this.substancePropertyListener = propertyChangeEvent -> {
+            if (JInternalFrame.TITLE_PROPERTY.equals(propertyChangeEvent.getPropertyName())) {
+                SubstanceInternalFrameTitlePane.this.setToolTipText((String) propertyChangeEvent.getNewValue());
             }
-            if ("JInternalFrame.messageType".equals(evt.getPropertyName())) {
+            if ("JInternalFrame.messageType".equals(propertyChangeEvent.getPropertyName())) {
                 updateOptionPaneState();
                 frame.repaint();
             }
@@ -120,8 +118,8 @@ public class SubstanceInternalFrameTitlePane extends BasicInternalFrameTitlePane
 
         // Property change listener for pulsating close button
         // when contents has been marked as modified.
-        this.substanceWinModifiedListener = (PropertyChangeEvent evt) -> {
-            if (SubstanceSynapse.CONTENTS_MODIFIED.equals(evt.getPropertyName())) {
+        this.substanceWinModifiedListener = propertyChangeEvent -> {
+            if (SubstanceSynapse.CONTENTS_MODIFIED.equals(propertyChangeEvent.getPropertyName())) {
                 syncCloseButtonTooltip();
             }
         };
@@ -305,25 +303,25 @@ public class SubstanceInternalFrameTitlePane extends BasicInternalFrameTitlePane
             return;
 
         Icon restoreIcon = new TransitionAwareIcon(this.maxButton,
-                (SubstanceColorScheme scheme) -> SubstanceIconFactory.getTitlePaneIcon(
+                scheme -> SubstanceIconFactory.getTitlePaneIcon(
                         SubstanceIconFactory.IconKind.RESTORE, scheme,
                         SubstanceCoreUtilities.getSkin(SubstanceInternalFrameTitlePane.this)
                                 .getBackgroundColorScheme(DecorationAreaType.SECONDARY_TITLE_PANE)),
                 "substance.internalFrame.restoreIcon");
         Icon maximizeIcon = new TransitionAwareIcon(this.maxButton,
-                (SubstanceColorScheme scheme) -> SubstanceIconFactory.getTitlePaneIcon(
+                scheme -> SubstanceIconFactory.getTitlePaneIcon(
                         SubstanceIconFactory.IconKind.MAXIMIZE, scheme,
                         SubstanceCoreUtilities.getSkin(SubstanceInternalFrameTitlePane.this)
                                 .getBackgroundColorScheme(DecorationAreaType.SECONDARY_TITLE_PANE)),
                 "substance.internalFrame.maxIcon");
         Icon minimizeIcon = new TransitionAwareIcon(this.iconButton,
-                (SubstanceColorScheme scheme) -> SubstanceIconFactory.getTitlePaneIcon(
+                scheme -> SubstanceIconFactory.getTitlePaneIcon(
                         SubstanceIconFactory.IconKind.MINIMIZE, scheme,
                         SubstanceCoreUtilities.getSkin(SubstanceInternalFrameTitlePane.this)
                                 .getBackgroundColorScheme(DecorationAreaType.SECONDARY_TITLE_PANE)),
                 "substance.internalFrame.minIcon");
         Icon closeIcon = new TransitionAwareIcon(this.closeButton,
-                (SubstanceColorScheme scheme) -> SubstanceIconFactory.getTitlePaneIcon(
+                scheme -> SubstanceIconFactory.getTitlePaneIcon(
                         SubstanceIconFactory.IconKind.CLOSE, scheme,
                         SubstanceCoreUtilities.getSkin(SubstanceInternalFrameTitlePane.this)
                                 .getBackgroundColorScheme(DecorationAreaType.SECONDARY_TITLE_PANE)),
@@ -349,16 +347,14 @@ public class SubstanceInternalFrameTitlePane extends BasicInternalFrameTitlePane
                         .getString("SystemMenu.maximize"));
             }
         }
-        if (closeIcon != null) {
-            this.closeButton.setIcon(closeIcon);
-            syncCloseButtonTooltip();
-        }
+        this.closeButton.setIcon(closeIcon);
+        syncCloseButtonTooltip();
     }
 
     /**
      * Click correction listener that resets models of minimize and restore buttons on click (so
      * that the rollover behaviour will be preserved correctly).
-     * 
+     *
      * @author Kirill Grouchnikov.
      */
     public static class ClickListener implements ActionListener {
@@ -432,7 +428,7 @@ public class SubstanceInternalFrameTitlePane extends BasicInternalFrameTitlePane
             this.closeButton.setToolTipText(
                     SubstanceCortex.GlobalScope.getLabelBundle().getString("SystemMenu.close")
                             + " [" + SubstanceCortex.GlobalScope.getLabelBundle()
-                                    .getString("Tooltip.contentsNotSaved")
+                            .getString("Tooltip.contentsNotSaved")
                             + "]");
         } else {
             this.closeButton.setToolTipText(
@@ -466,7 +462,7 @@ public class SubstanceInternalFrameTitlePane extends BasicInternalFrameTitlePane
 
     /**
      * Layout manager for this title pane.
-     * 
+     *
      * @author Kirill Grouchnikov
      */
     protected class SubstanceTitlePaneLayout extends TitlePaneLayout {
@@ -546,10 +542,10 @@ public class SubstanceInternalFrameTitlePane extends BasicInternalFrameTitlePane
 
             x = leftToRight ? w : 0;
 
-            SubstanceSlices.TitleIconHorizontalGravity iconGravity = SubstanceTitlePaneUtilities
-                    .getTitlePaneIconGravity();
-            SubstanceSlices.HorizontalGravity titleTextGravity = SubstanceTitlePaneUtilities
-                    .getTitlePaneTextGravity();
+            SubstanceSlices.TitleIconHorizontalGravity iconGravity =
+                    SubstanceTitlePaneUtilities.getTitlePaneIconGravity();
+            SubstanceSlices.HorizontalGravity titleTextGravity =
+                    SubstanceTitlePaneUtilities.getTitlePaneTextGravity();
             if (SubstanceInternalFrameTitlePane.this.menuBar != null) {
                 spacing = 5;
                 int menuBarLeft;
@@ -562,10 +558,9 @@ public class SubstanceInternalFrameTitlePane extends BasicInternalFrameTitlePane
                                 SubstanceInternalFrameTitlePane.this, frame);
                         String displayTitle = getDisplayTitle();
 
-                        Font font = SubstanceCortex.GlobalScope.getFontPolicy()
-                                .getFontSet().getWindowTitleFont();
-                        int displayTitleWidth = SubstanceMetricsUtilities.getFontMetrics(font)
-                                .stringWidth(displayTitle);
+                        Font font = SubstanceCortex.GlobalScope.getFontPolicy().getFontSet().getWindowTitleFont();
+                        int displayTitleWidth =
+                                SubstanceMetricsUtilities.getFontMetrics(font).stringWidth(displayTitle);
                         switch (titleTextGravity) {
                             case LEADING:
                                 menuBarLeft = leftToRight ? titleRect.x - buttonWidth - spacing
@@ -574,7 +569,7 @@ public class SubstanceInternalFrameTitlePane extends BasicInternalFrameTitlePane
                             case TRAILING:
                                 menuBarLeft = leftToRight
                                         ? titleRect.x + titleRect.width - displayTitleWidth
-                                                - buttonWidth - spacing
+                                        - buttonWidth - spacing
                                         : titleRect.x + titleRect.width + spacing;
                                 break;
                             default:
@@ -633,7 +628,7 @@ public class SubstanceInternalFrameTitlePane extends BasicInternalFrameTitlePane
 
     /**
      * Custom iconifying action.
-     * 
+     *
      * @author Kirill Grouchnikov
      */
     public class SubstanceIconifyAction extends IconifyAction {

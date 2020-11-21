@@ -37,6 +37,7 @@ import org.pushingpixels.substance.api.SubstanceSlices.DecorationAreaType;
 import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.internal.SubstanceSynapse;
 import org.pushingpixels.substance.internal.ui.SubstanceColorChooserUI;
+import org.pushingpixels.substance.internal.utils.SubstanceCoreUtilities;
 import org.pushingpixels.substance.internal.utils.SubstanceImageCreator;
 import org.pushingpixels.substance.internal.utils.SubstanceSizeUtils;
 import org.pushingpixels.substance.internal.utils.icon.SubstanceIconFactory;
@@ -119,7 +120,8 @@ public class ColorChooserPlugin implements SubstanceComponentPlugin {
                     Integer.valueOf(-1),
                     "ColorChooser.crayonsImage",
                     (UIDefaults.LazyValue) ((UIDefaults table) -> SubstanceImageCreator.getCrayonsImage(
-                            skin.getBackgroundColorScheme(DecorationAreaType.NONE).getBackgroundFillColor()
+                            SubstanceCoreUtilities.getBackgroundFill(skin, DecorationAreaType.NONE)
+//                            skin.getBackgroundColorScheme(DecorationAreaType.NONE).getBackgroundFillColor()
                     )),
                     "ColorChooser.textSliderGap",
                     Integer.valueOf(0),

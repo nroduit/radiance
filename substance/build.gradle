@@ -46,10 +46,6 @@ dependencies {
 
 ext.designation = "core"
 
-jar {
-    archiveBaseName = "${rootProject.name}-${project.name}"
-}
-
 javadoc {
     exclude 'org/pushingpixels/substance/internal/**'
 }
@@ -75,7 +71,6 @@ jar {
 
 apply plugin: 'com.bmuschko.nexus'
 
-archivesBaseName = 'radiance'
 group = 'org.pushing-pixels'
 
 publishing {

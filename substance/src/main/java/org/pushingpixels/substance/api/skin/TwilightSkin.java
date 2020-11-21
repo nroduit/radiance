@@ -35,6 +35,7 @@ import org.pushingpixels.substance.api.SubstanceSkin;
 import org.pushingpixels.substance.api.SubstanceSlices.ColorSchemeAssociationKind;
 import org.pushingpixels.substance.api.SubstanceSlices.DecorationAreaType;
 import org.pushingpixels.substance.api.colorscheme.ColorSchemeSingleColorQuery;
+import org.pushingpixels.substance.api.colorscheme.ColorTransform;
 import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.api.painter.border.ClassicBorderPainter;
 import org.pushingpixels.substance.api.painter.border.CompositeBorderPainter;
@@ -47,7 +48,6 @@ import org.pushingpixels.substance.api.painter.overlay.BottomShadowOverlayPainte
 import org.pushingpixels.substance.api.painter.overlay.TopBezelOverlayPainter;
 import org.pushingpixels.substance.api.painter.overlay.TopLineOverlayPainter;
 import org.pushingpixels.substance.api.shaper.ClassicButtonShaper;
-import org.pushingpixels.substance.internal.utils.SubstanceColorUtilities;
 
 /**
  * <code>Twilight</code> skin. This class is part of officially supported API.
@@ -80,7 +80,7 @@ public class TwilightSkin extends SubstanceSkin {
      * Creates a new <code>Twilight</code> skin.
      */
     public TwilightSkin() {
-        SubstanceSkin.ColorSchemes schemes = SubstanceSkin.getColorSchemes(
+        ColorSchemes schemes = SubstanceSkin.getColorSchemes(
                 this.getClass().getClassLoader().getResourceAsStream(
                         "org/pushingpixels/substance/api/skin/twilight.colorschemes"));
         SubstanceColorScheme activeScheme = schemes.get("Twilight Active");
@@ -192,41 +192,40 @@ public class TwilightSkin extends SubstanceSkin {
         // add an overlay painter to paint a dark line along the bottom
         // edge of toolbars
         this.toolbarBottomLineOverlayPainter = new BottomLineOverlayPainter(
-                (SubstanceColorScheme scheme) -> SubstanceColorUtilities.deriveByBrightness(
-                        scheme.getUltraDarkColor(), -0.5f));
+                ColorSchemeSingleColorQuery.composite(ColorSchemeSingleColorQuery.ULTRADARK,
+                        ColorTransform.brightness(-0.5f)));
         this.addOverlayPainter(this.toolbarBottomLineOverlayPainter, DecorationAreaType.TOOLBAR);
 
         // add an overlay painter to paint a dark line along the bottom
         // edge of toolbars
         this.toolbarTopLineOverlayPainter = new TopLineOverlayPainter(
-                (SubstanceColorScheme scheme) -> SubstanceColorUtilities
-                        .getAlphaColor(scheme.getForegroundColor(), 32));
+                ColorSchemeSingleColorQuery.composite(ColorSchemeSingleColorQuery.FOREGROUND,
+                        ColorTransform.alpha(32)));
         this.addOverlayPainter(this.toolbarTopLineOverlayPainter, DecorationAreaType.TOOLBAR);
 
         // add an overlay painter to paint a bezel line along the top
         // edge of footer
         this.footerTopBezelOverlayPainter = new TopBezelOverlayPainter(
-                (SubstanceColorScheme scheme) -> SubstanceColorUtilities.deriveByBrightness(
-                        scheme.getUltraDarkColor(), -0.5f),
-                (SubstanceColorScheme scheme) -> SubstanceColorUtilities
-                        .getAlphaColor(scheme.getForegroundColor(), 32));
+                ColorSchemeSingleColorQuery.composite(ColorSchemeSingleColorQuery.ULTRADARK,
+                        ColorTransform.brightness(-0.5f)),
+                ColorSchemeSingleColorQuery.composite(ColorSchemeSingleColorQuery.FOREGROUND,
+                        ColorTransform.alpha(32)));
         this.addOverlayPainter(this.footerTopBezelOverlayPainter, DecorationAreaType.FOOTER);
 
         this.setTabFadeStart(0.18);
         this.setTabFadeEnd(0.18);
 
         this.buttonShaper = new ClassicButtonShaper();
-        this.watermark = null;
         this.fillPainter = new FractionBasedFillPainter("Twilight",
-                new float[]{0.0f, 0.5f, 1.0f},
-                new ColorSchemeSingleColorQuery[]{ColorSchemeSingleColorQuery.ULTRALIGHT,
+                new float[] {0.0f, 0.5f, 1.0f},
+                new ColorSchemeSingleColorQuery[] {ColorSchemeSingleColorQuery.ULTRALIGHT,
                         ColorSchemeSingleColorQuery.LIGHT, ColorSchemeSingleColorQuery.LIGHT});
         this.decorationPainter = new MatteDecorationPainter();
         this.highlightPainter = new ClassicHighlightPainter();
         this.borderPainter = new CompositeBorderPainter("Twilight", new ClassicBorderPainter(),
                 new DelegateBorderPainter("Twilight Inner", new ClassicBorderPainter(), 0x40FFFFFF,
                         0x20FFFFFF, 0x00FFFFFF,
-                        (SubstanceColorScheme scheme) -> scheme.tint(0.2f)));
+                        scheme -> scheme.tint(0.2f)));
     }
 
     public String getDisplayName() {

@@ -44,7 +44,6 @@ import javax.swing.border.Border;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.BorderUIResource.CompoundBorderUIResource;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
@@ -56,7 +55,7 @@ public class PasswordStrengthCheckerWidget extends SubstanceWidget<JPasswordFiel
     /**
      * Listens on changes to {@link SubstanceSynapse#PASSWORD_STRENGTH_CHECKER} property.
      */
-    protected PropertyChangeListener strengthCheckerListener;
+    private PropertyChangeListener strengthCheckerListener;
 
     private static class WrappedBorder extends CompoundBorderUIResource implements BorderWrapper {
         public WrappedBorder(Border outsideBorder, Border insideBorder) {
@@ -133,8 +132,7 @@ public class PasswordStrengthCheckerWidget extends SubstanceWidget<JPasswordFiel
                 colorScheme = SubstanceColorSchemeUtilities.GREEN;
 
             if (colorScheme != null) {
-                SubstanceImageCreator.paintRectangularBackground(null, g, x, y, width, height,
-                        colorScheme, 0.5f, false);
+                SubstanceImageCreator.paintRectangularBackground(g, x, y, width, height, colorScheme, 0.5f, false);
             }
 
             g2.dispose();
@@ -143,10 +141,10 @@ public class PasswordStrengthCheckerWidget extends SubstanceWidget<JPasswordFiel
 
     @Override
     public void installListeners() {
-        this.strengthCheckerListener = (PropertyChangeEvent evt) -> {
-            if (SubstanceSynapse.PASSWORD_STRENGTH_CHECKER.equals(evt.getPropertyName())) {
-                Object newValue = evt.getNewValue();
-                Object oldValue = evt.getOldValue();
+        this.strengthCheckerListener = propertyChangeEvent -> {
+            if (SubstanceSynapse.PASSWORD_STRENGTH_CHECKER.equals(propertyChangeEvent.getPropertyName())) {
+                Object newValue = propertyChangeEvent.getNewValue();
+                Object oldValue = propertyChangeEvent.getOldValue();
                 if ((newValue instanceof PasswordStrengthChecker)
                         && (!(oldValue instanceof PasswordStrengthChecker))) {
                     jcomp.setBorder(

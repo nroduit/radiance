@@ -58,7 +58,7 @@ public class RavenSkin extends SubstanceSkin {
 	 * Creates a new <code>Raven</code> skin.
 	 */
 	public RavenSkin() {
-		SubstanceSkin.ColorSchemes schemes = SubstanceSkin.getColorSchemes(
+		ColorSchemes schemes = SubstanceSkin.getColorSchemes(
 				this.getClass().getClassLoader().getResourceAsStream(
 						"org/pushingpixels/substance/api/skin/graphite.colorschemes"));
 
@@ -136,8 +136,6 @@ public class RavenSkin extends SubstanceSkin {
 				DecorationAreaType.SECONDARY_TITLE_PANE,
 				DecorationAreaType.HEADER, DecorationAreaType.FOOTER,
 				DecorationAreaType.GENERAL, DecorationAreaType.TOOLBAR);
-
-		this.watermarkScheme = activeScheme.shade(0.4);
 
 		this.setTabFadeStart(0.18);
 		this.setTabFadeEnd(0.18);

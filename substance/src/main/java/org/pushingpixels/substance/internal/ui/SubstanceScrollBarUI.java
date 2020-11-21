@@ -37,7 +37,6 @@ import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.api.painter.border.SubstanceBorderPainter;
 import org.pushingpixels.substance.api.painter.fill.SubstanceFillPainter;
 import org.pushingpixels.substance.api.shaper.SubstanceButtonShaper;
-import org.pushingpixels.substance.api.watermark.SubstanceWatermark;
 import org.pushingpixels.substance.internal.SubstanceWidgetRepository;
 import org.pushingpixels.substance.internal.animation.StateTransitionTracker;
 import org.pushingpixels.substance.internal.animation.TransitionAwareUI;
@@ -49,12 +48,9 @@ import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
-import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
-import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Map;
 import java.util.Set;
@@ -419,12 +415,6 @@ public class SubstanceScrollBarUI extends BasicScrollBarUI implements Transition
         }
         graphics.setColor(SubstanceColorUtilities.getBackgroundFillColorScrollBar(this.scrollbar));
         graphics.fillRect(0, 0, this.scrollbar.getWidth(), this.scrollbar.getHeight());
-        SubstanceWatermark watermark = SubstanceCoreUtilities.getSkin(c).getWatermark();
-        if ((watermark != null)
-                && !Boolean.TRUE.equals(c.getClientProperty(WidgetUtilities.PREVIEW_MODE))
-                && SubstanceCoreUtilities.toDrawWatermark(c)) {
-            watermark.drawWatermarkImage(graphics, c, 0, 0, c.getWidth(), c.getHeight());
-        }
 
         GhostPaintingUtils.paintGhostImages(this.scrollbar, g);
 
@@ -515,14 +505,14 @@ public class SubstanceScrollBarUI extends BasicScrollBarUI implements Transition
         this.scrollbar.addMouseListener(this.substanceThumbRolloverListener);
         this.scrollbar.addMouseMotionListener(this.substanceThumbRolloverListener);
 
-        this.substancePropertyListener = (PropertyChangeEvent evt) -> {
-            if ("font".equals(evt.getPropertyName())) {
+        this.substancePropertyListener = propertyChangeEvent -> {
+            if ("font".equals(propertyChangeEvent.getPropertyName())) {
                 SwingUtilities.invokeLater(() -> scrollbar.updateUI());
             }
         };
         this.scrollbar.addPropertyChangeListener(this.substancePropertyListener);
 
-        this.substanceAdjustmentListener = (AdjustmentEvent e) -> {
+        this.substanceAdjustmentListener = adjustmentEvent -> {
             SubstanceCoreUtilities.testComponentStateChangeThreadingViolation(scrollbar);
             Component parent = SubstanceScrollBarUI.this.scrollbar.getParent();
             if (parent instanceof JScrollPane) {
@@ -808,19 +798,6 @@ public class SubstanceScrollBarUI extends BasicScrollBarUI implements Transition
             }
             this.setThumbBounds(thumbX, itemY, thumbW, itemH);
         }
-    }
-
-    /**
-     * Returns the memory usage string.
-     * 
-     * @return The memory usage string.
-     */
-    public static String getMemoryUsage() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("SubstanceScrollBarUI: \n");
-        sb.append("\t" + thumbHorizontalMap.size() + " thumb horizontal, " + thumbVerticalMap.size()
-                + " thumb vertical");
-        return sb.toString();
     }
 
     @Override

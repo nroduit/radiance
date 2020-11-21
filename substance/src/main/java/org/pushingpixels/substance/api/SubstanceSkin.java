@@ -42,7 +42,6 @@ import org.pushingpixels.substance.api.painter.highlight.SubstanceHighlightPaint
 import org.pushingpixels.substance.api.painter.overlay.SubstanceOverlayPainter;
 import org.pushingpixels.substance.api.shaper.SubstanceButtonShaper;
 import org.pushingpixels.substance.api.trait.SubstanceTrait;
-import org.pushingpixels.substance.api.watermark.SubstanceWatermark;
 import org.pushingpixels.substance.internal.utils.SkinUtilities;
 import org.pushingpixels.substance.internal.utils.SubstanceColorSchemeUtilities;
 
@@ -75,7 +74,7 @@ public abstract class SubstanceSkin implements SubstanceTrait {
      * in custom-painted parts of your UI.
      */
     public static abstract class Accented extends SubstanceSkin {
-        public static class AccentBuilder {
+        public final static class AccentBuilder {
             private SubstanceColorScheme windowChromeAccent;
             private SubstanceColorScheme enabledControlsAccent;
             private SubstanceColorScheme activeControlsAccent;
@@ -211,44 +210,32 @@ public abstract class SubstanceSkin implements SubstanceTrait {
     private Map<DecorationAreaType, List<SubstanceOverlayPainter>> overlayPaintersMap;
 
     /**
-     * The watermark of <code>this</code> skin. May be <code>null</code> if
-     * <code>this</code> skin doesn't define a custom watermark.
-     */
-    protected SubstanceWatermark watermark;
-
-    /**
-     * The button shaper of <code>this</code> skin. Must be non-
-     * <code>null</code>.
+     * The button shaper of <code>this</code> skin. Must be non-<code>null</code>.
      */
     protected SubstanceButtonShaper buttonShaper;
 
     /**
-     * The fill painter of <code>this</code> skin. Must be non-
-     * <code>null</code>.
+     * The fill painter of <code>this</code> skin. Must be non-<code>null</code>.
      */
     protected SubstanceFillPainter fillPainter;
 
     /**
-     * The border painter of <code>this</code> skin. Must be non-
-     * <code>null</code>.
+     * The border painter of <code>this</code> skin. Must be non-<code>null</code>.
      */
     protected SubstanceBorderPainter borderPainter;
 
     /**
-     * The highlight border painter of <code>this</code> skin. Can be
-     * <code>null</code>.
+     * The highlight border painter of <code>this</code> skin. Can be <code>null</code>.
      */
     protected SubstanceBorderPainter highlightBorderPainter;
 
     /**
-     * The highlight painter of <code>this</code> skin. Must be non-
-     * <code>null</code>.
+     * The highlight painter of <code>this</code> skin. Must be non-<code>null</code>.
      */
     protected SubstanceHighlightPainter highlightPainter;
 
     /**
-     * The decoration painter of <code>this</code> skin. Must be non-
-     * <code>null</code>.
+     * The decoration painter of <code>this</code> skin. Must be non-<code>null</code>.
      */
     protected SubstanceDecorationPainter decorationPainter;
 
@@ -279,14 +266,11 @@ public abstract class SubstanceSkin implements SubstanceTrait {
     protected double tabFadeEnd;
 
     /**
-     * Color scheme for watermarks.
-     */
-    protected SubstanceColorScheme watermarkScheme;
-
-    /**
      * All component states that have associated non-trivial alpha values.
      */
     private Set<ComponentState> statesWithAlpha;
+
+    private Map<SubstanceSlices.ColorOverlayType, Map<DecorationAreaType, Map<ComponentState, Color>>> colorOverlayMap;
 
     /**
      * Constructs the basic data structures for a skin.
@@ -295,6 +279,7 @@ public abstract class SubstanceSkin implements SubstanceTrait {
         this.colorSchemeBundleMap = new HashMap<>();
         this.backgroundColorSchemeMap = new HashMap<>();
         this.overlayPaintersMap = new HashMap<>();
+        this.colorOverlayMap = new HashMap<>();
 
         this.decoratedAreaSet = new HashSet<>();
         this.decoratedAreaSet.add(DecorationAreaType.PRIMARY_TITLE_PANE);
@@ -304,15 +289,6 @@ public abstract class SubstanceSkin implements SubstanceTrait {
         this.tabFadeEnd = DEFAULT_TAB_FADE_END;
 
         this.statesWithAlpha = new HashSet<>();
-    }
-
-    /**
-     * Returns the watermark of this skin.
-     *
-     * @return The watermark of this skin. May be <code>null</code>.
-     */
-    public final SubstanceWatermark getWatermark() {
-        return this.watermark;
     }
 
     /**
@@ -612,22 +588,6 @@ public abstract class SubstanceSkin implements SubstanceTrait {
     }
 
     /**
-     * Returns the color scheme to be used for painting the watermark. If no
-     * custom watermark color scheme is specified ({@link #watermarkScheme} is
-     * <code>null</code>), the main default color scheme of this skin is used.
-     *
-     * @return The color scheme to be used for painting the watermark.
-     */
-    public SubstanceColorScheme getWatermarkColorScheme() {
-        if (this.watermarkScheme != null) {
-            return this.watermarkScheme;
-        }
-
-        return this.colorSchemeBundleMap.get(DecorationAreaType.NONE)
-                .getEnabledColorScheme();
-    }
-
-    /**
      * Returns the main active color scheme for the specific decoration area
      * type. Custom painting code that needs to consult the colors of the
      * specific component should use
@@ -908,11 +868,6 @@ public abstract class SubstanceSkin implements SubstanceTrait {
         result.fillPainter = this.fillPainter;
         result.highlightPainter = this.highlightPainter;
         result.highlightBorderPainter = this.highlightBorderPainter;
-        // same watermark and transformed scheme
-        result.watermark = this.watermark;
-        if (this.watermarkScheme != null) {
-            result.watermarkScheme = transform.transform(this.watermarkScheme);
-        }
 
         // same misc settings
         result.tabFadeEnd = this.tabFadeEnd;
@@ -950,15 +905,13 @@ public abstract class SubstanceSkin implements SubstanceTrait {
      * Returns the background color scheme for the specified decoration area
      * type. This method is mainly for the internal use of
      * {@link SubstanceDecorationPainter#paintDecorationArea(Graphics2D, Component, SubstanceSlices.DecorationAreaType, int, int, SubstanceSkin)}
-     * , but can be used in applications that wish to provide custom overlay
-     * background painting (such as watermarks, for example).
+     * but can be used in applications that wish to provide custom overlay
+     * background painting.
      *
      * @param decorationAreaType Decoration area type.
-     * @return The background color scheme for the specified decoration area
-     * type.
+     * @return The background color scheme for the specified decoration area type.
      */
-    public final SubstanceColorScheme getBackgroundColorScheme(
-            DecorationAreaType decorationAreaType) {
+    public final SubstanceColorScheme getBackgroundColorScheme(DecorationAreaType decorationAreaType) {
         // 1 - check the registered background scheme for this specific area type.
         if (this.backgroundColorSchemeMap.containsKey(decorationAreaType)) {
             return this.backgroundColorSchemeMap.get(decorationAreaType);
@@ -973,6 +926,33 @@ public abstract class SubstanceSkin implements SubstanceTrait {
         }
         // 3 - return the background scheme for the default area type
         return this.backgroundColorSchemeMap.get(DecorationAreaType.NONE);
+    }
+
+    public void setOverlayColor(Color color, SubstanceSlices.ColorOverlayType colorOverlayType,
+            DecorationAreaType decorationAreaType, ComponentState... componentStates) {
+        if (!this.colorOverlayMap.containsKey(colorOverlayType)) {
+            this.colorOverlayMap.put(colorOverlayType, new HashMap<>());
+        }
+        Map<DecorationAreaType, Map<ComponentState, Color>> forOverlay = this.colorOverlayMap.get(colorOverlayType);
+        if (!forOverlay.containsKey(decorationAreaType)) {
+            forOverlay.put(decorationAreaType, new HashMap<>());
+        }
+        Map<ComponentState, Color> forDecorationArea = forOverlay.get(decorationAreaType);
+        for (ComponentState componentState : componentStates) {
+            forDecorationArea.put(componentState, color);
+        }
+    }
+
+    public Color getOverlayColor(SubstanceSlices.ColorOverlayType colorOverlayType,
+            DecorationAreaType decorationAreaType, ComponentState componentState) {
+        if (!this.colorOverlayMap.containsKey(colorOverlayType)) {
+            return null;
+        }
+        Map<DecorationAreaType, Map<ComponentState, Color>> forOverlay = this.colorOverlayMap.get(colorOverlayType);
+        if (!forOverlay.containsKey(decorationAreaType)) {
+            return null;
+        }
+        return forOverlay.get(decorationAreaType).get(componentState);
     }
 
     /**
@@ -1010,176 +990,21 @@ public abstract class SubstanceSkin implements SubstanceTrait {
         return true;
     }
 
-    /**
-     * Contains information on color schemes loaded by the
-     * {@link SubstanceSkin#getColorSchemes(InputStream)} API. Note that the custom
-     * skins should only use the {@link #get(String)} API. The rest of the API
-     * is currently internal and is used in the <strong>Apollo</strong>
-     * visual editor.
-     *
-     * @author Kirill Grouchnikov
-     */
-    public static class ColorSchemes {
+    public interface ColorSchemes {
         /**
-         * List of color schemes of this object.
-         */
-        private List<SubstanceColorScheme> schemes;
-
-        /**
-         * Creates an object with empty list of color schemes. This method is
-         * for internal use only and should not be used in custom application
-         * skins.
-         */
-        public ColorSchemes() {
-            this.schemes = new ArrayList<>();
-        }
-
-        /**
-         * Creates an object based on the specified list of color schemes. This
-         * method is for internal use only and should not be used in custom
-         * application skins.
+         * Returns all the color schemes handled by this object.
          *
-         * @param schemes List of color schemes.
+         * @return All the color schemes handled by this object.
          */
-        public ColorSchemes(List<SubstanceColorScheme> schemes) {
-            this();
-            this.schemes.addAll(schemes);
-        }
+        Collection<SubstanceColorScheme> getAll();
 
         /**
-         * Returns the number of color schemes in this object. This method is
-         * for internal use only and should not be used in custom application
-         * skins.
-         *
-         * @return The number of color schemes in this object.
-         */
-        public int size() {
-            return this.schemes.size();
-        }
-
-        /**
-         * Returns the color scheme at the specified index. This method is for
-         * internal use only and should not be used in custom application skins.
-         *
-         * @param index Index.
-         * @return Color scheme at the specified index.
-         */
-        public SubstanceColorScheme get(int index) {
-            return this.schemes.get(index);
-        }
-
-        /**
-         * Returns the color scheme based on its display name. This method is
-         * the only API that is published for use in custom application skins.
+         * Returns the color scheme based on its display name.
          *
          * @param displayName Display name of a color scheme.
          * @return The color scheme with the matching display name.
          */
-        public SubstanceColorScheme get(String displayName) {
-            for (SubstanceColorScheme scheme : this.schemes) {
-                if (scheme.getDisplayName().equals(displayName)) {
-                    return scheme;
-                }
-            }
-            return null;
-        }
-
-        /**
-         * Returns the index of the color scheme that has the specified display
-         * name. This method is for internal use only and should not be used in
-         * custom application skins.
-         *
-         * @param displayName Display name of a color scheme.
-         * @return The index of the color scheme that has the specified display
-         * name.
-         */
-        private int indexOf(String displayName) {
-            for (int i = 0; i < this.schemes.size(); i++) {
-                SubstanceColorScheme curr = this.schemes.get(i);
-                if (curr.getDisplayName().equals(displayName)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        /**
-         * Finds the index of the color scheme that has the specified display
-         * name and replaces it with (possibly another) color scheme. This
-         * method is for internal use only and should not be used in custom
-         * application skins.
-         *
-         * @param displayName Display name of a color scheme.
-         * @param scheme      Color scheme that will replace the existing color scheme
-         *                    (based on the display name) at the same index in the list.
-         */
-        public void replace(String displayName, SubstanceColorScheme scheme) {
-            int index = this.indexOf(displayName);
-
-            if (index >= 0) {
-                this.schemes.remove(index);
-                this.schemes.add(index, scheme);
-            }
-        }
-
-        /**
-         * Deletes the color scheme that has the specified display name. This
-         * method is for internal use only and should not be used in custom
-         * application skins.
-         *
-         * @param displayName Display name of the color scheme to delete from the list.
-         */
-        public void delete(String displayName) {
-            int index = this.indexOf(displayName);
-            if (index >= 0) {
-                this.schemes.remove(index);
-            }
-        }
-
-        /**
-         * Adds the specified color scheme to the end of the list. This method
-         * is for internal use only and should not be used in custom application
-         * skins.
-         *
-         * @param scheme Color scheme to add to the end of the list.
-         */
-        public void add(SubstanceColorScheme scheme) {
-            this.schemes.add(scheme);
-        }
-
-        /**
-         * Moves the color scheme with the specified display name one position
-         * towards the beginning of the list. This method is for internal use
-         * only and should not be used in custom application skins.
-         *
-         * @param displayName Display name of the color scheme to move one position
-         *                    towards the beginning of the list.
-         */
-        public void switchWithPrevious(String displayName) {
-            int index = this.indexOf(displayName);
-
-            if (index >= 0) {
-                SubstanceColorScheme scheme = this.schemes.remove(index);
-                this.schemes.add(index - 1, scheme);
-            }
-        }
-
-        /**
-         * Moves the color scheme with the specified display name one position
-         * towards the end of the list. This method is for internal use only and
-         * should not be used in custom application skins.
-         *
-         * @param displayName Display name of the color scheme to move one position
-         *                    towards the end of the list.
-         */
-        public void switchWithNext(String displayName) {
-            int index = this.indexOf(displayName);
-
-            if (index >= 0) {
-                SubstanceColorScheme scheme = this.schemes.remove(index);
-                this.schemes.add(index + 1, scheme);
-            }
-        }
+        SubstanceColorScheme get(String displayName);
     }
 
     /**

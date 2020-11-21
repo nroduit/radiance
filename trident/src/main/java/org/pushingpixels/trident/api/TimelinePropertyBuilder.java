@@ -34,7 +34,6 @@ import org.pushingpixels.trident.api.interpolator.PropertyInterpolator;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Supplier;
@@ -44,6 +43,7 @@ public class TimelinePropertyBuilder<T> {
     /**
      * Defines how to set a property.
      */
+    @FunctionalInterface
     public interface PropertySetter<T> {
         void set(Object obj, String fieldName, T value);
     }
@@ -51,6 +51,7 @@ public class TimelinePropertyBuilder<T> {
     /**
      * Defines how to get a property.
      */
+    @FunctionalInterface
     public interface PropertyGetter<T> {
         T get(Object obj, String fieldName);
     }
@@ -448,7 +449,7 @@ public class TimelinePropertyBuilder<T> {
             } catch (Throwable exc) {
                 System.err.println("Exception occurred in updating field '" + this.fieldName
                         + "' of object " + ((this.object == null) ? "[NONE]"
-                            : this.object.getClass().getCanonicalName())
+                        : this.object.getClass().getCanonicalName())
                         + " at timeline position " + timelinePosition);
                 exc.printStackTrace();
             }

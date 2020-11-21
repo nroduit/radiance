@@ -29,8 +29,13 @@
  */
 package org.pushingpixels.tools.electra
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.swing.Swing
 import org.pushingpixels.meteor.addDelayedActionListener
 import org.pushingpixels.meteor.addDelayedMouseListener
+import org.pushingpixels.meteor.awt.deriveByBrightness
 import org.pushingpixels.meteor.awt.render
 import org.pushingpixels.neon.api.NeonCortex
 import org.pushingpixels.substance.api.ComponentState
@@ -45,8 +50,8 @@ import javax.swing.*
 import javax.swing.border.Border
 import javax.swing.border.EmptyBorder
 
-fun main(args: Array<String>) {
-    SwingUtilities.invokeLater {
+fun main() {
+    GlobalScope.launch(Dispatchers.Swing) {
         JFrame.setDefaultLookAndFeelDecorated(true)
         JDialog.setDefaultLookAndFeelDecorated(true)
         SubstanceCortex.GlobalScope.setSkin(GeminiSkin())
@@ -72,7 +77,7 @@ fun main(args: Array<String>) {
 
                     it.composite = AlphaComposite.SrcOver.derive(0.8f)
                     val rightX = leftX + strokeWidth
-                    it.color = borderColorScheme.extraLightColor.brighter()
+                    it.color = borderColorScheme.extraLightColor.deriveByBrightness(0.4)
                     it.draw(Line2D.Float(rightX, y.toFloat(), rightX, (y + height).toFloat()))
                 }
             }

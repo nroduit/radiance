@@ -37,20 +37,18 @@ import org.pushingpixels.flamingo.api.common.popup.AbstractPopupMenu;
 import org.pushingpixels.flamingo.api.common.popup.model.AbstractPopupMenuPresentationModel;
 
 public class CommandButtonProjection<M extends Command>
-        extends Projection<AbstractCommandButton, M, CommandButtonPresentationModel> {
+        extends Projection<JCommandButton, M, CommandButtonPresentationModel> {
 
     private ComponentSupplier<? extends AbstractPopupMenu, ? extends CommandMenuContentModel,
             ? extends AbstractPopupMenuPresentationModel> popupMenuSupplier;
     private ComponentCustomizer<? extends AbstractPopupMenu> popupMenuCustomizer;
 
-    @SuppressWarnings("unchecked")
     public CommandButtonProjection(M command, CommandButtonPresentationModel commandPresentation) {
-        this(command, commandPresentation,
-                (Projection<AbstractCommandButton, M, CommandButtonPresentationModel> projection) -> JCommandButton::new);
+        this(command, commandPresentation, projection ->  JCommandButton::new);
     }
 
     public CommandButtonProjection(M command, CommandButtonPresentationModel commandPresentation,
-            ComponentSupplier<AbstractCommandButton, M, CommandButtonPresentationModel> componentSupplier) {
+            ComponentSupplier<JCommandButton, M, CommandButtonPresentationModel> componentSupplier) {
         super(command, commandPresentation, componentSupplier);
     }
 
@@ -64,8 +62,7 @@ public class CommandButtonProjection<M extends Command>
         return result;
     }
 
-    public void setPopupMenuCustomizer(
-            ComponentCustomizer<? extends AbstractPopupMenu> popupMenuCustomizer) {
+    public void setPopupMenuCustomizer(ComponentCustomizer<? extends AbstractPopupMenu> popupMenuCustomizer) {
         this.popupMenuCustomizer = popupMenuCustomizer;
     }
 
@@ -85,6 +82,6 @@ public class CommandButtonProjection<M extends Command>
     }
 
     @Override
-    protected void configureComponent(AbstractCommandButton component) {
+    protected void configureComponent(JCommandButton component) {
     }
 }

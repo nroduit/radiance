@@ -29,17 +29,18 @@
  */
 package org.pushingpixels.substance.extras.api.skinpack;
 
-import org.pushingpixels.substance.api.*;
-import org.pushingpixels.substance.api.SubstanceSlices.*;
-import org.pushingpixels.substance.api.colorscheme.*;
+import org.pushingpixels.substance.api.ComponentState;
+import org.pushingpixels.substance.api.SubstanceColorSchemeBundle;
+import org.pushingpixels.substance.api.SubstanceSkin;
+import org.pushingpixels.substance.api.SubstanceSlices.ColorSchemeAssociationKind;
+import org.pushingpixels.substance.api.SubstanceSlices.DecorationAreaType;
+import org.pushingpixels.substance.api.colorscheme.CharcoalColorScheme;
+import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.api.painter.border.GlassBorderPainter;
 import org.pushingpixels.substance.api.painter.decoration.ArcDecorationPainter;
 import org.pushingpixels.substance.api.painter.fill.GlassFillPainter;
 import org.pushingpixels.substance.api.painter.highlight.ClassicHighlightPainter;
 import org.pushingpixels.substance.api.shaper.ClassicButtonShaper;
-import org.pushingpixels.substance.extras.api.watermarkpack.SubstanceMetalWallWatermark;
-
-import java.awt.*;
 
 /**
  * <code>Streelights</code> skin. This class is part of officially supported
@@ -57,19 +58,16 @@ public class StreetlightsSkin extends SubstanceSkin {
      * Creates a new <code>Streetlights</code> skin.
      */
     public StreetlightsSkin() {
-        SubstanceColorScheme activeScheme = new SunsetColorScheme().saturate(0.4);
-
-        // dark green theme by shifting charcoal
-        SubstanceColorScheme deepGreenScheme = new CharcoalColorScheme().hueShift(0.35);
-        // default theme is ebony blended with the dark green
-        SubstanceColorScheme defaultScheme =
-                new EbonyColorScheme().blendWith(deepGreenScheme, 0.85);
-        // disabled theme is shaded dark green
-        SubstanceColorScheme disabledScheme = deepGreenScheme.shade(0.4);
+        ColorSchemes schemes = SubstanceSkin.getColorSchemes(
+                this.getClass().getClassLoader().getResourceAsStream(
+                        "org/pushingpixels/substance/extras/api/skinpack/streetlights.colorschemes"));
+        SubstanceColorScheme activeScheme = schemes.get("Streetlights Active");
+        SubstanceColorScheme enabledScheme = schemes.get("Streetlights Enabled");
+        SubstanceColorScheme disabledScheme = schemes.get("Streetlights Disabled");
 
         // default scheme bundle
         SubstanceColorSchemeBundle defaultSchemeBundle = new SubstanceColorSchemeBundle(
-                activeScheme, defaultScheme, disabledScheme);
+                activeScheme, enabledScheme, disabledScheme);
         // use charcoal for borders on active states
         defaultSchemeBundle.registerColorScheme(new CharcoalColorScheme(),
                 ColorSchemeAssociationKind.BORDER, ComponentState.getActiveStates());
@@ -82,20 +80,16 @@ public class StreetlightsSkin extends SubstanceSkin {
                 DecorationAreaType.NONE);
 
         // mark title panes and headers as decoration areas
-        this.registerAsDecorationArea(defaultScheme,
+        this.registerAsDecorationArea(enabledScheme,
                 DecorationAreaType.PRIMARY_TITLE_PANE,
                 DecorationAreaType.SECONDARY_TITLE_PANE,
                 DecorationAreaType.HEADER);
 
-        // set dark green as watermark scheme
-        this.watermarkScheme = new BottleGreenColorScheme().shiftBackground(
-                new Color(0, 50, 0), 0.7);
         this.setTabFadeStart(1.0);
         this.setTabFadeEnd(1.0);
 
         // additional skin settings
         this.buttonShaper = new ClassicButtonShaper();
-        this.watermark = new SubstanceMetalWallWatermark();
         this.borderPainter = new GlassBorderPainter();
         this.highlightPainter = new ClassicHighlightPainter();
         this.fillPainter = new GlassFillPainter();

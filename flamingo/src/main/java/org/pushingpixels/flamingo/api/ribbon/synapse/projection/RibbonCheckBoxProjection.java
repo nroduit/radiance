@@ -29,23 +29,21 @@
  */
 package org.pushingpixels.flamingo.api.ribbon.synapse.projection;
 
-import org.pushingpixels.flamingo.api.common.projection.Projection;
 import org.pushingpixels.flamingo.api.ribbon.synapse.JRibbonCheckBox;
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.RibbonCheckBoxContentModel;
 
-public class RibbonCheckBoxProjection extends ComponentProjection<JRibbonCheckBox,
-        RibbonCheckBoxContentModel> {
-
-    @SuppressWarnings("unchecked")
-    private static ComponentSupplier<JRibbonCheckBox,
-            RibbonCheckBoxContentModel, ComponentPresentationModel> DEFAULT_SUPPLIER =
-            (Projection<JRibbonCheckBox, RibbonCheckBoxContentModel,
-                    ComponentPresentationModel> projection) -> JRibbonCheckBox::new;
-
+/**
+ * Projection that allows using a {@link javax.swing.JCheckBox} as a ribbon component.
+ *
+ * @see org.pushingpixels.flamingo.api.ribbon.JRibbonBand#addRibbonComponent(ComponentProjection)
+ * @see org.pushingpixels.flamingo.api.ribbon.JFlowRibbonBand#addFlowComponent(ComponentProjection)
+ * @see org.pushingpixels.flamingo.api.ribbon.JRibbon#addTaskbarComponent(ComponentProjection)
+ */
+public class RibbonCheckBoxProjection extends ComponentProjection<JRibbonCheckBox, RibbonCheckBoxContentModel> {
     public RibbonCheckBoxProjection(RibbonCheckBoxContentModel contentModel,
             ComponentPresentationModel presentationModel) {
-        super(contentModel, presentationModel, DEFAULT_SUPPLIER);
+        super(contentModel, presentationModel, projection -> JRibbonCheckBox::new);
     }
 
     @Override

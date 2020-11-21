@@ -29,18 +29,20 @@
  */
 package org.pushingpixels.substance.extras.api.skinpack;
 
-import org.pushingpixels.substance.api.*;
+import org.pushingpixels.substance.api.SubstanceColorSchemeBundle;
+import org.pushingpixels.substance.api.SubstanceSkin;
 import org.pushingpixels.substance.api.SubstanceSlices.DecorationAreaType;
-import org.pushingpixels.substance.api.colorscheme.*;
+import org.pushingpixels.substance.api.colorscheme.BrownColorScheme;
+import org.pushingpixels.substance.api.colorscheme.ColorSchemeSingleColorQuery;
+import org.pushingpixels.substance.api.colorscheme.ColorTransform;
+import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.api.painter.border.ClassicBorderPainter;
+import org.pushingpixels.substance.api.painter.decoration.ArcDecorationPainter;
 import org.pushingpixels.substance.api.painter.fill.GlassFillPainter;
 import org.pushingpixels.substance.api.painter.highlight.ClassicHighlightPainter;
+import org.pushingpixels.substance.api.painter.overlay.BottomLineOverlayPainter;
+import org.pushingpixels.substance.api.painter.overlay.BottomShadowOverlayPainter;
 import org.pushingpixels.substance.api.shaper.ClassicButtonShaper;
-import org.pushingpixels.substance.extras.api.painterpack.decoration.Glass3DDecorationPainter;
-import org.pushingpixels.substance.extras.api.watermarkpack.SubstanceBinaryWatermark;
-import org.pushingpixels.substance.internal.colorscheme.SaturatedColorScheme;
-
-import java.awt.*;
 
 /**
  * <code>Field of Wheat</code> skin. This class is part of officially supported
@@ -58,30 +60,35 @@ public class FieldOfWheatSkin extends SubstanceSkin {
      * Creates a new <code>Field of Wheat</code> skin.
      */
     public FieldOfWheatSkin() {
-        SubstanceColorScheme activeScheme = new AquaColorScheme().saturate(0.1);
-        SubstanceColorScheme defaultScheme = new BrownColorScheme();
-
-        SubstanceColorScheme disabledScheme = new SaturatedColorScheme(
-                new BrownColorScheme().blendWith(new SunGlareColorScheme(), 0.3), -0.2) {
-            Color foreColor = new Color(181, 122, 26);
-
-            @Override
-            public Color getForegroundColor() {
-                return foreColor;
-            }
-        };
+        ColorSchemes schemes = SubstanceSkin.getColorSchemes(
+                this.getClass().getClassLoader().getResourceAsStream(
+                        "org/pushingpixels/substance/extras/api/skinpack/fieldofwheat.colorschemes"));
+        SubstanceColorScheme activeScheme = schemes.get("Field Of Wheat Active");
+        SubstanceColorScheme enabledScheme = new BrownColorScheme();
+        SubstanceColorScheme disabledScheme = schemes.get("Field Of Wheat Disabled");
 
         SubstanceColorSchemeBundle defaultSchemeBundle = new SubstanceColorSchemeBundle(
-                activeScheme, defaultScheme, disabledScheme);
+                activeScheme, enabledScheme, disabledScheme);
         this.registerDecorationAreaSchemeBundle(defaultSchemeBundle,
                 DecorationAreaType.NONE);
 
-        this.watermarkScheme = new SunGlareColorScheme().tone(0.8);
+        // mark title panes and headers as decoration areas
+        this.registerAsDecorationArea(enabledScheme,
+                DecorationAreaType.PRIMARY_TITLE_PANE,
+                DecorationAreaType.SECONDARY_TITLE_PANE,
+                DecorationAreaType.HEADER);
+
+        // Add overlay painters to paint drop shadow and a dark line along the bottom
+        // edges of headers
+        this.addOverlayPainter(BottomShadowOverlayPainter.getInstance(100), DecorationAreaType.HEADER);
+        this.addOverlayPainter(new BottomLineOverlayPainter(
+                        ColorSchemeSingleColorQuery.composite(ColorSchemeSingleColorQuery.DARK,
+                                ColorTransform.alpha(128))),
+                DecorationAreaType.HEADER);
 
         this.buttonShaper = new ClassicButtonShaper();
-        this.watermark = new SubstanceBinaryWatermark();
         this.fillPainter = new GlassFillPainter();
-        this.decorationPainter = new Glass3DDecorationPainter();
+        this.decorationPainter = new ArcDecorationPainter();
         this.borderPainter = new ClassicBorderPainter();
         this.highlightPainter = new ClassicHighlightPainter();
     }

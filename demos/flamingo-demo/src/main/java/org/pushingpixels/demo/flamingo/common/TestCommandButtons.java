@@ -35,9 +35,9 @@ import org.pushingpixels.demo.flamingo.LocaleSwitcher;
 import org.pushingpixels.demo.flamingo.SkinSwitcher;
 import org.pushingpixels.demo.flamingo.svg.logo.RadianceLogo;
 import org.pushingpixels.demo.flamingo.svg.tango.transcoded.*;
-import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.icon.EmptyResizableIcon;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
@@ -98,7 +98,7 @@ public class TestCommandButtons extends JFrame {
                 .setText(resourceBundle.getString("Copy.text"))
                 .setIconFactory(Edit_copy.factory())
                 .setExtraText(resourceBundle.getString("Copy.textExtra"))
-                .setAction((CommandActionEvent e) -> System.out.println(stamp() + ": Copy"))
+                .setAction(commandActionEvent -> System.out.println(stamp() + ": Copy"))
                 .setSecondaryContentModel(getPopupMenuContentModel())
                 .build();
 
@@ -106,7 +106,7 @@ public class TestCommandButtons extends JFrame {
                 .setText(resourceBundle.getString("Cut.text"))
                 .setIconFactory(Edit_cut.factory())
                 .setExtraText(resourceBundle.getString("Cut.textExtra"))
-                .setAction((CommandActionEvent e) -> System.out.println(stamp() + ": Cut"))
+                .setAction(commandActionEvent -> System.out.println(stamp() + ": Cut"))
                 .setSecondaryContentModel(getPopupMenuContentModel())
                 .build();
 
@@ -119,7 +119,7 @@ public class TestCommandButtons extends JFrame {
                                 SubstanceCortex.GlobalScope.getCurrentSkin().getColorScheme(null,
                                         ComponentState.DISABLED_UNSELECTED)))
                 .setExtraText(resourceBundle.getString("Paste.textExtra"))
-                .setAction((CommandActionEvent e) -> System.out.println(stamp() + ": Main paste"))
+                .setAction(commandActionEvent -> System.out.println(stamp() + ": Main paste"))
                 .build();
 
         buttonPanel = getButtonPanel();
@@ -136,28 +136,28 @@ public class TestCommandButtons extends JFrame {
         simpleEntries1.add(Command.builder()
                 .setText(mf.format(new Object[] { "1" }))
                 .setIconFactory(Address_book_new.factory())
-                .setAction((CommandActionEvent e) -> System.out.println("Popup action 1"))
+                .setAction(commandActionEvent -> System.out.println("Popup action 1"))
                 .build());
         simpleEntries1.add(Command.builder()
                 .setText(mf.format(new Object[] { "2" }))
                 .setIconFactory(EmptyResizableIcon.factory())
-                .setAction((CommandActionEvent e) -> System.out.println("Popup action 2"))
+                .setAction(commandActionEvent -> System.out.println("Popup action 2"))
                 .build());
         simpleEntries1.add(Command.builder()
                 .setText(mf.format(new Object[] { "3" }))
                 .setIconFactory(EmptyResizableIcon.factory())
-                .setAction((CommandActionEvent e) -> System.out.println("Popup action 3"))
+                .setAction(commandActionEvent -> System.out.println("Popup action 3"))
                 .build());
 
         simpleEntries2.add(Command.builder()
                 .setText(mf.format(new Object[] { "4" }))
                 .setIconFactory(EmptyResizableIcon.factory())
-                .setAction((CommandActionEvent e) -> System.out.println("Popup action 4"))
+                .setAction(commandActionEvent -> System.out.println("Popup action 4"))
                 .build());
         simpleEntries2.add(Command.builder()
                 .setText(mf.format(new Object[] { "5" }))
                 .setIconFactory(Text_x_generic.factory())
-                .setAction((CommandActionEvent e) -> System.out.println("Popup action 5"))
+                .setAction(commandActionEvent -> System.out.println("Popup action 5"))
                 .build());
 
         return new CommandMenuContentModel(
@@ -192,25 +192,25 @@ public class TestCommandButtons extends JFrame {
     private void addButtons(FormBuilder builder, CommandButtonPresentationState state, int row) {
         builder.add(state.getDisplayName() + " state").xy(1, row);
 
-        AbstractCommandButton actionButton = createActionButton(state);
+        JCommandButton actionButton = createActionButton(state);
         builder.add(actionButton).xy(3, row);
 
-        AbstractCommandButton actionAndPopupMainActionButton =
+        JCommandButton actionAndPopupMainActionButton =
                 createActionAndPopupMainActionButton(state);
         builder.add(actionAndPopupMainActionButton).xy(5, row);
 
-        AbstractCommandButton actionAndPopupMainPopupButton =
+        JCommandButton actionAndPopupMainPopupButton =
                 createActionAndPopupMainPopupButton(state);
         builder.add(actionAndPopupMainPopupButton).xy(7, row);
 
-        AbstractCommandButton popupButton = createPopupButton(state);
+        JCommandButton popupButton = createPopupButton(state);
         builder.add(popupButton).xy(9, row);
     }
 
     protected void configurePresentationBuilder(CommandButtonPresentationModel.Builder builder) {
     }
 
-    private AbstractCommandButton createPopupButton(CommandButtonPresentationState state) {
+    private JCommandButton createPopupButton(CommandButtonPresentationState state) {
         CommandButtonPresentationModel.Builder presentationBuilder =
                 CommandButtonPresentationModel.builder()
                         .setPresentationState(state)
@@ -221,7 +221,7 @@ public class TestCommandButtons extends JFrame {
                 .buildComponent();
     }
 
-    private AbstractCommandButton createActionAndPopupMainPopupButton(CommandButtonPresentationState state) {
+    private JCommandButton createActionAndPopupMainPopupButton(CommandButtonPresentationState state) {
         CommandButtonPresentationModel.Builder presentationBuilder =
                 CommandButtonPresentationModel.builder()
                         .setPresentationState(state)
@@ -233,7 +233,7 @@ public class TestCommandButtons extends JFrame {
                 .buildComponent();
     }
 
-    private AbstractCommandButton createActionAndPopupMainActionButton(CommandButtonPresentationState state) {
+    private JCommandButton createActionAndPopupMainActionButton(CommandButtonPresentationState state) {
         CommandButtonPresentationModel.Builder presentationBuilder =
                 CommandButtonPresentationModel.builder()
                         .setPresentationState(state)
@@ -245,7 +245,7 @@ public class TestCommandButtons extends JFrame {
                 .buildComponent();
     }
 
-    private AbstractCommandButton createActionButton(CommandButtonPresentationState state) {
+    private JCommandButton createActionButton(CommandButtonPresentationState state) {
         CommandButtonPresentationModel.Builder presentationBuilder =
                 CommandButtonPresentationModel.builder()
                         .setPresentationState(state)
@@ -261,7 +261,7 @@ public class TestCommandButtons extends JFrame {
 
         final JCheckBox actionEnabled = new JCheckBox("action enabled");
         actionEnabled.setSelected(true);
-        actionEnabled.addActionListener((ActionEvent e) -> SwingUtilities.invokeLater(() -> {
+        actionEnabled.addActionListener(actionEvent -> SwingUtilities.invokeLater(() -> {
             copyCommand.setActionEnabled(actionEnabled.isSelected());
             cutCommand.setActionEnabled(actionEnabled.isSelected());
             pasteActionCommand.setActionEnabled(actionEnabled.isSelected());
@@ -271,7 +271,7 @@ public class TestCommandButtons extends JFrame {
 
         final JCheckBox popupEnabled = new JCheckBox("popup enabled");
         popupEnabled.setSelected(true);
-        popupEnabled.addActionListener((ActionEvent e) -> SwingUtilities.invokeLater(() -> {
+        popupEnabled.addActionListener(actionEvent -> SwingUtilities.invokeLater(() -> {
             copyCommand.setSecondaryEnabled(popupEnabled.isSelected());
             cutCommand.setSecondaryEnabled(popupEnabled.isSelected());
             pasteActionCommand.setSecondaryEnabled(popupEnabled.isSelected());

@@ -29,7 +29,6 @@
  */
 package org.pushingpixels.flamingo.internal.substance.ribbon.ui;
 
-import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
@@ -41,13 +40,13 @@ import org.pushingpixels.flamingo.internal.ui.common.FlamingoInternalButton;
 import org.pushingpixels.flamingo.internal.ui.ribbon.BasicRibbonBandUI;
 import org.pushingpixels.neon.api.NeonCortex;
 import org.pushingpixels.neon.api.icon.ResizableIcon;
-import org.pushingpixels.substance.api.ComponentState;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.SubstanceCortex.ComponentOrParentChainScope;
 import org.pushingpixels.substance.api.SubstanceSkin;
 import org.pushingpixels.substance.api.SubstanceSlices;
 import org.pushingpixels.substance.api.SubstanceSlices.DecorationAreaType;
 import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
+import org.pushingpixels.substance.internal.painter.BackgroundPaintingUtils;
 import org.pushingpixels.substance.internal.painter.DecorationPainterUtils;
 import org.pushingpixels.substance.internal.painter.SeparatorPainterUtils;
 import org.pushingpixels.substance.internal.utils.*;
@@ -55,9 +54,7 @@ import org.pushingpixels.substance.internal.widget.animation.effects.GhostPainti
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.ComponentUI;
-import javax.swing.plaf.UIResource;
 import java.awt.*;
 import java.util.EnumSet;
 
@@ -80,14 +77,6 @@ public class SubstanceRibbonBandUI extends BasicRibbonBandUI {
         super.installDefaults();
         ComponentOrParentChainScope.setDecorationType(this.ribbonBand,
                 DecorationAreaType.GENERAL);
-
-        Color backgr = this.ribbonBand.getBackground();
-        if (backgr == null || backgr instanceof UIResource) {
-            Color toSet = SubstanceColorSchemeUtilities
-                    .getColorScheme(this.ribbonBand, ComponentState.ENABLED)
-                    .getBackgroundFillColor();
-            this.ribbonBand.setBackground(new ColorUIResource(toSet));
-        }
 
         Insets insets = SubstanceSizeUtils
                 .getDefaultBorderInsets(SubstanceSizeUtils.getComponentFontSize(this.ribbonBand));
@@ -148,9 +137,8 @@ public class SubstanceRibbonBandUI extends BasicRibbonBandUI {
         // this.expandButton, ComponentState.ENABLED);
 
         // make the title color blend a little with the background
-        SubstanceColorScheme bgColorScheme = skin
-                .getBackgroundColorScheme(DecorationAreaType.GENERAL);
-        Color bgFillColor = bgColorScheme.getBackgroundFillColor();
+        Color bgFillColor = SubstanceCoreUtilities.getBackgroundFill(skin, DecorationAreaType.GENERAL);
+        SubstanceColorScheme bgColorScheme = skin.getBackgroundColorScheme(DecorationAreaType.GENERAL);
         Color fgColor = bgColorScheme.getForegroundColor();
         fgColor = SubstanceColorUtilities.getInterpolatedColor(fgColor, bgFillColor, 0.95f);
 
@@ -162,7 +150,7 @@ public class SubstanceRibbonBandUI extends BasicRibbonBandUI {
         Rectangle smallTitleRectangle = new Rectangle(titleRectangle.x + deltaX,
                 titleRectangle.y + deltaY, titleRectangle.width - 2 * deltaX,
                 titleRectangle.height - 2 * deltaY);
-        SubstanceTextUtilities.paintText(g2d, this.ribbonBand, smallTitleRectangle, titleToPaint,
+        SubstanceTextUtilities.paintText(g2d, smallTitleRectangle, titleToPaint,
                 -1, g2d.getFont(), g2d.getColor(), g2d.getClipBounds());
 
         g2d.dispose();
@@ -176,14 +164,14 @@ public class SubstanceRibbonBandUI extends BasicRibbonBandUI {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected AbstractCommandButton createExpandButton() {
+    protected JCommandButton createExpandButton() {
         CommandButtonProjection<Command> expandCommandProjection =
                 new CommandButtonProjection<>(this.expandCommand,
                         CommandButtonPresentationModel.builder()
                                 .setActionKeyTip(ribbonBand.getExpandButtonKeyTip())
                                 .build());
         expandCommandProjection.setComponentSupplier(projection -> RibbonBandExpandButton::new);
-        expandCommandProjection.setComponentCustomizer((AbstractCommandButton button) -> {
+        expandCommandProjection.setComponentCustomizer(button -> {
             // since paintBandTitleBackground uses GENERAL, mark this button with
             // GENERAL as well to sync the mark color
             ComponentOrParentChainScope.setDecorationType(button, DecorationAreaType.GENERAL);
@@ -205,16 +193,14 @@ public class SubstanceRibbonBandUI extends BasicRibbonBandUI {
     }
 
     private ResizableIcon getExpandButtonIcon(final SubstanceSkin skin,
-            final AbstractCommandButton button) {
+            final JCommandButton button) {
         final int fontSize = SubstanceSizeUtils.getComponentFontSize(button);
         int arrowIconWidth = (int) SubstanceSizeUtils.getSmallArrowIconWidth(fontSize);
         int arrowIconHeight = (int) SubstanceSizeUtils.getSmallDoubleArrowIconHeight(fontSize);
         final ResizableIcon arrowIcon = new TransitionAwareResizableIcon(button,
                 () -> ((ActionPopupTransitionAwareUI) button.getUI()).getActionTransitionTracker(),
-                (SubstanceColorScheme scheme, int width, int height) -> {
-                    SubstanceColorScheme bgColorScheme = skin
-                            .getBackgroundColorScheme(DecorationAreaType.GENERAL);
-                    Color bgFillColor = bgColorScheme.getBackgroundFillColor();
+                (scheme, width, height) -> {
+                    Color bgFillColor = SubstanceCoreUtilities.getBackgroundFill(skin, DecorationAreaType.GENERAL);
                     return SubstanceImageCreator.getDoubleArrowIcon(
                             width, height,
                             SubstanceSizeUtils.getSmallDoubleArrowGap(fontSize),
@@ -238,13 +224,14 @@ public class SubstanceRibbonBandUI extends BasicRibbonBandUI {
         Graphics2D g2d = (Graphics2D) g.create();
         NeonCortex.installDesktopHints(g2d, this.ribbonBand.getFont());
         GhostPaintingUtils.paintGhostImages(c, g2d);
-        super.update(g2d, c);
+        BackgroundPaintingUtils.update(g2d, c, false);
+        this.paint(g2d, c);
         g2d.dispose();
     }
 
     @SubstanceInternalButton
     private static class RibbonBandExpandButton extends JCommandButton implements FlamingoInternalButton {
-        private RibbonBandExpandButton(Projection<AbstractCommandButton, Command,
+        private RibbonBandExpandButton(Projection<JCommandButton, Command,
                 CommandButtonPresentationModel> projection) {
             super(projection);
 

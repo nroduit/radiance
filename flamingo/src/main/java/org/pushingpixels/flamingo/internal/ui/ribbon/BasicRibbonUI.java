@@ -47,16 +47,15 @@ import org.pushingpixels.neon.api.NeonCortex;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.SubstanceSlices;
 import org.pushingpixels.substance.internal.utils.SubstanceMetricsUtilities;
+import org.pushingpixels.substance.internal.utils.SubstancePopupContainer;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.UIResource;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.*;
@@ -76,7 +75,7 @@ public abstract class BasicRibbonUI extends RibbonUI {
 
     protected JScrollablePanel<JPanel> bandScrollablePanel;
 
-    private JScrollablePanel<TaskToggleButtonsHostPanel> taskToggleButtonsScrollablePanel;
+    protected JScrollablePanel<TaskToggleButtonsHostPanel> taskToggleButtonsScrollablePanel;
 
     protected JRibbonApplicationMenuButton applicationMenuButton;
 
@@ -134,14 +133,14 @@ public abstract class BasicRibbonUI extends RibbonUI {
      * Installs listeners on the associated ribbon.
      */
     protected void installListeners() {
-        this.ribbonChangeListener = (ChangeEvent e) -> syncRibbonState();
+        this.ribbonChangeListener = changeEvent -> syncRibbonState();
         this.ribbon.addChangeListener(this.ribbonChangeListener);
 
-        this.propertyChangeListener = (PropertyChangeEvent evt) -> {
-            if ("selectedTask".equals(evt.getPropertyName())) {
+        this.propertyChangeListener = propertyChangeEvent -> {
+            if ("selectedTask".equals(propertyChangeEvent.getPropertyName())) {
                 syncSelectedTask();
             }
-            if ("applicationMenu".equals(evt.getPropertyName())) {
+            if ("applicationMenu".equals(propertyChangeEvent.getPropertyName())) {
                 if (this.applicationMenuButton != null) {
                     this.ribbon.remove(this.applicationMenuButton);
                 }
@@ -168,7 +167,7 @@ public abstract class BasicRibbonUI extends RibbonUI {
 
                 syncApplicationMenuTips();
             }
-            if ("minimized".equals(evt.getPropertyName())) {
+            if ("minimized".equals(propertyChangeEvent.getPropertyName())) {
                 PopupPanelManager.defaultManager().hidePopups(null);
                 RichTooltipManager.sharedInstance().hideCurrentlyShowingTipIfNecessary();
                 ribbon.revalidate();
@@ -240,8 +239,7 @@ public abstract class BasicRibbonUI extends RibbonUI {
         // need to repaint the entire ribbon on change since scrolling
         // the task toggle buttons affects the contour outline
         // of the ribbon
-        this.taskToggleButtonsScrollablePanel.addChangeListener(
-                (ChangeEvent e) -> ribbon.repaint());
+        this.taskToggleButtonsScrollablePanel.addChangeListener(changeEvent -> ribbon.repaint());
         this.ribbon.add(this.taskToggleButtonsScrollablePanel);
 
         this.ribbon.setLayout(createLayoutManager());
@@ -449,7 +447,7 @@ public abstract class BasicRibbonUI extends RibbonUI {
             int result = 0;
 
             for (Component comp : anchoredButtons.getComponents()) {
-                AbstractCommandButton anchoredButton = (AbstractCommandButton) comp;
+                JCommandButton anchoredButton = (JCommandButton) comp;
                 result += state.createLayoutManager(anchoredButton)
                         .getPreferredSize(anchoredButton).width;
             }
@@ -515,14 +513,14 @@ public abstract class BasicRibbonUI extends RibbonUI {
             if (fullPreferredContentWidth <= c.getWidth()) {
                 // can fit everything with no cuts
                 for (Component comp : anchoredButtons.getComponents()) {
-                    AbstractCommandButton anchoredButton = (AbstractCommandButton) comp;
+                    JCommandButton anchoredButton = (JCommandButton) comp;
                     anchoredButton.setPresentationState(CommandButtonPresentationState.MEDIUM);
                 }
                 anchoredButtonPanelWidth = anchoredButtonsExpandedWidth;
             } else {
                 // switch anchored buttons to icon-only mode
                 for (Component comp : anchoredButtons.getComponents()) {
-                    AbstractCommandButton anchoredButton = (AbstractCommandButton) comp;
+                    JCommandButton anchoredButton = (JCommandButton) comp;
                     anchoredButton.setPresentationState(CommandButtonPresentationState.SMALL);
                 }
                 anchoredButtonPanelWidth = anchoredButtonsCollapsedWidth;
@@ -737,11 +735,8 @@ public abstract class BasicRibbonUI extends RibbonUI {
                         int ribbonBandHeight = availableBandHeight - ribbonBandInsets.top
                                 - ribbonBandInsets.bottom;
                         int availableHeight = ribbonBandHeight
-                                - ribbonBand.getUI().getBandTitleHeight();
-                        if (controlPanel != null) {
-                            availableHeight = availableHeight - controlPanelInsets.top
-                                    - controlPanelInsets.bottom;
-                        }
+                                - ribbonBand.getUI().getBandTitleHeight() - controlPanelInsets.top
+                                - controlPanelInsets.bottom;
                         int preferredWidth = currentResizePolicy.getPreferredWidth(availableHeight,
                                 controlPanelGap) + ribbonBandInsets.left + ribbonBandInsets.right;
                         totalWidth += preferredWidth + bandGap;
@@ -898,7 +893,7 @@ public abstract class BasicRibbonUI extends RibbonUI {
             int totalTaskButtonsWidth = 0;
             List<RibbonTask> visibleTasks = getCurrentlyShownRibbonTasks();
             for (RibbonTask task : visibleTasks) {
-                AbstractCommandButton tabButton = taskToggleButtons.get(task);
+                JCommandButton tabButton = taskToggleButtons.get(task);
                 int pw = tabButton.getPreferredSize().width;
                 totalTaskButtonsWidth += (pw + tabButtonGap);
             }
@@ -914,7 +909,7 @@ public abstract class BasicRibbonUI extends RibbonUI {
             int totalTaskButtonsWidth = 0;
             List<RibbonTask> visibleTasks = getCurrentlyShownRibbonTasks();
             for (RibbonTask task : visibleTasks) {
-                AbstractCommandButton tabButton = taskToggleButtons.get(task);
+                JCommandButton tabButton = taskToggleButtons.get(task);
                 int pw = tabButton.getMinimumSize().width;
                 totalTaskButtonsWidth += (pw + tabButtonGap);
             }
@@ -931,10 +926,10 @@ public abstract class BasicRibbonUI extends RibbonUI {
             int totalPrefWidth = 0;
             int totalMinWidth = 0;
             List<RibbonTask> visibleTasks = getCurrentlyShownRibbonTasks();
-            Map<AbstractCommandButton, Integer> diffMap = new HashMap<>();
+            Map<JCommandButton, Integer> diffMap = new HashMap<>();
             int totalDiff = 0;
             for (RibbonTask task : visibleTasks) {
-                AbstractCommandButton tabButton = taskToggleButtons.get(task);
+                JCommandButton tabButton = taskToggleButtons.get(task);
                 int pw = tabButton.getPreferredSize().width;
                 int mw = tabButton.getMinimumSize().width;
                 diffMap.put(tabButton, pw - mw);
@@ -952,7 +947,7 @@ public abstract class BasicRibbonUI extends RibbonUI {
                 // compute bounds for the tab buttons
                 int x = ltr ? 0 : c.getWidth();
                 for (RibbonTask task : visibleTasks) {
-                    AbstractCommandButton tabButton = taskToggleButtons.get(task);
+                    JCommandButton tabButton = taskToggleButtons.get(task);
                     int pw = tabButton.getPreferredSize().width;
                     if (ltr) {
                         tabButton.setBounds(x, y + 1, pw, taskToggleButtonHeight - 1);
@@ -973,7 +968,7 @@ public abstract class BasicRibbonUI extends RibbonUI {
                 // how much do we need to take from each toggle button?
                 int toDistribute = totalPrefWidth - c.getWidth() + 2;
                 for (RibbonTask task : visibleTasks) {
-                    AbstractCommandButton tabButton = taskToggleButtons.get(task);
+                    JCommandButton tabButton = taskToggleButtons.get(task);
                     int pw = tabButton.getPreferredSize().width;
                     int delta = (toDistribute * diffMap.get(tabButton) / totalDiff);
                     int finalWidth = pw - delta;
@@ -1058,7 +1053,7 @@ public abstract class BasicRibbonUI extends RibbonUI {
         if (isShowingScrollsForTaskToggleButtons() && (currentSelection != null)) {
             // scroll selected task as necessary so that it's
             // visible
-            AbstractCommandButton toggleButton = taskToggleButtons.get(currentSelection);
+            JCommandButton toggleButton = taskToggleButtons.get(currentSelection);
             if (toggleButton != null) {
                 scrollAndRevealTaskToggleButton(toggleButton);
             }
@@ -1120,9 +1115,9 @@ public abstract class BasicRibbonUI extends RibbonUI {
             Command taskToggleCommand = Command.builder()
                     .setText(task.getTitle())
                     .inToggleGroup(this.taskToggleGroupModel)
-                    .setAction((CommandActionEvent cae) -> SwingUtilities.invokeLater(() ->
+                    .setAction(commandActionEvent -> SwingUtilities.invokeLater(() ->
                             processTaskSelection(task,
-                                    (JRibbonTaskToggleButton) cae.getButtonSource())))
+                                    (JRibbonTaskToggleButton) commandActionEvent.getButtonSource())))
                     .build();
 
             // And create a specific projection
@@ -1134,13 +1129,12 @@ public abstract class BasicRibbonUI extends RibbonUI {
 
             // Configure the projection to use our own subclass of command button (so that it can
             // use its own UI delegate class
-            taskToggleCommandProjection.setComponentSupplier(
-                    projection -> JRibbonTaskToggleButton::new);
+            taskToggleCommandProjection.setComponentSupplier(projection -> JRibbonTaskToggleButton::new);
 
             // Configure the projection with additional customizations on the command button that
             // is created to represent the task toggle command
             taskToggleCommandProjection.setComponentCustomizer(
-                    (AbstractCommandButton button) -> {
+                    button -> {
                         JRibbonTaskToggleButton taskToggleButton = (JRibbonTaskToggleButton) button;
 
                         // wire listener to toggle ribbon minimization on double mouse click
@@ -1180,7 +1174,7 @@ public abstract class BasicRibbonUI extends RibbonUI {
             this.taskToggleButtons.put(task, taskToggleButton);
         }
 
-        AbstractCommandButton toSelect = this.taskToggleButtons.get(selectedTask);
+        JCommandButton toSelect = this.taskToggleButtons.get(selectedTask);
         if (toSelect != null) {
             toSelect.getActionModel().setSelected(true);
         }
@@ -1350,7 +1344,7 @@ public abstract class BasicRibbonUI extends RibbonUI {
         return this.taskToggleButtonsScrollablePanel.isShowingScrollButtons();
     }
 
-    public Map<RibbonTask, AbstractCommandButton> getTaskToggleButtons() {
+    public Map<RibbonTask, JCommandButton> getTaskToggleButtons() {
         return Collections.unmodifiableMap(taskToggleButtons);
     }
 
@@ -1362,6 +1356,7 @@ public abstract class BasicRibbonUI extends RibbonUI {
         return Collections.unmodifiableList(result);
     }
 
+    @SubstancePopupContainer
     private static class BandHostPopupPanel extends JPopupPanel {
         private BandHostPopupPanel(Component component, Dimension originalSize) {
             this.setLayout(new BorderLayout());
@@ -1414,7 +1409,7 @@ public abstract class BasicRibbonUI extends RibbonUI {
         });
     }
 
-    private void scrollAndRevealTaskToggleButton(final AbstractCommandButton taskToggleButton) {
+    private void scrollAndRevealTaskToggleButton(final JCommandButton taskToggleButton) {
         // scroll the viewport of the scrollable panel
         // so that the button is fully viewed.
         Point loc = SwingUtilities.convertPoint(taskToggleButton.getParent(),

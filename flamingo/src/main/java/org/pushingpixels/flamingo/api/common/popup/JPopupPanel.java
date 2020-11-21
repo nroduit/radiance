@@ -39,8 +39,7 @@ import java.awt.*;
  * Base class for popup panels.
  * 
  * @author Kirill Grouchnikov
- * @see PopupPanelManager#addPopup(javax.swing.JComponent, javax.swing.Popup,
- *      JPopupPanel)
+ * @see PopupPanelManager#addPopup(javax.swing.JComponent, javax.swing.Popup, JPopupPanel)
  */
 public abstract class JPopupPanel extends JPanel {
 	/**
@@ -64,6 +63,7 @@ public abstract class JPopupPanel extends JPanel {
 	 * 
 	 * @author Kirill Grouchnikov
 	 */
+	@FunctionalInterface
 	public interface PopupPanelCustomizer {
 		/**
 		 * Returns the requested screen bounds of the associated popup panel.

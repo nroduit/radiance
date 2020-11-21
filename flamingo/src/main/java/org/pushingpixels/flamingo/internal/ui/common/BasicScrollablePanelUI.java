@@ -29,8 +29,6 @@
  */
 package org.pushingpixels.flamingo.internal.ui.common;
 
-import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
-import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JScrollablePanel;
 import org.pushingpixels.flamingo.api.common.JScrollablePanel.ScrollType;
@@ -40,8 +38,10 @@ import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.MouseWheelListener;
 import java.beans.PropertyChangeListener;
 
 /**
@@ -57,9 +57,9 @@ public abstract class BasicScrollablePanelUI extends ScrollablePanelUI {
 
     private JPanel viewport;
 
-    private AbstractCommandButton leadingScroller;
+    private JCommandButton leadingScroller;
 
-    private AbstractCommandButton trailingScroller;
+    private JCommandButton trailingScroller;
 
     private int viewOffset;
 
@@ -79,22 +79,22 @@ public abstract class BasicScrollablePanelUI extends ScrollablePanelUI {
     }
 
     protected void installListeners() {
-        this.mouseWheelListener = (MouseWheelEvent e) -> {
+        this.mouseWheelListener = mouseWheelEvent -> {
             if (scrollablePanel.getScrollType() != JScrollablePanel.ScrollType.VERTICALLY) {
                 return;
             }
 
-            int scrollAmount = 8 * e.getScrollAmount() * e.getWheelRotation();
+            int scrollAmount = 8 * mouseWheelEvent.getScrollAmount() * mouseWheelEvent.getWheelRotation();
             viewOffset += scrollAmount;
             syncScrolling();
         };
         this.scrollablePanel.addMouseWheelListener(this.mouseWheelListener);
 
-        this.propertyChangeListener = (PropertyChangeEvent evt) -> {
-            if ("scrollOnRollover".equals(evt.getPropertyName())) {
-                boolean isScrollOnRollover = (Boolean) evt.getNewValue();
-                ((JCommandButton) leadingScroller).setFireActionOnRollover(isScrollOnRollover);
-                ((JCommandButton) trailingScroller).setFireActionOnRollover(isScrollOnRollover);
+        this.propertyChangeListener = propertyChangeEvent -> {
+            if ("scrollOnRollover".equals(propertyChangeEvent.getPropertyName())) {
+                boolean isScrollOnRollover = (Boolean) propertyChangeEvent.getNewValue();
+                leadingScroller.setFireActionOnRollover(isScrollOnRollover);
+                trailingScroller.setFireActionOnRollover(isScrollOnRollover);
             }
         };
         this.scrollablePanel.addPropertyChangeListener(this.propertyChangeListener);
@@ -156,14 +156,14 @@ public abstract class BasicScrollablePanelUI extends ScrollablePanelUI {
         this.scrollablePanel.add(this.viewport);
 
         Command leadingScrollCommand = Command.builder()
-                .setAction((CommandActionEvent e) -> {
+                .setAction(commandActionEvent -> {
                     viewOffset -= 12;
                     syncScrolling();
                 })
                 .build();
 
         Command trailingScrollCommand = Command.builder()
-                .setAction((CommandActionEvent e) -> {
+                .setAction(commandActionEvent -> {
                     viewOffset += 12;
                     syncScrolling();
                 })
@@ -231,9 +231,9 @@ public abstract class BasicScrollablePanelUI extends ScrollablePanelUI {
         }
     }
 
-    protected abstract void configureLeadingScrollerButton(AbstractCommandButton button);
+    protected abstract void configureLeadingScrollerButton(JCommandButton button);
 
-    protected abstract void configureTrailingScrollerButton(AbstractCommandButton button);
+    protected abstract void configureTrailingScrollerButton(JCommandButton button);
 
     private void syncScrolling() {
         this.scrollablePanel.doLayout();

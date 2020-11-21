@@ -31,7 +31,7 @@ Use `JBreadcrumbBar.setPath()` to set the specified path to be the currently sel
 
 ```java
 JButton setPath = new JButton("Select and set path...");
-setPath.addActionListener((ActionEvent e) -> SwingUtilities.invokeLater(() -> {
+setPath.addActionListener(actionEvent -> SwingUtilities.invokeLater(() -> {
     JFileChooser folderChooser = new JFileChooser();
     folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     if (folderChooser.showOpenDialog(BreadCrumbTest.this) == JFileChooser.APPROVE_OPTION) {
@@ -59,7 +59,7 @@ It is achieved by adding a path listener to the `JBreadcrumbBar`'s model:
 
 ```java
 this.bar.getModel().addPathListener(
-        (BreadcrumbPathEvent<File> event) -> SwingUtilities.invokeLater(() -> {
+        event -> SwingUtilities.invokeLater(() -> {
             final List<BreadcrumbItem<File>> newPath = event.getSource().getItems();
             System.out.println("New path is ");
             for (BreadcrumbItem<File> item : newPath) {

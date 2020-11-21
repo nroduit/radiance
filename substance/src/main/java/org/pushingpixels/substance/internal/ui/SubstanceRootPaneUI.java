@@ -293,8 +293,6 @@ public class SubstanceRootPaneUI extends BasicRootPaneUI {
         if (!SubstanceCoreUtilities.isCurrentLookAndFeel())
             return;
 
-        // fix for issue 244 - paint the entire root pane so that it
-        // picks the correct watermark
         if (SubstanceCoreUtilities.isOpaque(c)) {
             BackgroundPaintingUtils.update(g, c, false);
         }
@@ -374,7 +372,7 @@ public class SubstanceRootPaneUI extends BasicRootPaneUI {
     protected void installListeners(final JRootPane root) {
         super.installListeners(root);
 
-        this.substanceHierarchyListener = (HierarchyEvent e) -> {
+        this.substanceHierarchyListener = hierarchyEvent -> {
             Component parent = root.getParent();
             if (parent == null) {
                 // fix for defect 271 - check for null parent
@@ -493,8 +491,8 @@ public class SubstanceRootPaneUI extends BasicRootPaneUI {
         };
         root.addHierarchyListener(this.substanceHierarchyListener);
 
-        this.substancePropertyChangeListener = (PropertyChangeEvent evt) -> {
-            if (SubstanceSynapse.CONTENTS_MODIFIED.equals(evt.getPropertyName())) {
+        this.substancePropertyChangeListener = propertyChangeEvent -> {
+            if (SubstanceSynapse.CONTENTS_MODIFIED.equals(propertyChangeEvent.getPropertyName())) {
                 propagateModificationState();
             }
         };

@@ -106,8 +106,7 @@ public class CookbookSkin extends SubstanceSkin {
                                 ColorSchemeSingleColorQuery.ULTRADARK });
         SubstanceBorderPainter innerBorderPainter = new DelegateBorderPainter("Cookbook Inner",
                 new ClassicBorderPainter(), 0x88FFFFFF, 0x44FFFFFF, 0x00FFFFFF,
-                (SubstanceColorScheme scheme) -> scheme
-                        .shiftBackground(scheme.getUltraLightColor(), 0.8).tint(0.7));
+                scheme -> scheme.shiftBackground(scheme.getUltraLightColor(), 0.8).tint(0.7));
         this.borderPainter = new CompositeBorderPainter("Cookbook", outerBorderPainter,
                 innerBorderPainter);
 
@@ -127,7 +126,7 @@ public class CookbookSkin extends SubstanceSkin {
         // Add an overlay painter to paint a dark line along the bottom
         // edge of the title pane
         BottomLineOverlayPainter titlePaneBottomLineOverlayPainter = new BottomLineOverlayPainter(
-                (SubstanceColorScheme scheme) -> scheme.getUltraDarkColor());
+                ColorSchemeSingleColorQuery.ULTRADARK);
         this.addOverlayPainter(titlePaneBottomLineOverlayPainter,
                 DecorationAreaType.PRIMARY_TITLE_PANE);
     }

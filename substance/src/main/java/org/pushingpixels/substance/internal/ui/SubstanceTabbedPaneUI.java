@@ -54,7 +54,6 @@ import org.pushingpixels.trident.api.Timeline.TimelineState;
 import org.pushingpixels.trident.api.swing.EventDispatchThreadTimelineCallbackAdapter;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.UIResource;
@@ -66,7 +65,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.*;
@@ -177,10 +175,10 @@ public class SubstanceTabbedPaneUI extends BasicTabbedPaneUI {
                 return;
             }
 
-            PropertyChangeListener tabModifiedListener = (PropertyChangeEvent evt) -> {
-                if (SubstanceSynapse.CONTENTS_MODIFIED.equals(evt.getPropertyName())) {
-                    Object oldValue = evt.getOldValue();
-                    Object newValue = evt.getNewValue();
+            PropertyChangeListener tabModifiedListener = propertyChangeEvent -> {
+                if (SubstanceSynapse.CONTENTS_MODIFIED.equals(propertyChangeEvent.getPropertyName())) {
+                    Object oldValue = propertyChangeEvent.getOldValue();
+                    Object newValue = propertyChangeEvent.getNewValue();
                     boolean wasModified = Boolean.TRUE.equals(oldValue);
                     boolean isModified = Boolean.TRUE.equals(newValue);
 
@@ -560,9 +558,10 @@ public class SubstanceTabbedPaneUI extends BasicTabbedPaneUI {
 
         this.tabPane.addContainerListener(this.substanceContainerListener);
 
-        this.substanceSelectionListener = (ChangeEvent e) -> SwingUtilities.invokeLater(() -> {
-            if (SubstanceTabbedPaneUI.this.tabPane == null)
+        this.substanceSelectionListener = changeEvent -> SwingUtilities.invokeLater(() -> {
+            if (SubstanceTabbedPaneUI.this.tabPane == null) {
                 return;
+            }
             int selected = SubstanceTabbedPaneUI.this.tabPane.getSelectedIndex();
 
             // fix for issue 437 - track the selection change,
@@ -1081,7 +1080,7 @@ public class SubstanceTabbedPaneUI extends BasicTabbedPaneUI {
     @Override
     protected JButton createScrollButton(final int direction) {
         SubstanceScrollButton ssb = new SubstanceScrollButton();
-        Icon icon = new TransitionAwareIcon(ssb, (SubstanceColorScheme scheme) -> {
+        Icon icon = new TransitionAwareIcon(ssb, scheme -> {
             // fix for defect 279 - tab pane might not yet have the font installed.
             int fontSize = SubstanceSizeUtils.getComponentFontSize(tabPane);
             return SubstanceImageCreator.getArrowIcon(fontSize, direction, scheme);
@@ -1617,18 +1616,6 @@ public class SubstanceTabbedPaneUI extends BasicTabbedPaneUI {
      */
     public Rectangle getTabRectangle(int tabIndex) {
         return this.rects[tabIndex];
-    }
-
-    /**
-     * Returns the memory usage string.
-     * 
-     * @return The memory usage string.
-     */
-    public static String getMemoryUsage() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("SubstanceTabbedPaneUI: \n");
-        sb.append("\t" + SubstanceTabbedPaneUI.backgroundMap.size() + " backgrounds");
-        return sb.toString();
     }
 
     @Override
@@ -2203,7 +2190,7 @@ public class SubstanceTabbedPaneUI extends BasicTabbedPaneUI {
                                 this.tabPane.getComponentAt(tabIndex), currState));
             }
             graphics.clip(getTabRectangle(tabIndex));
-            SubstanceTextUtilities.paintText(graphics, this.tabPane, textRect, title, mnemIndex,
+            SubstanceTextUtilities.paintText(graphics, textRect, title, mnemIndex,
                     graphics.getFont(), fg, null);
             graphics.dispose();
         }

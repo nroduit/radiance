@@ -29,11 +29,9 @@
  */
 package org.pushingpixels.substance.internal.ui;
 
-import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.SubstanceSlices;
 import org.pushingpixels.substance.api.SubstanceWidget;
 import org.pushingpixels.substance.internal.AnimationConfigurationManager;
-import org.pushingpixels.substance.internal.SubstanceSynapse;
 import org.pushingpixels.substance.internal.SubstanceWidgetRepository;
 import org.pushingpixels.substance.internal.painter.BackgroundPaintingUtils;
 import org.pushingpixels.substance.internal.utils.SubstanceColorUtilities;
@@ -43,7 +41,6 @@ import org.pushingpixels.trident.api.swing.EventDispatchThreadTimelineCallbackAd
 import org.pushingpixels.trident.api.swing.SwingComponentTimeline;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.TableHeaderUI;
@@ -51,7 +48,6 @@ import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicScrollPaneUI;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashSet;
 import java.util.Set;
@@ -63,8 +59,7 @@ import java.util.Set;
  */
 public class SubstanceScrollPaneUI extends BasicScrollPaneUI {
     /**
-     * Property change listener on {@link SubstanceSynapse#WATERMARK_VISIBLE} and
-     * <code>layoutManager</code> properties.
+     * Property change listener on <code>layoutManager</code> properties.
      */
     private PropertyChangeListener substancePropertyChangeListener;
 
@@ -117,11 +112,6 @@ public class SubstanceScrollPaneUI extends BasicScrollPaneUI {
     @Override
     protected void installDefaults(final JScrollPane scrollpane) {
         super.installDefaults(scrollpane);
-        if (SubstanceCoreUtilities.toDrawWatermark(scrollpane) && (SubstanceCortex.ComponentScope
-                .getCurrentSkin(scrollpane).getWatermark() != null)) {
-            scrollpane.setOpaque(false);
-            scrollpane.getViewport().setOpaque(false);
-        }
 
         SwingUtilities.invokeLater(() -> installTableHeaderCornerFiller(scrollpane));
 
@@ -150,19 +140,11 @@ public class SubstanceScrollPaneUI extends BasicScrollPaneUI {
     @Override
     protected void installListeners(final JScrollPane c) {
         super.installListeners(c);
-        this.substancePropertyChangeListener = (PropertyChangeEvent evt) -> {
-            if (SubstanceSynapse.WATERMARK_VISIBLE.equals(evt.getPropertyName())) {
-                boolean toBleed = SubstanceCoreUtilities.toDrawWatermark(c);
-                c.setOpaque(!toBleed);
-                c.getViewport().setOpaque(!toBleed);
-                Component view = c.getViewport().getView();
-                if (view instanceof JComponent)
-                    ((JComponent) view).setOpaque(!toBleed);
-            }
-            if ("background".equals(evt.getPropertyName())) {
+        this.substancePropertyChangeListener = propertyChangeEvent -> {
+            if ("background".equals(propertyChangeEvent.getPropertyName())) {
                 // propagate application-specific background color to the
                 // scroll bars.
-                Color newBackgr = (Color) evt.getNewValue();
+                Color newBackgr = (Color) propertyChangeEvent.getNewValue();
                 if (!(newBackgr instanceof UIResource)) {
                     JScrollBar vertical = scrollpane.getVerticalScrollBar();
                     if (vertical != null) {
@@ -178,9 +160,9 @@ public class SubstanceScrollPaneUI extends BasicScrollPaneUI {
                     }
                 }
             }
-            if ("columnHeader".equals(evt.getPropertyName())
-                    || "componentOrientation".equals(evt.getPropertyName())
-                    || "ancestor".equals(evt.getPropertyName())) {
+            if ("columnHeader".equals(propertyChangeEvent.getPropertyName())
+                    || "componentOrientation".equals(propertyChangeEvent.getPropertyName())
+                    || "ancestor".equals(propertyChangeEvent.getPropertyName())) {
                 SwingUtilities.invokeLater(() -> {
                     // need to switch the corner filler based on the
                     // current scroll pane state.
@@ -192,7 +174,7 @@ public class SubstanceScrollPaneUI extends BasicScrollPaneUI {
         };
         c.addPropertyChangeListener(this.substancePropertyChangeListener);
 
-        this.substanceVerticalScrollbarChangeListener = (ChangeEvent e) -> {
+        this.substanceVerticalScrollbarChangeListener = changeEvent -> {
             // check if it's a horizontally scrollable tree inside
             if ((c.getHorizontalScrollBar() != null) && c.getHorizontalScrollBar().isVisible()
                     && (c.getViewport().getView() instanceof JTree)) {
@@ -230,7 +212,7 @@ public class SubstanceScrollPaneUI extends BasicScrollPaneUI {
                                         }
                                     }
                                 })
-                                .setEase((float durationFraction) -> {
+                                .setEase(durationFraction -> {
                                     if (durationFraction < 0.5) {
                                         return 0.5f * durationFraction;
                                     }
@@ -300,8 +282,6 @@ public class SubstanceScrollPaneUI extends BasicScrollPaneUI {
                         .getBackgroundFillColorScrollBar(this.scrollpane.getVerticalScrollBar()));
                 for (Component corner : corners) {
                     g2d.fill(corner.getBounds());
-                    // BackgroundPaintingUtils.fillAndWatermark(g, c, c
-                    // .getBackground(), corner.getBounds());
                 }
 
                 JScrollBar horizontal = this.scrollpane.getHorizontalScrollBar();

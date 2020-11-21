@@ -29,7 +29,6 @@
  */
 package org.pushingpixels.flamingo.api.common.popup;
 
-import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButtonPanel;
 import org.pushingpixels.flamingo.api.common.model.*;
@@ -39,8 +38,10 @@ import org.pushingpixels.flamingo.api.common.projection.CommandPanelProjection;
 import org.pushingpixels.flamingo.api.common.projection.Projection;
 import org.pushingpixels.flamingo.internal.substance.common.ui.SubstanceCommandPopupMenuUI;
 import org.pushingpixels.flamingo.internal.ui.common.popup.ScrollableHost;
+import org.pushingpixels.substance.internal.utils.SubstancePopupContainer;
 
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.List;
 
@@ -51,6 +52,7 @@ import java.util.List;
  *
  * @author Kirill Grouchnikov
  */
+@SubstancePopupContainer
 public class JCommandPopupMenu extends AbstractPopupMenu implements ScrollableHost {
     /**
      * @see #getUIClassID
@@ -64,6 +66,7 @@ public class JCommandPopupMenu extends AbstractPopupMenu implements ScrollableHo
     private CommandPopupMenuPresentationModel popupMenuPresentationModel;
 
     private CommandPanelContentModel popupMenuPanelContentModel;
+    private ChangeListener popupMenuPanelContentChangeListener;
 
     /**
      * The main button panel.
@@ -83,7 +86,8 @@ public class JCommandPopupMenu extends AbstractPopupMenu implements ScrollableHo
                 this.popupMenuContentModel.getPanelContentModel() : null;
 
         this.populateContent();
-        this.popupMenuContentModel.addChangeListener((ChangeEvent event) -> populateContent());
+        this.popupMenuPanelContentChangeListener = (ChangeEvent event) -> populateContent();
+        this.popupMenuContentModel.addChangeListener(this.popupMenuPanelContentChangeListener);
 
         this.updateUI();
     }
@@ -99,8 +103,7 @@ public class JCommandPopupMenu extends AbstractPopupMenu implements ScrollableHo
         // Command presentation for menu content
         CommandButtonPresentationModel presentation =
                 CommandButtonPresentationModel.builder()
-                        .setPresentationState(
-                                this.popupMenuPresentationModel.getMenuPresentationState())
+                        .setPresentationState(this.popupMenuPresentationModel.getMenuPresentationState())
                         .setMenu(true)
                         .build();
 
@@ -110,30 +113,24 @@ public class JCommandPopupMenu extends AbstractPopupMenu implements ScrollableHo
             for (Command command : commandGroups.get(i).getCommands()) {
                 CommandButtonProjection<Command> commandProjection;
                 // Do we need to apply a command-specific overlay?
-                CommandButtonPresentationModel.Overlay overlay =
-                        this.projection.getCommandOverlays().get(command);
+                CommandButtonPresentationModel.Overlay overlay = this.projection.getCommandOverlays().get(command);
                 if (overlay != null) {
                     commandProjection = command.project(presentation.overlayWith(overlay));
                 } else {
                     commandProjection = command.project(presentation);
                 }
                 // Create a button that can be used in this popup menu
-                AbstractCommandButton commandButton = commandProjection.buildComponent();
+                JCommandButton commandButton = commandProjection.buildComponent();
 
                 // Need to highlight it?
-                Command highlightedCommand =
-                        this.popupMenuContentModel.getHighlightedCommand();
+                Command highlightedCommand = this.popupMenuContentModel.getHighlightedCommand();
                 if (command == highlightedCommand) {
                     // Use bold font
                     commandButton.setFont(commandButton.getFont().deriveFont(Font.BOLD));
                 }
 
-                if (commandButton instanceof JCommandButton) {
-                    JCommandButton menuButton = (JCommandButton) commandButton;
-                    menuButton.setPopupOrientationKind(
-                            this.popupMenuPresentationModel.getPopupOrientationKind());
-                    this.addMenuButton(menuButton);
-                }
+                commandButton.setPopupOrientationKind(this.popupMenuPresentationModel.getPopupOrientationKind());
+                this.addMenuButton(commandButton);
             }
             if (i < (commandGroups.size() - 1)) {
                 this.addMenuSeparator();
@@ -141,8 +138,7 @@ public class JCommandPopupMenu extends AbstractPopupMenu implements ScrollableHo
         }
     }
 
-    public Projection<JCommandPopupMenu, CommandMenuContentModel,
-            CommandPopupMenuPresentationModel> getProjection() {
+    public Projection<JCommandPopupMenu, CommandMenuContentModel, CommandPopupMenuPresentationModel> getProjection() {
         return this.projection;
     }
 

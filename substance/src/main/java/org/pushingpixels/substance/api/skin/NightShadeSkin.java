@@ -35,6 +35,7 @@ import org.pushingpixels.substance.api.SubstanceSkin;
 import org.pushingpixels.substance.api.SubstanceSlices.ColorSchemeAssociationKind;
 import org.pushingpixels.substance.api.SubstanceSlices.DecorationAreaType;
 import org.pushingpixels.substance.api.colorscheme.ColorSchemeSingleColorQuery;
+import org.pushingpixels.substance.api.colorscheme.ColorTransform;
 import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.api.painter.border.ClassicBorderPainter;
 import org.pushingpixels.substance.api.painter.border.CompositeBorderPainter;
@@ -47,7 +48,6 @@ import org.pushingpixels.substance.api.painter.overlay.BottomShadowOverlayPainte
 import org.pushingpixels.substance.api.painter.overlay.SubstanceOverlayPainter;
 import org.pushingpixels.substance.api.painter.overlay.TopBezelOverlayPainter;
 import org.pushingpixels.substance.api.shaper.ClassicButtonShaper;
-import org.pushingpixels.substance.internal.utils.SubstanceColorUtilities;
 
 /**
  * <code>Night Shade</code> skin. This class is part of officially supported API.
@@ -171,24 +171,23 @@ public class NightShadeSkin extends SubstanceSkin {
         // add an overlay painter to paint a dark line along the bottom
         // edge of toolbars
         SubstanceOverlayPainter toolbarBottomLineOverlayPainter = new BottomLineOverlayPainter(
-                (SubstanceColorScheme scheme) -> SubstanceColorUtilities.deriveByBrightness(
-                        scheme.getUltraDarkColor(), -0.5f));
+                ColorSchemeSingleColorQuery.composite(ColorSchemeSingleColorQuery.ULTRADARK,
+                        ColorTransform.brightness(-0.5f)));
         this.addOverlayPainter(toolbarBottomLineOverlayPainter, DecorationAreaType.TOOLBAR);
 
         // add an overlay painter to paint a bezel line along the top
         // edge of footer
         SubstanceOverlayPainter footerTopBezelOverlayPainter = new TopBezelOverlayPainter(
-                (SubstanceColorScheme scheme) -> SubstanceColorUtilities.deriveByBrightness(
-                        scheme.getUltraDarkColor(), -0.5f),
-                (SubstanceColorScheme scheme) -> SubstanceColorUtilities
-                        .getAlphaColor(scheme.getForegroundColor(), 32));
+                ColorSchemeSingleColorQuery.composite(ColorSchemeSingleColorQuery.ULTRADARK,
+                        ColorTransform.brightness(-0.5f)),
+                ColorSchemeSingleColorQuery.composite(ColorSchemeSingleColorQuery.FOREGROUND,
+                        ColorTransform.alpha(32)));
         this.addOverlayPainter(footerTopBezelOverlayPainter, DecorationAreaType.FOOTER);
 
         this.setTabFadeStart(0.18);
         this.setTabFadeEnd(0.18);
 
         this.buttonShaper = new ClassicButtonShaper();
-        this.watermark = null;
         this.fillPainter = new FractionBasedFillPainter("Night Shade",
                 new float[]{0.0f, 0.5f, 1.0f},
                 new ColorSchemeSingleColorQuery[]{ColorSchemeSingleColorQuery.ULTRALIGHT,
@@ -198,7 +197,7 @@ public class NightShadeSkin extends SubstanceSkin {
         this.borderPainter = new CompositeBorderPainter("Night Shade", new ClassicBorderPainter(),
                 new DelegateBorderPainter("Night Shade Inner", new ClassicBorderPainter(), 0x40FFFFFF,
                         0x20FFFFFF, 0x00FFFFFF,
-                        (SubstanceColorScheme scheme) -> scheme.tint(0.2f)));
+                        scheme -> scheme.tint(0.2f)));
     }
 
     public String getDisplayName() {

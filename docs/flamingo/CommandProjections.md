@@ -24,7 +24,7 @@ The only difference is the presentation model associated with each one of the pr
 Here is how the first (big) button is created:
 
 ```java
-AbstractCommandButton bigButton =
+JCommandButton bigButton =
       this.pasteActionCommand.project(
             CommandButtonPresentationModel.builder()
                     .setPresentationState(CommandButtonPresentationState.BIG)
@@ -73,7 +73,7 @@ this.pasteActionCommand = Command.builder()
     .setIconFactory(Edit_paste.factory())
     .build();
 
-AbstractCommandButton bigButton = this.pasteActionCommand.project(
+JCommandButton bigButton = this.pasteActionCommand.project(
     CommandButtonPresentationModel.builder()
           .setPresentationState(CommandButtonPresentationState.BIG)
           .setFlat(false)
@@ -95,11 +95,11 @@ Let's take a look at how the "bold" styling is done. First, we create the comman
 // Bold style command
 Command commandBold = Command.builder()
         .setIconFactory(Format_text_bold.factory())
-        .setAction((CommandActionEvent event) -> {
+        .setAction(commandActionEvent -> {
              // toggle bold in current selection
              toggleStyleInSelection(textPane, StyleConstants.CharacterConstants.Bold);
              // and update command selection state based on the presence of bold
-             event.getCommand().setToggleSelected(
+             commandActionEvent.getCommand().setToggleSelected(
                  hasStyleInSelection(textPane,
                          StyleConstants.CharacterConstants.Bold));
         })
@@ -112,7 +112,7 @@ The important part here is what happens in the `setAction` block. The first thin
 And then, we have the caret listener registered on the text pane to update the enabled state of our command:
 
 ```java
-textPane.addCaretListener((CaretEvent e) -> {
+textPane.addCaretListener(caretEvent -> {
     // Compute selection presence
     boolean hasSelection =
           (textPane.getSelectionEnd() - textPane.getSelectionStart()) > 0;

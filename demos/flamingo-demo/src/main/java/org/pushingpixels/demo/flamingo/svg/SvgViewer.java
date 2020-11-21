@@ -86,7 +86,7 @@ public class SvgViewer extends JFrame {
         this.bar = new BreadcrumbFileSelector();
 
         this.bar.getModel()
-                .addPathListener((BreadcrumbPathEvent<File> event) -> SwingUtilities.invokeLater(() -> {
+                .addPathListener(event -> SwingUtilities.invokeLater(() -> {
                     final List<BreadcrumbItem<File>> newPath = event.getSource().getItems();
                     svgFileViewPanel.cancelMainWorker();
                     System.out.println("New path is ");
@@ -136,7 +136,7 @@ public class SvgViewer extends JFrame {
         this.iconSizeSlider.setMinorTickSpacing(8);
         this.iconSizeSlider.setValue(initialSize);
         this.currIconSize = initialSize;
-        this.iconSizeSlider.addChangeListener((ChangeEvent e) -> {
+        this.iconSizeSlider.addChangeListener(changeEvent -> {
             if (!iconSizeSlider.getModel().getValueIsAdjusting()) {
                 int newValue = iconSizeSlider.getValue();
                 if (newValue != currIconSize) {

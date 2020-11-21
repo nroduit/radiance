@@ -32,7 +32,6 @@ package org.pushingpixels.substance.internal.utils;
 import org.pushingpixels.substance.api.ComponentState;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.SubstanceSlices.ColorSchemeAssociationKind;
-import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.internal.animation.StateTransitionTracker;
 import org.pushingpixels.substance.internal.animation.StateTransitionTracker.ModelStateInfo;
 import org.pushingpixels.substance.internal.animation.TransitionAwareUI;
@@ -45,13 +44,12 @@ import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Map;
 
 /**
  * Split pane divider in <code>Substance</code> look and feel.
- * 
+ *
  * @author Kirill Grouchnikov
  */
 public class SubstanceSplitPaneDivider extends BasicSplitPaneDivider implements TransitionAwareUI {
@@ -106,9 +104,8 @@ public class SubstanceSplitPaneDivider extends BasicSplitPaneDivider implements 
 
     /**
      * Simple constructor.
-     * 
-     * @param ui
-     *            Associated UI.
+     *
+     * @param ui Associated UI.
      */
     public SubstanceSplitPaneDivider(SubstanceSplitPaneUI ui) {
         super(ui);
@@ -142,14 +139,16 @@ public class SubstanceSplitPaneDivider extends BasicSplitPaneDivider implements 
             this.addMouseListener(this.substanceRolloverListener);
             this.addMouseMotionListener(this.substanceRolloverListener);
 
-            this.substancePropertyChangeListener = (PropertyChangeEvent evt) -> {
-                if ("enabled".equals(evt.getPropertyName())) {
+            this.substancePropertyChangeListener = propertyChangeEvent -> {
+                if ("enabled".equals(propertyChangeEvent.getPropertyName())) {
                     boolean isEnabled = splitPane.isEnabled();
                     gripModel.setEnabled(isEnabled);
-                    if (leftButton != null)
+                    if (leftButton != null) {
                         leftButton.setEnabled(isEnabled);
-                    if (rightButton != null)
+                    }
+                    if (rightButton != null) {
                         rightButton.setEnabled(isEnabled);
+                    }
                     setEnabled(isEnabled);
                 }
             };
@@ -271,7 +270,7 @@ public class SubstanceSplitPaneDivider extends BasicSplitPaneDivider implements 
     protected JButton createLeftOneTouchButton() {
         JButton oneTouchButton = new SubstanceSplitPaneDividerButton();
         Icon verticalSplit = new TransitionAwareIcon(oneTouchButton,
-                (SubstanceColorScheme scheme) -> {
+                scheme -> {
                     int fontSize = SubstanceSizeUtils.getComponentFontSize(splitPane);
                     return SubstanceImageCreator.getArrowIcon(
                             SubstanceSizeUtils.getSplitPaneArrowIconWidth(fontSize),
@@ -280,7 +279,7 @@ public class SubstanceSplitPaneDivider extends BasicSplitPaneDivider implements 
                             SwingConstants.NORTH, scheme);
                 }, "substance.splitPane.left.vertical");
         Icon horizontalSplit = new TransitionAwareIcon(oneTouchButton,
-                (SubstanceColorScheme scheme) -> {
+                scheme -> {
                     int fontSize = SubstanceSizeUtils.getComponentFontSize(splitPane);
                     return SubstanceImageCreator.getArrowIcon(
                             SubstanceSizeUtils.getSplitPaneArrowIconWidth(fontSize),
@@ -305,7 +304,7 @@ public class SubstanceSplitPaneDivider extends BasicSplitPaneDivider implements 
     protected JButton createRightOneTouchButton() {
         JButton oneTouchButton = new SubstanceSplitPaneDividerButton();
         Icon verticalSplit = new TransitionAwareIcon(oneTouchButton,
-                (SubstanceColorScheme scheme) -> {
+                scheme -> {
                     int fontSize = SubstanceSizeUtils.getComponentFontSize(splitPane);
                     return SubstanceImageCreator.getArrowIcon(
                             SubstanceSizeUtils.getSplitPaneArrowIconWidth(fontSize),
@@ -314,7 +313,7 @@ public class SubstanceSplitPaneDivider extends BasicSplitPaneDivider implements 
                             SwingConstants.SOUTH, scheme);
                 }, "substance.splitPane.right.vertical");
         Icon horizontalSplit = new TransitionAwareIcon(oneTouchButton,
-                (SubstanceColorScheme scheme) -> {
+                scheme -> {
                     int fontSize = SubstanceSizeUtils.getComponentFontSize(splitPane);
                     return SubstanceImageCreator.getArrowIcon(
                             SubstanceSizeUtils.getSplitPaneArrowIconWidth(fontSize),
@@ -338,15 +337,14 @@ public class SubstanceSplitPaneDivider extends BasicSplitPaneDivider implements 
 
     /**
      * Updates the one-touch buttons.
-     * 
-     * @param orientation
-     *            Split pane orientation.
+     *
+     * @param orientation Split pane orientation.
      */
     public void updateOneTouchButtons(int orientation) {
         if (orientation == JSplitPane.VERTICAL_SPLIT) {
             if (this.leftButton != null) {
                 this.leftButton.setIcon(
-                        new TransitionAwareIcon(this.leftButton, (SubstanceColorScheme scheme) -> {
+                        new TransitionAwareIcon(this.leftButton, scheme -> {
                             int fontSize = SubstanceSizeUtils.getComponentFontSize(splitPane);
                             return SubstanceImageCreator.getArrowIcon(
                                     SubstanceSizeUtils.getSplitPaneArrowIconWidth(fontSize),
@@ -357,7 +355,7 @@ public class SubstanceSplitPaneDivider extends BasicSplitPaneDivider implements 
             }
             if (this.rightButton != null) {
                 this.rightButton.setIcon(
-                        new TransitionAwareIcon(this.rightButton, (SubstanceColorScheme scheme) -> {
+                        new TransitionAwareIcon(this.rightButton, scheme -> {
                             int fontSize = SubstanceSizeUtils.getComponentFontSize(splitPane);
                             return SubstanceImageCreator.getArrowIcon(
                                     SubstanceSizeUtils.getSplitPaneArrowIconWidth(fontSize),
@@ -369,7 +367,7 @@ public class SubstanceSplitPaneDivider extends BasicSplitPaneDivider implements 
         } else {
             if (this.leftButton != null) {
                 this.leftButton.setIcon(
-                        new TransitionAwareIcon(this.leftButton, (SubstanceColorScheme scheme) -> {
+                        new TransitionAwareIcon(this.leftButton, scheme -> {
                             int fontSize = SubstanceSizeUtils.getComponentFontSize(splitPane);
                             return SubstanceImageCreator.getArrowIcon(
                                     SubstanceSizeUtils.getSplitPaneArrowIconWidth(fontSize),
@@ -380,7 +378,7 @@ public class SubstanceSplitPaneDivider extends BasicSplitPaneDivider implements 
             }
             if (this.rightButton != null) {
                 this.rightButton.setIcon(
-                        new TransitionAwareIcon(this.rightButton, (SubstanceColorScheme scheme) -> {
+                        new TransitionAwareIcon(this.rightButton, scheme -> {
                             int fontSize = SubstanceSizeUtils.getComponentFontSize(splitPane);
                             return SubstanceImageCreator.getArrowIcon(
                                     SubstanceSizeUtils.getSplitPaneArrowIconWidth(fontSize),
@@ -405,7 +403,7 @@ public class SubstanceSplitPaneDivider extends BasicSplitPaneDivider implements 
 
     /**
      * Layout manager for the split pane divider.
-     * 
+     *
      * @author Kirill Grouchnikov
      */
     protected class SubstanceDividerLayout extends DividerLayout {

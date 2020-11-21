@@ -29,10 +29,10 @@
  */
 package org.pushingpixels.substance.internal.animation;
 
+import org.pushingpixels.neon.api.UiThreadingViolationException;
 import org.pushingpixels.substance.api.ComponentState;
 import org.pushingpixels.substance.api.SubstanceSlices.AnimationFacet;
 import org.pushingpixels.substance.api.SubstanceSlices.ComponentStateFacet;
-import org.pushingpixels.neon.api.UiThreadingViolationException;
 import org.pushingpixels.substance.api.renderer.SubstanceRenderer;
 import org.pushingpixels.substance.internal.AnimationConfigurationManager;
 import org.pushingpixels.substance.internal.utils.SubstanceCoreUtilities;
@@ -45,7 +45,6 @@ import org.pushingpixels.trident.api.swing.SwingComponentTimeline;
 import org.pushingpixels.trident.api.swing.SwingRepaintCallback;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import javax.swing.table.TableCellRenderer;
@@ -243,7 +242,7 @@ public class StateTransitionTracker {
     }
 
     public void registerModelListeners() {
-        this.modelChangeListener = (ChangeEvent e) -> {
+        this.modelChangeListener = changeEvent -> {
             if (isAutoTrackingModelChanges) {
                 onModelStateChanged();
             }
@@ -355,9 +354,8 @@ public class StateTransitionTracker {
                     .get(newState).getContribution();
             transitionTimelineBuilder.addPropertyToInterpolate(
                     Timeline.<Float>property("transitionPosition")
-                            .getWith((Object obj, String fieldName) -> transitionPosition)
-                            .setWith((Object obj, String fieldName, Float value) ->
-                                    transitionPosition = value)
+                            .getWith((obj, fieldName) -> transitionPosition)
+                            .setWith((obj, fieldName, value) -> transitionPosition = value)
                             .from(this.transitionPosition)
                             .to(1.0f));
             transitionTimelineBuilder
@@ -382,9 +380,8 @@ public class StateTransitionTracker {
             this.transitionPosition = 0.0f;
             transitionTimelineBuilder.addPropertyToInterpolate(
                     Timeline.<Float>property("transitionPosition")
-                            .getWith((Object obj, String fieldName) -> transitionPosition)
-                            .setWith((Object obj, String fieldName, Float value) ->
-                                    transitionPosition = value)
+                            .getWith((obj, fieldName) -> transitionPosition)
+                            .setWith((obj, fieldName, value) -> transitionPosition = value)
                             .from(0.0f).to(1.0f));
             // if ((this.component instanceof JMenuItem)
             // && "Check enabled unselected"

@@ -43,7 +43,7 @@ class DerivedColorsResolverDark implements SchemeDerivedColors {
 	/**
 	 * The original color scheme.
 	 */
-	SubstanceColorScheme scheme;
+	private SubstanceColorScheme scheme;
 
 	/**
 	 * Creates the resolver of derived colors for the specified dark color
@@ -54,25 +54,14 @@ class DerivedColorsResolverDark implements SchemeDerivedColors {
 	 */
 	public DerivedColorsResolverDark(SubstanceColorScheme scheme) {
 		if (!scheme.isDark()) {
-			throw new IllegalArgumentException(
-					"The scheme must be dark: " + scheme.getDisplayName());
+			throw new IllegalArgumentException("The scheme must be dark: " + scheme.getDisplayName());
 		}
 		this.scheme = scheme;
 	}
 
 	@Override
-	public Color getWatermarkStampColor() {
-		return SubstanceColorUtilities.getAlphaColor(this.scheme.getUltraLightColor(), 30);
-	}
-
-	@Override
-	public Color getWatermarkDarkColor() {
-		return this.scheme.getLightColor();
-	}
-
-	@Override
-	public Color getWatermarkLightColor() {
-		return this.scheme.getUltraLightColor();
+	public String toString() {
+		return "Resolver for " + this.scheme.getDisplayName();
 	}
 
 	@Override
@@ -82,7 +71,7 @@ class DerivedColorsResolverDark implements SchemeDerivedColors {
 
 	@Override
 	public Color getSelectionForegroundColor() {
-		return SubstanceColorUtilities.deriveByBrightness(this.scheme.getUltraDarkColor(), -0.5f);
+		return this.scheme.getForegroundColor();
 	}
 
 	@Override
@@ -104,5 +93,20 @@ class DerivedColorsResolverDark implements SchemeDerivedColors {
 	public Color getTextBackgroundFillColor() {
 		return SubstanceColorUtilities.getInterpolatedColor(this.scheme.getMidColor(),
 				this.scheme.getLightColor(), 0.4f);
+	}
+
+	@Override
+	public Color getSeparatorLightColor() {
+		return this.scheme.getLightColor();
+	}
+
+	@Override
+	public Color getSeparatorDarkColor() {
+		return this.scheme.getExtraLightColor();
+	}
+
+	@Override
+	public Color getSeparatorShadowColor() {
+		return this.scheme.getDarkColor();
 	}
 }

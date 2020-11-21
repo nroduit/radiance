@@ -84,8 +84,8 @@ Now, elsewhere in the app there's code that gets notified whenever this property
 
 ```java
 // track modification changes on the scheme list and any scheme in it
-this.colorSchemeList.addPropertyChangeListener("modified", (PropertyChangeEvent evt) -> {
-    boolean isModified = (Boolean) evt.getNewValue();
+this.colorSchemeList.addPropertyChangeListener("modified", propertyChangeEvent -> {
+    boolean isModified = (Boolean) propertyChangeEvent.getNewValue();
     SubstanceCortex.RootPaneScope.setContentsModified(getRootPane(), isModified);
 
     // update the main frame title
@@ -117,7 +117,7 @@ This is all we need to wire property change to integrate with the existing Swing
 ```kotlin
 // track modification changes on the scheme list and any scheme in it
 this.colorSchemeList.addTypedDelayedPropertyChangeListener<Boolean>(
-        this.colorSchemeList::isModified.name) { evt ->
+        this.colorSchemeList::isModified) { evt ->
     val isModified = evt.newValue ?: false
 
     // update the close / X button of the main frame
@@ -133,7 +133,7 @@ this.colorSchemeList.addTypedDelayedPropertyChangeListener<Boolean>(
 
 Here we use Meteor's typed property change listener to introduce type safety into querying the property value. For type completeness and null safety we use Kotlin's elvis operator to fall back on `false`.
 
-In addition, note the use of `::isModified.name` to make sure that both sides of the property change processing use the same underlying string name that will play well with codebase renaming and refactoring.
+In addition, note the use of `::isModified` to make sure that both sides of the property change processing use the same underlying property name that will play well with codebase renaming and refactoring.
 
 ### Working with actions
 
@@ -208,6 +208,69 @@ this.captionEditor.wireActionToKeyStroke("escape",
         KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0)) {
     stopCaptionEdit(false)
 }
+```
+
+### Simple layout managers
+
+The core Swing [LayoutManager](https://docs.oracle.com/javase/9/docs/api/java/awt/LayoutManager.html) and its extension [LayoutManager2](https://docs.oracle.com/javase/9/docs/api/java/awt/LayoutManager2.html) provide a lot of flexibility to write complex layout logic in your app. But what if you don't need that flexibility, and only looking to express something simple?
+
+If we start with something as simple as wanting to put a custom close button in the top-right corner of our container, the resulting code in traditional Java might look like this:
+
+```java
+contentPane.setLayout(new LayoutManager() {
+    @Override
+    public void addLayoutComponent(String name, Component comp) {
+    }
+
+    @Override
+    public void removeLayoutComponent(Component comp) {
+    }
+
+    @Override
+    public Dimension minimumLayoutSize(Container parent) {
+        return null;
+    }
+
+    @Override
+    public Dimension preferredLayoutSize(Container parent) {
+        return null;
+    }
+
+    @Override
+    public void layoutContainer(Container parent) {
+        int closeButtonDim = 35;
+        closeButton.setBounds(getWidth() - closeButtonDim, 0,
+                closeButtonDim, closeButtonDim);
+        contentPanel.setBounds(0, 10, getWidth() - 10, getHeight() - 10);
+    }
+});
+```
+
+There's a lot of boilerplate that is added to just implement the `LayoutManager` interface, even if you only have custom logic for the `layoutContainer` method.
+
+Here is how it looks like in Meteor:
+
+```kotlin
+contentPane.layout = MeteorLayoutManager(
+        onLayout = {
+            val closeButtonDim = 35
+            closeButton.setBounds(width - closeButtonDim, 0,
+                    closeButtonDim, closeButtonDim)
+            contentPanel.setBounds(0, 10, width - 10, height - 10)
+        })
+```
+
+For a slightly more complex logic that needs to compute the preferred size:
+
+```kotlin
+this.layout = MeteorLayoutManager(
+        getPreferredSize = { parent ->
+            ...  // compute preferred width and height
+            Dimension(myPreferredWidth, myPreferredHeight)
+        },
+        onLayout = { parent ->
+            ...  // compute child(ren) bounds
+        })
 ```
 
 ### Rendering with `Graphics2D`

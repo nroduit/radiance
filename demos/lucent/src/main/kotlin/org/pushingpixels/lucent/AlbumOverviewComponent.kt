@@ -29,6 +29,10 @@
  */
 package org.pushingpixels.lucent
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.swing.Swing
 import org.pushingpixels.lucent.data.SearchResultRelease
 import org.pushingpixels.meteor.addDelayedComponentListener
 import org.pushingpixels.meteor.addDelayedMouseListener
@@ -44,7 +48,6 @@ import org.pushingpixels.trident.api.swing.TimelineSwingWorker
 import java.awt.*
 import java.awt.image.BufferedImage
 import javax.swing.JComponent
-import javax.swing.SwingUtilities
 import kotlin.math.min
 
 /**
@@ -128,7 +131,7 @@ class AlbumOverviewComponent(albumItem: SearchResultRelease) : JComponent() {
 
         this.labelFont = NeonCortex.getDefaultFontPolicy().fontSet.controlFont
 
-        SwingUtilities.invokeLater { getLoadImageScenario(albumItem).play() }
+        GlobalScope.launch(Dispatchers.Swing) { getLoadImageScenario(albumItem).play() }
     }
 
     /**
@@ -210,19 +213,17 @@ class AlbumOverviewComponent(albumItem: SearchResultRelease) : JComponent() {
 
             var contentHorizontalOffset = INSETS
             if (this.imageLoadedDone) {
-                it.render {
-                    it.composite = AlphaComposite.SrcOver.derive(this.alpha * this.imageAlpha)
+                it.composite = AlphaComposite.SrcOver.derive(this.alpha * this.imageAlpha)
 
-                    // draw the album art image
-                    val scaleFactor = NeonCortex.getScaleFactor()
-                    val imageWidth = this.image!!.width
-                    val imageHeight = this.image!!.height
-                    contentHorizontalOffset = ((this.width - imageWidth / scaleFactor) / 2).toInt()
-                    val offsetY = INSETS + ((OVERVIEW_IMAGE_DIM - imageHeight / scaleFactor) / 2).toInt()
-                    it.drawImage(this.image, contentHorizontalOffset, offsetY,
-                            (imageWidth / scaleFactor).toInt(), (imageHeight / scaleFactor).toInt(), null)
-                    it.dispose()
-                }
+                // draw the album art image
+                val scaleFactor = NeonCortex.getScaleFactor()
+                val imageWidth = this.image!!.width
+                val imageHeight = this.image!!.height
+                contentHorizontalOffset = ((this.width - imageWidth / scaleFactor) / 2).toInt()
+                val offsetY = INSETS + ((OVERVIEW_IMAGE_DIM - imageHeight / scaleFactor) / 2).toInt()
+                it.drawImage(this.image, contentHorizontalOffset, offsetY,
+                        (imageWidth / scaleFactor).toInt(), (imageHeight / scaleFactor).toInt(), null)
+                it.composite = AlphaComposite.SrcOver.derive(this.alpha)
             }
 
             it.color = Color.white
@@ -245,14 +246,17 @@ class AlbumOverviewComponent(albumItem: SearchResultRelease) : JComponent() {
          * The dimensions of the overview image.
          */
         const val OVERVIEW_IMAGE_DIM = 132
+
         /**
          * Default width of this component.
          */
         const val DEFAULT_WIDTH = 160
+
         /**
          * Default height of this component.
          */
         const val DEFAULT_HEIGHT = 200
+
         /**
          * Component insets.
          */

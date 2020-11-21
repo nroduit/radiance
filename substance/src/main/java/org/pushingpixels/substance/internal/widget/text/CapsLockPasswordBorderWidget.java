@@ -44,7 +44,6 @@ import javax.swing.plaf.UIResource;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
@@ -69,16 +68,16 @@ public class CapsLockPasswordBorderWidget extends SubstanceWidget<JPasswordField
     /**
      * Name for client property that stores the original border.
      */
-    private static String ORIGINAL_BORDER = "substance.internal.capsLockBorder.original";
+    private static final String ORIGINAL_BORDER = "substancelaf.internal.capsLockBorder.original";
 
     @Override
     public void installListeners() {
-        this.propertyChangeListener = (PropertyChangeEvent evt) -> {
+        this.propertyChangeListener = propertyChangeEvent -> {
             // fix for defect 5 - infinite event chain.
-            if ("border".equals(evt.getPropertyName())) {
+            if ("border".equals(propertyChangeEvent.getPropertyName())) {
                 return;
             }
-            if (CapsLockPasswordBorderWidget.ORIGINAL_BORDER.equals(evt.getPropertyName())) {
+            if (CapsLockPasswordBorderWidget.ORIGINAL_BORDER.equals(propertyChangeEvent.getPropertyName())) {
                 return;
             }
             SwingUtilities.invokeLater(() -> {

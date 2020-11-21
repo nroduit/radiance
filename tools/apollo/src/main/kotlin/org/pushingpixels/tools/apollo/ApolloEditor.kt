@@ -30,6 +30,10 @@
 package org.pushingpixels.tools.apollo
 
 import com.jgoodies.forms.builder.FormBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.swing.Swing
 import org.pushingpixels.ember.setContentsModified
 import org.pushingpixels.meteor.addDelayedActionListener
 import org.pushingpixels.meteor.addDelayedWindowListener
@@ -40,9 +44,9 @@ import org.pushingpixels.substance.api.colorscheme.BaseDarkColorScheme
 import org.pushingpixels.substance.api.colorscheme.BaseLightColorScheme
 import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme
 import org.pushingpixels.substance.api.skin.BusinessSkin
+import org.pushingpixels.tools.apollo.svg.outline_save_24px
 import org.pushingpixels.tools.common.JImageComponent
 import org.pushingpixels.tools.common.RadianceLogo
-import org.pushingpixels.tools.apollo.svg.outline_save_24px
 import java.awt.*
 import java.awt.datatransfer.Clipboard
 import java.awt.datatransfer.ClipboardOwner
@@ -114,7 +118,7 @@ class ApolloEditor : JFrame(), ClipboardOwner {
         // wire color scheme selection in the list to the
         // color scheme component
         this.colorSchemeList.addTypedDelayedPropertyChangeListener<SubstanceColorScheme?>(
-                JColorSchemeList::selectedColorScheme.name) { event ->
+                JColorSchemeList::selectedColorScheme) { event ->
             val newSelection = event.newValue
             if (newSelection != null) {
                 colorSchemeComp.setContent(newSelection)
@@ -218,7 +222,7 @@ class ApolloEditor : JFrame(), ClipboardOwner {
 
         // track modification changes on the scheme list and any scheme in it
         this.colorSchemeList.addTypedDelayedPropertyChangeListener<Boolean?>(
-                this.colorSchemeList::isModified.name) { evt ->
+                this.colorSchemeList::isModified) { evt ->
             val isModified = evt.newValue ?: false
 
             // update the close / X button of the main frame
@@ -241,7 +245,7 @@ class ApolloEditor : JFrame(), ClipboardOwner {
                 "\t* Drag and drop a URL pointing to an image"))
 
         imageComp.addTypedDelayedPropertyChangeListener<Color>(
-                JImageComponent::selectedColor.name) { evt ->
+                JImageComponent::selectedColor) { evt ->
             val selectedImageColor = evt.newValue
             val selectedColorComp = colorSchemeComp.selectedColorComponent
             selectedColorComp?.setColor(selectedImageColor, true)
@@ -319,10 +323,10 @@ class ApolloEditor : JFrame(), ClipboardOwner {
     }
 }
 
-fun main(args: Array<String>) {
+fun main() {
     JDialog.setDefaultLookAndFeelDecorated(true)
     JFrame.setDefaultLookAndFeelDecorated(true)
-    SwingUtilities.invokeLater {
+    GlobalScope.launch(Dispatchers.Swing) {
         SubstanceCortex.GlobalScope.setSkin(BusinessSkin())
 
         val editor = ApolloEditor()
@@ -330,6 +334,7 @@ fun main(args: Array<String>) {
         editor.extendedState = JFrame.MAXIMIZED_BOTH
         editor.setLocationRelativeTo(null)
         editor.defaultCloseOperation = WindowConstants.DO_NOTHING_ON_CLOSE
+
         editor.isVisible = true
     }
 }

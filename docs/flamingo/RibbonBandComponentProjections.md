@@ -11,11 +11,11 @@ The first type of component projections is available by using the `JFlowRibbonBa
 ```java
 Command indentLeft = Command.builder()
         .setIconFactory(Format_indent_less.factory())
-        .setAction((CommandActionEvent e) -> System.out.println("<- Left"))
+        .setAction(commandActionEvent -> System.out.println("<- Left"))
         .build();
 Command indentRight = Command.builder()
         .setIconFactory(Format_indent_more.factory())
-        .setAction((CommandActionEvent e) -> System.out.println("-> Right"))
+        .setAction(commandActionEvent -> System.out.println("-> Right"))
         .build();
 Map<Command, CommandButtonPresentationModel.Overlay> indentOverlays = new HashMap<>();
 indentOverlays.put(indentLeft,
@@ -115,7 +115,7 @@ We start again by defining the content model:
 this.rulerCheckBoxModel = RibbonCheckBoxContentModel.builder()
         .setText(resourceBundle.getString("Ruler.text"))
         .setSelected(true)
-        .setActionListener((ActionEvent ae) ->
+        .setActionListener(actionEvent ->
                 System.out.println("Ruler selection --> " + rulerCheckBoxModel.isSelected()))
         .build();
 ```

@@ -31,16 +31,16 @@ package org.pushingpixels.plasma.synapse
 
 import org.pushingpixels.flamingo.api.common.HorizontalAlignment
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel
-import org.pushingpixels.plasma.FlamingoElementMarker
+import org.pushingpixels.plasma.PlasmaElementMarker
 
-@FlamingoElementMarker
-open class KComponentPresentation {
-    var isFlat: Boolean = true
-    var horizontalAlignment: HorizontalAlignment = HorizontalAlignment.FILL
-    var isResizingAware: Boolean = false
-    var keyTip: String? = null
+@PlasmaElementMarker
+public open class KComponentPresentation {
+    public var isFlat: Boolean = true
+    public var horizontalAlignment: HorizontalAlignment = HorizontalAlignment.FILL
+    public var isResizingAware: Boolean = false
+    public var keyTip: String? = null
 
-    fun toComponentPresentation(): ComponentPresentationModel {
+    internal fun toComponentPresentation(): ComponentPresentationModel {
         val result = ComponentPresentationModel.builder()
                 .setFlat(isFlat)
                 .setHorizontalAlignment(horizontalAlignment)

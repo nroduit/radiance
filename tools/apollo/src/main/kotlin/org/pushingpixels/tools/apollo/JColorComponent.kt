@@ -30,6 +30,8 @@
 package org.pushingpixels.tools.apollo
 
 import org.pushingpixels.meteor.addDelayedMouseListener
+import org.pushingpixels.meteor.awt.MeteorLayoutManager
+import org.pushingpixels.meteor.awt.deriveByBrightness
 import org.pushingpixels.meteor.awt.render
 import org.pushingpixels.neon.api.NeonCortex
 import org.pushingpixels.substance.api.SubstanceCortex
@@ -43,7 +45,7 @@ import javax.swing.JRadioButton
 import kotlin.properties.Delegates
 
 class JColorComponent(name: String, color: Color?) : JComponent() {
-    val radio: JRadioButton
+    val radio: JRadioButton = JRadioButton(name)
 
     var color: Color? = null
         private set
@@ -58,16 +60,31 @@ class JColorComponent(name: String, color: Color?) : JComponent() {
     val isDefined: Boolean
         get() = this.color != null
 
-    var selectedColor: Color? by Delegates.observable<Color?>(null) {
+    var selectedColor: Color? by Delegates.observable(null) {
         prop, old, new -> this.firePropertyChange(prop.name, old, new)
     }
 
     init {
-        this.radio = JRadioButton(name)
         this.radio.isFocusable = false
         this.color = color
         this.visualizer = ColorVisualizer()
-        this.layout = ColorComponentLayout()
+        this.layout = MeteorLayoutManager(
+                getPreferredSize = { parent ->
+                    val colorComponent = parent as JColorComponent
+                    val colorVisualizer = colorComponent.visualizer
+                    val cvPref = colorVisualizer.preferredSize
+                    Dimension(100 + cvPref.width, cvPref.height)
+                },
+                onLayout = { parent ->
+                    val jColorComponent = parent as JColorComponent
+                    val width = jColorComponent.width
+                    val height = jColorComponent.height
+
+                    val colorVisualizer = jColorComponent.visualizer
+                    val cvPref = colorVisualizer.preferredSize
+                    colorVisualizer.setBounds(width - cvPref.width, 0, cvPref.width, height)
+                    jColorComponent.radio.setBounds(0, 0, width - cvPref.width, height)
+                })
 
         this.add(this.radio)
         this.add(this.visualizer)
@@ -132,7 +149,7 @@ class JColorComponent(name: String, color: Color?) : JComponent() {
                     it.color = color
                     it.fillRect(2, 2, 100, height - 4)
                     it.stroke = BasicStroke(borderThickness)
-                    it.color = color!!.darker()
+                    it.color = color!!.deriveByBrightness(-0.4)
                     it.drawRect(2, 2, 99, height - 4)
 
                     it.color = Color.black
@@ -149,33 +166,5 @@ class JColorComponent(name: String, color: Color?) : JComponent() {
         override fun getPreferredSize(): Dimension {
             return Dimension(200, 25)
         }
-    }
-
-    private inner class ColorComponentLayout : LayoutManager {
-        override fun addLayoutComponent(name: String, comp: Component) {}
-
-        override fun layoutContainer(parent: Container) {
-            val jColorComponent = parent as JColorComponent
-            val width = jColorComponent.width
-            val height = jColorComponent.height
-
-            val colorVisualizer = jColorComponent.visualizer
-            val cvPref = colorVisualizer.preferredSize
-            colorVisualizer.setBounds(width - cvPref.width, 0, cvPref.width, height)
-            jColorComponent.radio.setBounds(0, 0, width - cvPref.width, height)
-        }
-
-        override fun minimumLayoutSize(parent: Container): Dimension {
-            return preferredLayoutSize(parent)
-        }
-
-        override fun preferredLayoutSize(parent: Container): Dimension {
-            val colorComponent = parent as JColorComponent
-            val colorVisualizer = colorComponent.visualizer
-            val cvPref = colorVisualizer.preferredSize
-            return Dimension(100 + cvPref.width, cvPref.height)
-        }
-
-        override fun removeLayoutComponent(comp: Component) {}
     }
 }

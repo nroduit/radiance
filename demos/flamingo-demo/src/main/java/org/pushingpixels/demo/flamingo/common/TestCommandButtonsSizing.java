@@ -4,9 +4,9 @@ import com.jgoodies.forms.builder.FormBuilder;
 import com.jgoodies.forms.factories.Paddings;
 import org.pushingpixels.demo.flamingo.svg.logo.RadianceLogo;
 import org.pushingpixels.demo.flamingo.svg.tango.transcoded.Edit_paste;
-import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
@@ -49,12 +49,11 @@ public class TestCommandButtonsSizing extends JPanel {
 
         for (final CommandButtonPresentationState state : new CommandButtonPresentationState[] {
                 CommandButtonPresentationState.BIG, CommandButtonPresentationState.MEDIUM,
-                CommandButtonPresentationState.TILE, CommandButtonPresentationState.SMALL }) {
+                CommandButtonPresentationState.TILE, CommandButtonPresentationState.SMALL}) {
             for (final CommandButtonKind commandButtonKind : CommandButtonKind.values()) {
                 this.model.add(new Mapping(
-                        state.getDisplayName() + " + " + commandButtonKind.name(), (int fontSize) ->
-                        createActionOnlyButton("Sample", state, commandButtonKind,
-                                fontSize)));
+                        state.getDisplayName() + " + " + commandButtonKind.name(),
+                        fontSize -> createActionOnlyButton("Sample", state, commandButtonKind, fontSize)));
             }
         }
 
@@ -81,14 +80,14 @@ public class TestCommandButtonsSizing extends JPanel {
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         list.getSelectionModel().addListSelectionListener(
-                (ListSelectionEvent e) -> SwingUtilities.invokeLater(() -> {
+                listSelectionEvent -> SwingUtilities.invokeLater(() -> {
                     if (central != null)
                         remove(central);
                     central = null;
 
                     int selIndex = list.getSelectedIndex();
                     if (selIndex >= 0) {
-                        Mapping sel = (Mapping) list.getSelectedValue();
+                        Mapping sel = list.getSelectedValue();
 
                         String rowSpec = "p";
                         for (int fontSize = 12; fontSize < 25; fontSize++) {
@@ -113,7 +112,7 @@ public class TestCommandButtonsSizing extends JPanel {
                 }));
     }
 
-    private AbstractCommandButton createActionOnlyButton(String text,
+    private JCommandButton createActionOnlyButton(String text,
             CommandButtonPresentationState state,
             CommandButtonKind commandButtonKind, int fontSize) {
 
@@ -123,17 +122,16 @@ public class TestCommandButtonsSizing extends JPanel {
                 .setIconFactory(Edit_paste.factory());
         switch (commandButtonKind) {
             case ACTION_ONLY:
-                commandBuilder.setAction((CommandActionEvent e)
-                        -> System.out.println("Action invoked"));
+                commandBuilder.setAction(commandActionEvent -> System.out.println("Action invoked"));
                 break;
             case ACTION_AND_POPUP_MAIN_ACTION:
                 commandBuilder
-                        .setAction((CommandActionEvent e) -> System.out.println("Action invoked"))
+                        .setAction(commandActionEvent -> System.out.println("Action (main action) invoked"))
                         .setSecondaryContentModel(SamplePopupMenu.getSamplePopupMenuContentModel());
                 break;
             case ACTION_AND_POPUP_MAIN_POPUP:
                 commandBuilder
-                        .setAction((CommandActionEvent e) -> System.out.println("Action invoked"))
+                        .setAction(commandActionEvent -> System.out.println("Action (main popup) invoked"))
                         .setSecondaryContentModel(SamplePopupMenu.getSamplePopupMenuContentModel());
                 break;
             case POPUP_ONLY:
@@ -157,7 +155,7 @@ public class TestCommandButtonsSizing extends JPanel {
 
         CommandButtonProjection<Command> commandProjection = commandBuilder.build().project(
                 commandButtonPresentationBuilder.build());
-        commandProjection.setComponentCustomizer((AbstractCommandButton button) ->
+        commandProjection.setComponentCustomizer(button ->
                 button.setFont(button.getFont().deriveFont((float) fontSize)));
 
         return commandProjection.buildComponent();

@@ -57,7 +57,7 @@ public class BreadCrumbTest extends JFrame {
 
         this.bar = new BreadcrumbFileSelector();
         this.bar.getModel().addPathListener(
-                (BreadcrumbPathEvent<File> event) -> SwingUtilities.invokeLater(() -> {
+                event -> SwingUtilities.invokeLater(() -> {
                     final List<BreadcrumbItem<File>> newPath = event.getSource().getItems();
                     System.out.println("New path is ");
                     for (BreadcrumbItem<File> item : newPath) {
@@ -95,7 +95,7 @@ public class BreadCrumbTest extends JFrame {
 
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton setPath = new JButton("Select and set path...");
-        setPath.addActionListener((ActionEvent e) -> SwingUtilities.invokeLater(() -> {
+        setPath.addActionListener(actionEvent -> SwingUtilities.invokeLater(() -> {
             JFileChooser folderChooser = new JFileChooser();
             folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (folderChooser.showOpenDialog(BreadCrumbTest.this) == JFileChooser.APPROVE_OPTION) {

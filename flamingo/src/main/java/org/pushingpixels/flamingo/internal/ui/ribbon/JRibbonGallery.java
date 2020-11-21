@@ -29,8 +29,8 @@
  */
 package org.pushingpixels.flamingo.internal.ui.ribbon;
 
-import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.model.*;
 import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
 import org.pushingpixels.flamingo.api.common.popup.PopupPanelManager;
@@ -66,11 +66,12 @@ public class JRibbonGallery extends JComponent {
     private RibbonGalleryContentModel galleryContentModel;
     private RibbonGalleryPresentationModel galleryPresentationModel;
     private Map<Command, CommandButtonPresentationModel.Overlay> galleryCommandOverlays;
+    private ChangeListener galleryContentChangeListener;
 
     /**
      * The buttons of <code>this</code> gallery.
      */
-    protected List<AbstractCommandButton> buttons;
+    protected List<JCommandButton> buttons;
 
     /**
      * The commands of <code>this</code> gallery.
@@ -111,7 +112,7 @@ public class JRibbonGallery extends JComponent {
         this.galleryContentModel.addCommandActivationListener(
                 (Command activated) -> this.commandToggleGroupModel.setSelected(activated, true));
 
-        this.galleryContentModel.addChangeListener((ChangeEvent changeEvent) -> {
+        this.galleryContentChangeListener = (ChangeEvent changeEvent) -> {
             this.buttons.clear();
             this.commandToggleGroupModel.removeAll();
             this.commands.clear();
@@ -119,7 +120,8 @@ public class JRibbonGallery extends JComponent {
 
             populateContent();
             this.updateUI();
-        });
+        };
+        this.galleryContentModel.addChangeListener(this.galleryContentChangeListener);
 
         this.updateUI();
     }
@@ -181,7 +183,7 @@ public class JRibbonGallery extends JComponent {
             presentation = presentation.overlayWith(overlay);
         }
 
-        AbstractCommandButton button = command.project(presentation).buildComponent();
+        JCommandButton button = command.project(presentation).buildComponent();
         button.getActionModel().addChangeListener(new ChangeListener() {
             boolean wasRollover = false;
 
@@ -201,7 +203,7 @@ public class JRibbonGallery extends JComponent {
                 wasRollover = isRollover;
             }
         });
-        button.getActionModel().addActionListener((ActionEvent e) ->
+        button.getActionModel().addActionListener(actionEvent ->
                 galleryContentModel.setSelectedCommand(command));
 
         this.buttons.add(button);
@@ -264,7 +266,7 @@ public class JRibbonGallery extends JComponent {
      * @param index Gallery button index.
      * @return Gallery button at specified index.
      */
-    public AbstractCommandButton getButtonAt(int index) {
+    public JCommandButton getButtonAt(int index) {
         return this.buttons.get(index);
     }
 
@@ -273,7 +275,7 @@ public class JRibbonGallery extends JComponent {
      *
      * @return The currently selected gallery button.
      */
-    public AbstractCommandButton getSelectedButton() {
+    public JCommandButton getSelectedButton() {
         Command selectedCommand = this.commandToggleGroupModel.getSelected();
         if (selectedCommand == null) {
             return null;
@@ -401,7 +403,7 @@ public class JRibbonGallery extends JComponent {
             commandPopupMenuProjection.setCommandOverlays(galleryProjection.getCommandOverlays());
         }
 
-        commandPopupMenuProjection.setComponentCustomizer((JCommandPopupMenu galleryPopupMenu) -> {
+        commandPopupMenuProjection.setComponentCustomizer(galleryPopupMenu -> {
             galleryPopupMenu.applyComponentOrientation(componentOrientation);
 
             // Configure a popup listener for the two-way sync between the gallery model and
@@ -416,8 +418,7 @@ public class JRibbonGallery extends JComponent {
                 @Override
                 public void popupHidden(PopupPanelManager.PopupEvent event) {
                     // update the gallery content model with the command selection
-                    Command selectedCommand =
-                            galleryPopupMenu.getMainButtonPanel().getSelectedCommand();
+                    Command selectedCommand = galleryPopupMenu.getMainButtonPanel().getSelectedCommand();
                     galleryProjection.getContentModel().setSelectedCommand(selectedCommand);
                     PopupPanelManager.defaultManager().removePopupListener(this);
                 }

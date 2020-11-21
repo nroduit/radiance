@@ -32,7 +32,6 @@ package org.pushingpixels.substance.internal.widget.animation.effects;
 import org.pushingpixels.substance.api.SubstanceWidget;
 
 import javax.swing.*;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
@@ -50,7 +49,7 @@ public class GhostAnimationWidget extends SubstanceWidget<AbstractButton> {
      * Property change listener. Listens on changes to the
      * {@link AbstractButton#MODEL_CHANGED_PROPERTY} property.
      */
-    protected PropertyChangeListener ghostPropertyListener;
+    private PropertyChangeListener ghostPropertyListener;
 
     @Override
     public void installDefaults() {
@@ -59,10 +58,11 @@ public class GhostAnimationWidget extends SubstanceWidget<AbstractButton> {
 
     @Override
     public void installListeners() {
-        this.ghostPropertyListener = (PropertyChangeEvent evt) -> {
-            if (AbstractButton.MODEL_CHANGED_PROPERTY.equals(evt.getPropertyName())) {
-                if (ghostModelChangeListener != null)
+        this.ghostPropertyListener = propertyChangeEvent -> {
+            if (AbstractButton.MODEL_CHANGED_PROPERTY.equals(propertyChangeEvent.getPropertyName())) {
+                if (ghostModelChangeListener != null) {
                     ghostModelChangeListener.unregisterListeners();
+                }
                 ghostModelChangeListener = new GhostingListener(jcomp, jcomp.getModel());
                 ghostModelChangeListener.registerListeners();
             }

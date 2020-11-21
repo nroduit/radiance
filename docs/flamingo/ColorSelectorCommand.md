@@ -167,7 +167,7 @@ ColorSelectorPopupMenuGroupModel.Builder selectorBuilder =
 selectorBuilder.addCommand(Command.builder()
         .setText(resourceBundle.getString("ColorSelector.textAutomatic"))
         .setIconFactory(ColorIcon.factory(defaultPanelColor))
-        .setAction((CommandActionEvent e) -> {
+        .setAction(commandActionEvent -> {
             colorActivationListener.onColorActivated(defaultPanelColor);
             JColorSelectorPopupMenu.addColorToRecentlyUsed(defaultPanelColor);
         })
@@ -238,7 +238,7 @@ We're using `Builder.addRecentsSection()`. Internally, any color selection made 
 ```java
 selectorBuilder.addCommand(Command.builder()
         .setText(resourceBundle.getString("ColorSelector.textMoreColor"))
-        .setAction((CommandActionEvent e) -> SwingUtilities.invokeLater(() -> {
+        .setAction(commandActionEvent -> SwingUtilities.invokeLater(() -> {
             Color color = JColorChooser.showDialog(MyFrame.this,
                     "Color chooser", backgroundColor);
             if (color != null) {
@@ -260,7 +260,7 @@ this.colorSelectorCommand = ColorSelectorCommand.colorSelectorBuilder()
         .setIconFactory(ColorIcon.factory(backgroundColor))
         .setColorSelectorPopupMenuContentModel(selectorModel)
         .build();
-AbstractCommandButton colorButton = new ColorSelectorCommandButtonProjection(
+JCommandButton colorButton = new ColorSelectorCommandButtonProjection(
         this.colorSelectorCommand,
         CommandButtonPresentationModel.builder()
                 .setPresentationState(CommandButtonPresentationState.SMALL)
@@ -273,7 +273,7 @@ AbstractCommandButton colorButton = new ColorSelectorCommandButtonProjection(
 - The initial icon is set to be based on the default background color of our main panel. All color selections are wired to our main color activation listener that updates the command's icon factory with the newly selected color - automatically updating the projected `colorButton`.
 - The `colorSelectorPopupMenuContentModel` is set to our popup menu content model.
 - We use `ColorSelectorCommandButtonProjection` to combine our `ColorSelectorCommand` content model with a `CommandButtonPresentationModel` presentation model configured with `SMALL` presentation state and non-flat background fill.
-- Finally, we call `ColorSelectorCommandButtonProjection.buildComponent()` to get a Swing `AbstractCommandButton` component that we can add to our component hierarchy.
+- Finally, we call `ColorSelectorCommandButtonProjection.buildComponent()` to get a Swing `JCommandButton` component that we can add to our component hierarchy.
 
 ### Next
 

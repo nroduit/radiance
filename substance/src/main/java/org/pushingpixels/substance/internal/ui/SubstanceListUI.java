@@ -37,7 +37,6 @@ import org.pushingpixels.substance.api.SubstanceSlices.ComponentStateFacet;
 import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.api.renderer.SubstanceDefaultListCellRenderer;
 import org.pushingpixels.substance.api.renderer.SubstancePanelListCellRenderer;
-import org.pushingpixels.substance.internal.SubstanceSynapse;
 import org.pushingpixels.substance.internal.animation.StateTransitionMultiTracker;
 import org.pushingpixels.substance.internal.animation.StateTransitionTracker;
 import org.pushingpixels.substance.internal.painter.BackgroundPaintingUtils;
@@ -56,7 +55,6 @@ import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicListUI;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -232,9 +230,6 @@ public class SubstanceListUI extends BasicListUI implements UpdateOptimizationAw
         }
 
         public void mouseExited(MouseEvent e) {
-            // if (SubstanceCoreUtilities.toBleedWatermark(list))
-            // return;
-
             fadeOutRolloverIndication();
             // System.out.println("Nulling RO index");
             resetRolloverIndex();
@@ -315,9 +310,6 @@ public class SubstanceListUI extends BasicListUI implements UpdateOptimizationAw
     @Override
     protected void installDefaults() {
         super.installDefaults();
-        if (SubstanceCoreUtilities.toDrawWatermark(list)) {
-            list.setOpaque(false);
-        }
 
         syncModelContents();
     }
@@ -411,31 +403,28 @@ public class SubstanceListUI extends BasicListUI implements UpdateOptimizationAw
         list.addMouseMotionListener(substanceFadeRolloverListener);
         list.addMouseListener(substanceFadeRolloverListener);
 
-        substancePropertyChangeListener = (final PropertyChangeEvent evt) -> {
-            if (SubstanceSynapse.WATERMARK_VISIBLE.equals(evt.getPropertyName())) {
-                list.setOpaque(!SubstanceCoreUtilities.toDrawWatermark(list));
-            }
-            if ("model".equals(evt.getPropertyName())) {
+        substancePropertyChangeListener = propertyChangeEvent -> {
+            if ("model".equals(propertyChangeEvent.getPropertyName())) {
                 SwingUtilities.invokeLater(() -> {
-                    ListModel oldModel = (ListModel) evt.getOldValue();
+                    ListModel oldModel = (ListModel) propertyChangeEvent.getOldValue();
                     if (oldModel != null) {
                         oldModel.removeListDataListener(substanceListDataListener);
                     }
-                    ListModel newModel = (ListModel) evt.getNewValue();
+                    ListModel newModel = (ListModel) propertyChangeEvent.getNewValue();
                     substanceListDataListener = new SubstanceListDataListener();
                     newModel.addListDataListener(substanceListDataListener);
                     syncModelContents();
                 });
             }
-            if ("selectionModel".equals(evt.getPropertyName())) {
+            if ("selectionModel".equals(propertyChangeEvent.getPropertyName())) {
                 // fix for issue 475 - wire the listener on the new
                 // selection model
                 SwingUtilities.invokeLater(() -> {
-                    ListSelectionModel oldModel = (ListSelectionModel) evt.getOldValue();
+                    ListSelectionModel oldModel = (ListSelectionModel) propertyChangeEvent.getOldValue();
                     if (oldModel != null) {
                         oldModel.removeListSelectionListener(substanceListSelectionListener);
                     }
-                    ListSelectionModel newModel = (ListSelectionModel) evt.getNewValue();
+                    ListSelectionModel newModel = (ListSelectionModel) propertyChangeEvent.getNewValue();
                     substanceListSelectionListener = new SubstanceListSelectionListener();
                     newModel.addListSelectionListener(substanceListSelectionListener);
                     syncModelContents();
@@ -502,8 +491,6 @@ public class SubstanceListUI extends BasicListUI implements UpdateOptimizationAw
             return;
         }
 
-        boolean isWatermarkBleed = updateInfo.toDrawWatermark;
-
         int cx = rowBounds.x;
         int cy = rowBounds.y;
         int cw = rowBounds.width;
@@ -523,19 +510,14 @@ public class SubstanceListUI extends BasicListUI implements UpdateOptimizationAw
 
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.setComposite(WidgetUtilities.getAlphaComposite(list, g));
-        if (!isWatermarkBleed) {
-            Color background = rendererComponent.getBackground();
-            // optimization - only render background if it's different
-            // from the list background
-            if (!(background instanceof UIResource) &&
-                    ((background != null) && (!list.getBackground().equals(background)
-                            || this.updateInfo.isInDecorationArea))) {
-                g2d.setColor(background);
-                g2d.fillRect(cx, cy, cw, ch);
-            }
-        } else {
-            BackgroundPaintingUtils.fillAndWatermark(g2d, this.list,
-                    rendererComponent.getBackground(), new Rectangle(cx, cy, cw, ch));
+        Color background = rendererComponent.getBackground();
+        // optimization - only render background if it's different
+        // from the list background
+        if (!(background instanceof UIResource) &&
+                ((background != null) && (!list.getBackground().equals(background)
+                        || this.updateInfo.isInDecorationArea))) {
+            g2d.setColor(background);
+            g2d.fillRect(cx, cy, cw, ch);
         }
 
         StateTransitionTracker tracker = this.stateTransitionMultiTracker.getTracker(row);

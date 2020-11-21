@@ -29,7 +29,7 @@
  */
 package org.pushingpixels.flamingo.internal.substance.ribbon.ui;
 
-import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.internal.substance.common.TransitionAwareResizableIcon;
 import org.pushingpixels.flamingo.internal.substance.common.ui.ActionPopupTransitionAwareUI;
 import org.pushingpixels.flamingo.internal.ui.ribbon.BasicRibbonGalleryUI;
@@ -83,13 +83,13 @@ public class SubstanceRibbonGalleryUI extends BasicRibbonGalleryUI {
     }
 
     @Override
-    protected void configureExpandButton(AbstractCommandButton button) {
+    protected void configureExpandButton(JCommandButton button) {
         final int fontSize = SubstanceSizeUtils.getComponentFontSize(button);
         int arrowIconHeight = (int) SubstanceSizeUtils.getSmallDoubleArrowIconHeight(fontSize);
         int arrowIconWidth = (int) SubstanceSizeUtils.getSmallArrowIconWidth(fontSize);
         final ResizableIcon arrowIcon = new TransitionAwareResizableIcon(button,
                 () -> ((ActionPopupTransitionAwareUI) button.getUI()).getActionTransitionTracker(),
-                (SubstanceColorScheme scheme, int width, int height) -> SubstanceImageCreator
+                (scheme, width, height) -> SubstanceImageCreator
                         .getDoubleArrowIcon(
                                 width, height, SubstanceSizeUtils.getSmallDoubleArrowGap(fontSize),
                                 SubstanceSizeUtils.getDoubleArrowStrokeWidth(fontSize),
@@ -103,13 +103,13 @@ public class SubstanceRibbonGalleryUI extends BasicRibbonGalleryUI {
     }
 
     @Override
-    protected void configureScrollDownButton(AbstractCommandButton button) {
+    protected void configureScrollDownButton(JCommandButton button) {
         final int fontSize = SubstanceSizeUtils.getComponentFontSize(button);
         int arrowIconHeight = (int) SubstanceSizeUtils.getSmallArrowIconHeight(fontSize);
         int arrowIconWidth = (int) SubstanceSizeUtils.getSmallArrowIconWidth(fontSize);
         final ResizableIcon arrowIcon = new TransitionAwareResizableIcon(button,
                 () -> ((ActionPopupTransitionAwareUI) button.getUI()).getActionTransitionTracker(),
-                (SubstanceColorScheme scheme, int width, int height) -> SubstanceImageCreator
+                (scheme, width, height) -> SubstanceImageCreator
                         .getArrowIcon(width, height,
                                 SubstanceSizeUtils.getDoubleArrowStrokeWidth(fontSize),
                                 SwingConstants.SOUTH, scheme),
@@ -122,16 +122,15 @@ public class SubstanceRibbonGalleryUI extends BasicRibbonGalleryUI {
     }
 
     @Override
-    protected void configureScrollUpButton(AbstractCommandButton button) {
+    protected void configureScrollUpButton(JCommandButton button) {
         final int fontSize = SubstanceSizeUtils.getComponentFontSize(button);
         int arrowIconHeight = (int) SubstanceSizeUtils.getSmallArrowIconHeight(fontSize);
         int arrowIconWidth = (int) SubstanceSizeUtils.getSmallArrowIconWidth(fontSize);
         final ResizableIcon arrowIcon = new TransitionAwareResizableIcon(button,
                 () -> ((ActionPopupTransitionAwareUI) button.getUI()).getActionTransitionTracker(),
-                (SubstanceColorScheme scheme, int width, int height) -> SubstanceImageCreator
-                        .getArrowIcon(width, height,
-                                SubstanceSizeUtils.getDoubleArrowStrokeWidth(fontSize),
-                                SwingConstants.NORTH, scheme),
+                (scheme, width, height) -> SubstanceImageCreator.getArrowIcon(width, height,
+                        SubstanceSizeUtils.getDoubleArrowStrokeWidth(fontSize),
+                        SwingConstants.NORTH, scheme),
                 new Dimension(arrowIconWidth, arrowIconHeight));
         button.setIcon(arrowIcon);
         SubstanceCortex.ComponentScope.setButtonStraightSide(button,

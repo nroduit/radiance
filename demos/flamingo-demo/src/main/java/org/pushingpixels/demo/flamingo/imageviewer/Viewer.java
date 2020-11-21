@@ -40,7 +40,7 @@ public class Viewer extends JFrame {
         this.bar = new BreadcrumbFileSelector();
 
         this.bar.getModel().addPathListener(
-                (BreadcrumbPathEvent<File> event) -> SwingUtilities.invokeLater(() -> {
+                event -> SwingUtilities.invokeLater(() -> {
                     final List<BreadcrumbItem<File>> newPath = event.getSource().getItems();
                     System.out.println("New path is ");
                     for (BreadcrumbItem<File> item : newPath) {
@@ -115,7 +115,7 @@ public class Viewer extends JFrame {
         this.iconSizeSlider.setMajorTickSpacing(50);
         this.iconSizeSlider.setMinorTickSpacing(10);
         this.iconSizeSlider.setValue(initialSize);
-        this.iconSizeSlider.addChangeListener((ChangeEvent e) -> {
+        this.iconSizeSlider.addChangeListener(changeEvent -> {
             if (!iconSizeSlider.getModel().getValueIsAdjusting()) {
                 if (iconSizeSlider.getValue() != fileViewPanel.getProjection()
                         .getPresentationModel().getCommandIconDimension()) {

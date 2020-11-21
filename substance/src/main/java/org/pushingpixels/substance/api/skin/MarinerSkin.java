@@ -36,6 +36,7 @@ import org.pushingpixels.substance.api.SubstanceSlices.ColorSchemeAssociationKin
 import org.pushingpixels.substance.api.SubstanceSlices.ComponentStateFacet;
 import org.pushingpixels.substance.api.SubstanceSlices.DecorationAreaType;
 import org.pushingpixels.substance.api.colorscheme.ColorSchemeSingleColorQuery;
+import org.pushingpixels.substance.api.colorscheme.ColorTransform;
 import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.api.painter.border.ClassicBorderPainter;
 import org.pushingpixels.substance.api.painter.border.FractionBasedBorderPainter;
@@ -46,7 +47,6 @@ import org.pushingpixels.substance.api.painter.overlay.BottomLineOverlayPainter;
 import org.pushingpixels.substance.api.painter.overlay.BottomShadowOverlayPainter;
 import org.pushingpixels.substance.api.painter.overlay.TopBezelOverlayPainter;
 import org.pushingpixels.substance.api.shaper.ClassicButtonShaper;
-import org.pushingpixels.substance.internal.utils.SubstanceColorUtilities;
 
 /**
  * <code>Mariner</code> skin. This class is part of officially supported API.
@@ -80,7 +80,7 @@ public class MarinerSkin extends SubstanceSkin {
 	 * Creates a new <code>Mariner</code> skin.
 	 */
 	public MarinerSkin() {
-		SubstanceSkin.ColorSchemes schemes = SubstanceSkin.getColorSchemes(
+		ColorSchemes schemes = SubstanceSkin.getColorSchemes(
 				this.getClass().getClassLoader().getResourceAsStream(
 						"org/pushingpixels/substance/api/skin/mariner.colorschemes"));
 
@@ -192,8 +192,8 @@ public class MarinerSkin extends SubstanceSkin {
 		// add two overlay painters to create a bezel line between
 		// menu bar and toolbars
 		this.menuOverlayPainter = new BottomLineOverlayPainter(
-				(SubstanceColorScheme scheme) -> SubstanceColorUtilities.deriveByBrightness(
-						scheme.getUltraDarkColor(), -0.5f));
+				ColorSchemeSingleColorQuery.composite(ColorSchemeSingleColorQuery.ULTRADARK,
+						ColorTransform.brightness(-0.5f)));
 		this.addOverlayPainter(this.menuOverlayPainter, DecorationAreaType.HEADER);
 
 		// add overlay painter to paint drop shadows along the bottom

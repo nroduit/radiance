@@ -20,14 +20,14 @@ public CommandMenuContentModel getContextualMenuContentModel(
         componentCommand = Command.builder()
                 .setText(resourceBundle.getString(
                         "ContextMenu.removeFromTaskbar"))
-                .setAction((CommandActionEvent event) ->
+                .setAction(commandActionEvent ->
                         getRibbon().removeTaskbarComponent(
                                 componentProjection.getContentModel()))
                 .build();
     } else {
         componentCommand = Command.builder()
                 .setText(resourceBundle.getString("ContextMenu.addToTaskbar"))
-                .setAction((CommandActionEvent event) ->
+                .setAction(commandActionEvent ->
                         getRibbon().addTaskbarComponent(componentProjection))
                 .build();
     }
@@ -47,19 +47,19 @@ private CommandMenuContentModel build(Command... commands) {
     if (getRibbon().isMinimized()) {
         commandGroup.addCommand(Command.builder()
                 .setText(resourceBundle.getString("ContextMenu.showRibbon"))
-                .setAction((CommandActionEvent event) ->
+                .setAction(commandActionEvent ->
                         getRibbon().setMinimized(false))
                 .build());
     } else {
         commandGroup.addCommand(Command.builder()
                 .setText(resourceBundle.getString("ContextMenu.hideRibbon"))
-                .setAction((CommandActionEvent event) ->
+                .setAction(commandActionEvent ->
                         getRibbon().setMinimized(true))
                 .build());
     }
     commandGroup.addCommand(Command.builder()
             .setText(resourceBundle.getString("ContextMenu.configureRibbon"))
-            .setAction((CommandActionEvent event) ->
+            .setAction(commandActionEvent ->
                     JOptionPane.showMessageDialog(BasicCheckRibbon.this,
                             "Configure ribbon option selected"))
             .build());
@@ -67,7 +67,7 @@ private CommandMenuContentModel build(Command... commands) {
 }
 ```
 
-The first is the command to minimize / restore the ribbon, using `JRibbon.isMinimized()` and `JRibbon.setMinimized()` APIs. The second is the dummy command to open a custom UI for deep configuration of the entire ribbon content - that is left to the particular application needs.
+The first is the command to minimize / restore the ribbon, using `JRibbon.isMinimized()` and `JRibbon.setMinimized()` APIs. The second is a placeholder command to open a custom UI for deep configuration of the entire ribbon content - that is left to the particular application needs.
 
 Here is our global contextual menu shown when the user right-clicks on the font combobox in the taskbar:
 

@@ -43,7 +43,7 @@ public class IcoViewer extends JFrame {
 
         this.bar.getModel()
                 .addPathListener(
-                        (BreadcrumbPathEvent<File> event) -> SwingUtilities.invokeLater(() -> {
+                        event -> SwingUtilities.invokeLater(() -> {
                             final List<BreadcrumbItem<File>> newPath = event.getSource().getItems();
                             System.out.println("New path is ");
                             for (BreadcrumbItem<File> item : newPath) {
@@ -118,7 +118,7 @@ public class IcoViewer extends JFrame {
         this.iconSizeSlider.setMinorTickSpacing(16);
         this.iconSizeSlider.setValue(initialSize);
         this.currIconSize = initialSize;
-        this.iconSizeSlider.addChangeListener((ChangeEvent e) -> {
+        this.iconSizeSlider.addChangeListener(changeEvent -> {
             if (!iconSizeSlider.getModel().getValueIsAdjusting()) {
                 int newValue = iconSizeSlider.getValue();
                 if (newValue != currIconSize) {

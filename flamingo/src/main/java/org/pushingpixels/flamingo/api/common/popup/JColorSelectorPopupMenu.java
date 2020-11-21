@@ -29,7 +29,6 @@
  */
 package org.pushingpixels.flamingo.api.common.popup;
 
-import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.KeyValuePair;
 import org.pushingpixels.flamingo.api.common.model.Command;
@@ -42,14 +41,17 @@ import org.pushingpixels.flamingo.internal.substance.common.ui.SubstanceColorSel
 import org.pushingpixels.flamingo.internal.ui.common.popup.ColorSelectorPopupMenuMultiRowSelector;
 import org.pushingpixels.flamingo.internal.ui.common.popup.ColorSelectorPopupMenuSingleRowSelector;
 import org.pushingpixels.flamingo.internal.ui.common.popup.JColorSelectorPanel;
+import org.pushingpixels.substance.internal.utils.SubstancePopupContainer;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+@SubstancePopupContainer
 public class JColorSelectorPopupMenu extends AbstractPopupMenu {
     /**
      * @see #getUIClassID
@@ -63,6 +65,7 @@ public class JColorSelectorPopupMenu extends AbstractPopupMenu {
 
     private int colorColumns;
     private JColorSelectorPanel lastColorSelectorPanel;
+    private ChangeListener contentChangeListener;
 
     private static LinkedList<Color> recentlySelected = new LinkedList<>();
 
@@ -74,7 +77,8 @@ public class JColorSelectorPopupMenu extends AbstractPopupMenu {
         this.colorColumns = this.presentationModel.getColorColumns();
 
         this.populateContent();
-        this.contentModel.addChangeListener((ChangeEvent event) -> populateContent());
+        this.contentChangeListener = (ChangeEvent event) -> populateContent();
+        this.contentModel.addChangeListener(this.contentChangeListener);
 
         this.updateUI();
     }
@@ -88,8 +92,7 @@ public class JColorSelectorPopupMenu extends AbstractPopupMenu {
         // Command presentation for menu content
         CommandButtonPresentationModel presentation =
                 CommandButtonPresentationModel.builder()
-                        .setPresentationState(
-                                this.presentationModel.getMenuPresentationState())
+                        .setPresentationState(this.presentationModel.getMenuPresentationState())
                         .setMenu(true)
                         .build();
 
@@ -101,17 +104,13 @@ public class JColorSelectorPopupMenu extends AbstractPopupMenu {
                 switch (groupEntry.getKey()) {
                     case COMMAND:
                         Command command = (Command) groupEntry.getValue();
-                        AbstractCommandButton commandButton =
-                                command.project(presentation).buildComponent();
-                        if (commandButton instanceof JCommandButton) {
-                            this.addMenuButton((JCommandButton) commandButton);
-                        }
+                        JCommandButton commandButton = command.project(presentation).buildComponent();
+                        this.addMenuButton(commandButton);
                         break;
                     case COLOR_SECTION:
                         ColorSelectorPopupMenuGroupModel.ColorSectionModel colorSectionModel =
                                 (ColorSelectorPopupMenuGroupModel.ColorSectionModel) groupEntry.getValue();
-                        this.addColorSection(colorSectionModel.getTitle(),
-                                colorSectionModel.getColors());
+                        this.addColorSection(colorSectionModel.getTitle(), colorSectionModel.getColors());
                         break;
                     case COLOR_SECTION_WITH_DERIVED:
                         ColorSelectorPopupMenuGroupModel.ColorSectionModel colorSectionWithDerivedModel =
@@ -143,8 +142,7 @@ public class JColorSelectorPopupMenu extends AbstractPopupMenu {
 
     private void addColorSectionWithDerived(String label, Color[] primaryColors) {
         if ((primaryColors == null) || (primaryColors.length != this.colorColumns)) {
-            throw new IllegalArgumentException("Must pass exactly " + this.colorColumns +
-                    " colors");
+            throw new IllegalArgumentException("Must pass exactly " + this.colorColumns + " colors");
         }
         JPanel selectorContainer = new ColorSelectorPopupMenuMultiRowSelector(this, primaryColors);
         JColorSelectorPanel selector = new JColorSelectorPanel(label, selectorContainer);
@@ -155,8 +153,7 @@ public class JColorSelectorPopupMenu extends AbstractPopupMenu {
 
     private void addColorSection(String label, Color[] primaryColors) {
         if ((primaryColors == null) || (primaryColors.length != this.colorColumns)) {
-            throw new IllegalArgumentException("Must pass exactly " + this.colorColumns +
-                    " colors");
+            throw new IllegalArgumentException("Must pass exactly " + this.colorColumns + " colors");
         }
         JPanel selectorContainer = new ColorSelectorPopupMenuSingleRowSelector(this, primaryColors);
         JColorSelectorPanel selector = new JColorSelectorPanel(label, selectorContainer);
@@ -165,8 +162,7 @@ public class JColorSelectorPopupMenu extends AbstractPopupMenu {
     }
 
     private void addRecentSection(String label) {
-        JPanel recent = new ColorSelectorPopupMenuSingleRowSelector(
-                this, recentlySelected.toArray(new Color[0]));
+        JPanel recent = new ColorSelectorPopupMenuSingleRowSelector(this, recentlySelected.toArray(new Color[0]));
         JColorSelectorPanel recentPanel = new JColorSelectorPanel(label, recent);
         recentPanel.setLastPanel(true);
         this.addMenuPanel(recentPanel);
@@ -197,16 +193,16 @@ public class JColorSelectorPopupMenu extends AbstractPopupMenu {
     }
 
     public synchronized static void addColorToRecentlyUsed(Color color) {
-        // is in?
+        // Is it already in?
         if (recentlySelected.contains(color)) {
-            // bump up to the top of the most recent
+            // Bump up to the top of the most recent
             recentlySelected.remove(color);
             recentlySelected.addLast(color);
             return;
         }
 
         if (recentlySelected.size() == 100) {
-            // too many in history, bump out the least recently used or added
+            // Too many in history, bump out the least recently used or added
             recentlySelected.removeFirst();
         }
         recentlySelected.addLast(color);

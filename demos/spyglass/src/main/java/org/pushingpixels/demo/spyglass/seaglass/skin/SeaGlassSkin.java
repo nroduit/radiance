@@ -56,7 +56,7 @@ public class SeaGlassSkin extends SubstanceSkin {
 	 * Creates a new <code>Gemini</code> skin.
 	 */
 	public SeaGlassSkin() {
-		SubstanceSkin.ColorSchemes schemes = SubstanceSkin.getColorSchemes(
+		ColorSchemes schemes = SubstanceSkin.getColorSchemes(
 				this.getClass().getClassLoader().getResourceAsStream(
 						"org/pushingpixels/demo/spyglass/seaglass/skin/seaglass.colorschemes"));
 
@@ -123,15 +123,9 @@ public class SeaGlassSkin extends SubstanceSkin {
 				DecorationAreaType.PRIMARY_TITLE_PANE);
 
 		this.addOverlayPainter(new BottomLineOverlayPainter(
-				new ColorSchemeSingleColorQuery() {
-					@Override
-					public Color query(SubstanceColorScheme scheme) {
-						return scheme.getDarkColor().darker();
-					}
-				}), DecorationAreaType.PRIMARY_TITLE_PANE);
+				scheme -> scheme.getDarkColor().darker()), DecorationAreaType.PRIMARY_TITLE_PANE);
 
 		this.buttonShaper = new ClassicButtonShaper();
-		this.watermark = null;
 		this.fillPainter = new FractionBasedFillPainter("Sea Glass",
 				new float[] { 0.0f, 0.49999f, 0.5f, 0.65f, 1.0f },
 				new ColorSchemeSingleColorQuery[] {

@@ -29,20 +29,19 @@
  */
 package org.pushingpixels.substance.extras.api.skinpack;
 
-import org.pushingpixels.substance.api.*;
+import org.pushingpixels.substance.api.SubstanceColorSchemeBundle;
+import org.pushingpixels.substance.api.SubstanceSkin;
 import org.pushingpixels.substance.api.SubstanceSlices.DecorationAreaType;
 import org.pushingpixels.substance.api.colorscheme.*;
 import org.pushingpixels.substance.api.painter.border.ClassicBorderPainter;
+import org.pushingpixels.substance.api.painter.decoration.ArcDecorationPainter;
 import org.pushingpixels.substance.api.painter.fill.StandardFillPainter;
 import org.pushingpixels.substance.api.painter.highlight.ClassicHighlightPainter;
+import org.pushingpixels.substance.api.painter.overlay.BottomLineOverlayPainter;
+import org.pushingpixels.substance.api.painter.overlay.BottomShadowOverlayPainter;
 import org.pushingpixels.substance.api.shaper.ClassicButtonShaper;
 import org.pushingpixels.substance.extras.api.colorschemepack.MixColorScheme;
-import org.pushingpixels.substance.extras.api.painterpack.decoration.Glass3DDecorationPainter;
 import org.pushingpixels.substance.extras.api.painterpack.fill.MixDelegateFillPainter;
-import org.pushingpixels.substance.extras.api.watermarkpack.SubstanceMarbleVeinWatermark;
-import org.pushingpixels.substance.internal.colorscheme.SaturatedColorScheme;
-
-import java.awt.*;
 
 /**
  * <code>Mango</code> skin. This class is part of officially supported API.
@@ -59,33 +58,41 @@ public class MangoSkin extends SubstanceSkin {
      * Creates a new <code>Mango</code> skin.
      */
     public MangoSkin() {
+        ColorSchemes schemes = SubstanceSkin.getColorSchemes(
+                this.getClass().getClassLoader().getResourceAsStream(
+                        "org/pushingpixels/substance/extras/api/skinpack/mango.colorschemes"));
+        SubstanceColorScheme enabledScheme = schemes.get("Mango Enabled");
+        SubstanceColorScheme disabledScheme = schemes.get("Mango Disabled");
+
         SubstanceColorScheme activeScheme = new MixColorScheme("Mango Active",
                 new SunGlareColorScheme(), new BarbyPinkColorScheme())
                 .saturate(0.2);
-        SubstanceColorScheme defaultScheme = new AquaColorScheme().blendWith(
-                new LimeGreenColorScheme(), 0.5).tone(0.1).saturate(-0.2);
 
-        SubstanceColorScheme disabledScheme = new SaturatedColorScheme(
-                defaultScheme, -0.3) {
-            Color foreColor = new Color(91, 165, 129);
-
-            @Override
-            public Color getForegroundColor() {
-                return foreColor;
-            }
-        };
         SubstanceColorSchemeBundle defaultSchemeBundle = new SubstanceColorSchemeBundle(
-                activeScheme, defaultScheme, disabledScheme);
+                activeScheme, enabledScheme, disabledScheme);
         this.registerDecorationAreaSchemeBundle(defaultSchemeBundle,
                 DecorationAreaType.NONE);
 
+        // mark title panes and headers as decoration areas
+        this.registerAsDecorationArea(enabledScheme,
+                DecorationAreaType.PRIMARY_TITLE_PANE,
+                DecorationAreaType.SECONDARY_TITLE_PANE,
+                DecorationAreaType.HEADER);
+
+        // Add overlay painters to paint drop shadow and a dark line along the bottom
+        // edges of headers
+        this.addOverlayPainter(BottomShadowOverlayPainter.getInstance(100), DecorationAreaType.HEADER);
+        this.addOverlayPainter(new BottomLineOverlayPainter(
+                        ColorSchemeSingleColorQuery.composite(ColorSchemeSingleColorQuery.DARK,
+                                ColorTransform.alpha(128))),
+                DecorationAreaType.HEADER);
+
         this.buttonShaper = new ClassicButtonShaper();
-        this.watermark = new SubstanceMarbleVeinWatermark();
         this.borderPainter = new ClassicBorderPainter();
         this.highlightPainter = new ClassicHighlightPainter();
         this.fillPainter = new MixDelegateFillPainter("Mixed Standard",
                 new StandardFillPainter());
-        this.decorationPainter = new Glass3DDecorationPainter();
+        this.decorationPainter = new ArcDecorationPainter();
     }
 
     @Override

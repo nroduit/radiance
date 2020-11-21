@@ -40,10 +40,10 @@ import org.pushingpixels.substance.api.colorscheme.SubstanceColorScheme;
 import org.pushingpixels.substance.api.renderer.SubstanceDefaultTableCellRenderer;
 import org.pushingpixels.substance.api.renderer.SubstanceDefaultTableHeaderCellRenderer;
 import org.pushingpixels.substance.internal.AnimationConfigurationManager;
-import org.pushingpixels.substance.internal.SubstanceSynapse;
 import org.pushingpixels.substance.internal.animation.StateTransitionMultiTracker;
 import org.pushingpixels.substance.internal.animation.StateTransitionTracker;
 import org.pushingpixels.substance.internal.painter.BackgroundPaintingUtils;
+import org.pushingpixels.substance.internal.painter.DecorationPainterUtils;
 import org.pushingpixels.substance.internal.painter.HighlightPainterUtils;
 import org.pushingpixels.substance.internal.utils.*;
 import org.pushingpixels.trident.api.Timeline.TimelineState;
@@ -60,14 +60,13 @@ import javax.swing.plaf.basic.BasicTableUI;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.*;
 
 /**
  * UI for tables in <b>Substance</b> look and feel.
- * 
+ *
  * @author Kirill Grouchnikov
  */
 public class SubstanceTableUI extends BasicTableUI implements UpdateOptimizationAware {
@@ -178,15 +177,13 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
     @Override
     protected void installDefaults() {
         super.installDefaults();
-        if (SubstanceCoreUtilities.toDrawWatermark(this.table))
-            this.table.setOpaque(false);
 
         // fix for defect 117 - need to restore default table cell
         // renderers when Substance is unset
         this.defaultRenderers = new HashMap<>();
 
-        Class<?>[] defClasses = new Class[] { Object.class, Icon.class, ImageIcon.class,
-                        Number.class, Float.class, Double.class, Date.class, Boolean.class };
+        Class<?>[] defClasses = new Class[] {Object.class, Icon.class, ImageIcon.class,
+                Number.class, Float.class, Double.class, Date.class, Boolean.class};
         for (Class<?> clazz : defClasses) {
             this.defaultRenderers.put(clazz, this.table.getDefaultRenderer(clazz));
         }
@@ -214,7 +211,7 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
         this.defaultEditors = new HashMap<>();
 
-        Class<?>[] defEditorClasses = new Class[] { Boolean.class };
+        Class<?>[] defEditorClasses = new Class[] {Boolean.class};
         for (Class<?> clazz : defEditorClasses) {
             this.defaultEditors.put(clazz, this.table.getDefaultEditor(clazz));
         }
@@ -241,7 +238,7 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
         //
         // The current solution first checks whether all the renderers
         // come from Substance. If not, it does nothing. If they do, it
-        // creates a dummy label, computes its preferred height and apply
+        // creates a placeholder label, computes its preferred height and apply
         // insets. There's no need to go over each cell and compute its
         // preferred height - since at this moment the cell renderers
         // *are* Substance labels.
@@ -262,10 +259,9 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
         if (areAllRenderersFromSubstance) {
             Insets rendererInsets = SubstanceSizeUtils
                     .getTableCellRendererInsets(SubstanceSizeUtils.getComponentFontSize(table));
-            JLabel dummy = new JLabel("dummy");
-            dummy.setFont(table.getFont());
-            int rowHeight = dummy.getPreferredSize().height + rendererInsets.bottom
-                    + rendererInsets.top;
+            JLabel forSizing = new JLabel("Text");
+            forSizing.setFont(table.getFont());
+            int rowHeight = forSizing.getPreferredSize().height + rendererInsets.bottom + rendererInsets.top;
             table.setRowHeight(rowHeight);
         }
 
@@ -279,11 +275,9 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
     /**
      * Installs Substance-specific renderers for column classes that don't have application-specific
      * renderers installed by the user code.
-     * 
-     * @param clazz
-     *            Column class.
-     * @param renderer
-     *            Default renderer for the specified column class.
+     *
+     * @param clazz    Column class.
+     * @param renderer Default renderer for the specified column class.
      */
     protected void installRendererIfNecessary(Class<?> clazz, TableCellRenderer renderer) {
         TableCellRenderer currRenderer = this.table.getDefaultRenderer(clazz);
@@ -299,11 +293,9 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
     /**
      * Installs Substance-specific renderers for column classes that don't have application-specific
      * renderers installed by the user code.
-     * 
-     * @param clazz
-     *            Column class.
-     * @param editor
-     *            Default renderer for the specified column class.
+     *
+     * @param clazz  Column class.
+     * @param editor Default renderer for the specified column class.
      */
     protected void installEditorIfNecessary(Class<?> clazz, TableCellEditor editor) {
         TableCellEditor currEditor = this.table.getDefaultEditor(clazz);
@@ -339,11 +331,9 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
     /**
      * Uninstalls default Substance renderers that were installed in
      * {@link #installRendererIfNecessary(Class, TableCellRenderer)}.
-     * 
-     * @param clazz
-     *            Column class.
-     * @param renderer
-     *            Renderer to restore.
+     *
+     * @param clazz    Column class.
+     * @param renderer Renderer to restore.
      */
     protected void uninstallRendererIfNecessary(Class<?> clazz, TableCellRenderer renderer) {
         TableCellRenderer currRenderer = this.table.getDefaultRenderer(clazz);
@@ -360,11 +350,9 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
     /**
      * Uninstalls default Substance editors that were installed in
      * {@link #installEditorIfNecessary(Class, TableCellEditor)}.
-     * 
-     * @param clazz
-     *            Column class.
-     * @param editor
-     *            Editor to restore.
+     *
+     * @param clazz  Column class.
+     * @param editor Editor to restore.
      */
     protected void uninstallEditorIfNecessary(Class<?> clazz, TableCellEditor editor) {
         TableCellEditor currEditor = this.table.getDefaultEditor(clazz);
@@ -381,19 +369,14 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
     @Override
     protected void installListeners() {
         super.installListeners();
-        this.substancePropertyChangeListener = (PropertyChangeEvent evt) -> {
-            if (SubstanceSynapse.WATERMARK_VISIBLE.equals(evt.getPropertyName())) {
-                SubstanceTableUI.this.table.setOpaque(
-                        !SubstanceCoreUtilities.toDrawWatermark(SubstanceTableUI.this.table));
-            }
-
-            if ("columnSelectionAllowed".equals(evt.getPropertyName())
-                    || "rowSelectionAllowed".equals(evt.getPropertyName())) {
+        this.substancePropertyChangeListener = propertyChangeEvent -> {
+            if ("columnSelectionAllowed".equals(propertyChangeEvent.getPropertyName())
+                    || "rowSelectionAllowed".equals(propertyChangeEvent.getPropertyName())) {
                 SubstanceTableUI.this.syncSelection(true);
             }
 
-            if ("model".equals(evt.getPropertyName())) {
-                TableModel old = (TableModel) evt.getOldValue();
+            if ("model".equals(propertyChangeEvent.getPropertyName())) {
+                TableModel old = (TableModel) propertyChangeEvent.getOldValue();
                 if (old != null) {
                     old.removeTableModelListener(substanceTableStateListener);
                 }
@@ -404,8 +387,8 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
                 SubstanceTableUI.this.syncSelection(true);
             }
 
-            if ("columnModel".equals(evt.getPropertyName())) {
-                TableColumnModel old = (TableColumnModel) evt.getOldValue();
+            if ("columnModel".equals(propertyChangeEvent.getPropertyName())) {
+                TableColumnModel old = (TableColumnModel) propertyChangeEvent.getOldValue();
                 if (old != null) {
                     old.getSelectionModel()
                             .removeListSelectionListener(substanceTableStateListener);
@@ -422,16 +405,16 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
                     // fix for issue 309 - syncing animations on tables
                     // and table headers.
                     SubstanceTableHeaderUI headerUI = (SubstanceTableHeaderUI) tableHeader.getUI();
-                    headerUI.processColumnModelChangeEvent((TableColumnModel) evt.getOldValue(),
-                            (TableColumnModel) evt.getNewValue());
+                    headerUI.processColumnModelChangeEvent((TableColumnModel) propertyChangeEvent.getOldValue(),
+                            (TableColumnModel) propertyChangeEvent.getNewValue());
                 }
             }
 
             // fix for defect 243 - not tracking changes to selection
             // model results in incorrect selection painting on JXTreeTable
             // component from SwingX.
-            if ("selectionModel".equals(evt.getPropertyName())) {
-                ListSelectionModel old = (ListSelectionModel) evt.getOldValue();
+            if ("selectionModel".equals(propertyChangeEvent.getPropertyName())) {
+                ListSelectionModel old = (ListSelectionModel) propertyChangeEvent.getOldValue();
                 if (old != null) {
                     old.removeListSelectionListener(substanceTableStateListener);
                 }
@@ -443,12 +426,12 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
             // fix for issue 479 - tracking sort / filter changes and
             // canceling selection animations
-            if ("rowSorter".equals(evt.getPropertyName())) {
-                RowSorter old = (RowSorter) evt.getOldValue();
+            if ("rowSorter".equals(propertyChangeEvent.getPropertyName())) {
+                RowSorter old = (RowSorter) propertyChangeEvent.getOldValue();
                 if (old != null) {
                     old.removeRowSorterListener(substanceTableStateListener);
                 }
-                RowSorter newSorter = (RowSorter) evt.getNewValue();
+                RowSorter newSorter = (RowSorter) propertyChangeEvent.getNewValue();
                 if (newSorter != null) {
                     newSorter.addRowSorterListener(substanceTableStateListener);
                 }
@@ -457,7 +440,7 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
                 SubstanceTableUI.this.syncSelection(true);
             }
 
-            if ("font".equals(evt.getPropertyName())) {
+            if ("font".equals(propertyChangeEvent.getPropertyName())) {
                 SwingUtilities.invokeLater(() -> {
                     // fix for bug 341
                     if (table == null)
@@ -466,10 +449,10 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
                 });
             }
 
-            if ("background".equals(evt.getPropertyName())) {
+            if ("background".equals(propertyChangeEvent.getPropertyName())) {
                 // propagate application-specific background color to the
                 // header.
-                Color newBackgr = (Color) evt.getNewValue();
+                Color newBackgr = (Color) propertyChangeEvent.getNewValue();
                 JTableHeader header = table.getTableHeader();
                 if (header != null) {
                     Color headerBackground = header.getBackground();
@@ -492,7 +475,7 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
             // fix for issue 361 - track enabled status of the table
             // and propagate to the table header
-            if ("enabled".equals(evt.getPropertyName())) {
+            if ("enabled".equals(propertyChangeEvent.getPropertyName())) {
                 JTableHeader header = table.getTableHeader();
                 if (header != null) {
                     header.setEnabled(table.isEnabled());
@@ -500,8 +483,8 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
                 }
             }
 
-            if ("dropLocation".equals(evt.getPropertyName())) {
-                JTable.DropLocation oldValue = (JTable.DropLocation) evt.getOldValue();
+            if ("dropLocation".equals(propertyChangeEvent.getPropertyName())) {
+                JTable.DropLocation oldValue = (JTable.DropLocation) propertyChangeEvent.getOldValue();
                 if (oldValue != null) {
                     Rectangle oldRect = getCellRectangleForRepaint(oldValue.getRow(),
                             oldValue.getColumn());
@@ -515,10 +498,10 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
                 }
             }
 
-            if ("tableCellEditor".equals(evt.getPropertyName())) {
+            if ("tableCellEditor".equals(propertyChangeEvent.getPropertyName())) {
                 // fix for issue 481 - rollovers on cell editing
-                TableCellEditor newEditor = (TableCellEditor) evt.getNewValue();
-                TableCellEditor oldEditor = (TableCellEditor) evt.getOldValue();
+                TableCellEditor newEditor = (TableCellEditor) propertyChangeEvent.getNewValue();
+                TableCellEditor oldEditor = (TableCellEditor) propertyChangeEvent.getOldValue();
                 if (oldEditor != null) {
                     table.getEditorComponent().removeMouseListener(substanceFadeRolloverListener);
                 }
@@ -620,8 +603,8 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
         bounds.x = bounds.y = 0;
 
         if (this.table.getRowCount() <= 0 || this.table.getColumnCount() <= 0 ||
-        // this check prevents us from painting the entire table
-        // when the clip doesn't intersect our bounds at all
+                // this check prevents us from painting the entire table
+                // when the clip doesn't intersect our bounds at all
                 !bounds.intersects(clip)) {
 
             return;
@@ -682,11 +665,16 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
         Color gridColor = this.table.getGridColor();
         if (gridColor instanceof UIResource) {
-            SubstanceColorScheme scheme = SubstanceColorSchemeUtilities.getColorScheme(this.table,
-                    ColorSchemeAssociationKind.BORDER,
-                    this.table.isEnabled() ? ComponentState.ENABLED
-                            : ComponentState.DISABLED_UNSELECTED);
-            gridColor = scheme.getLineColor();
+            gridColor = SubstanceCoreUtilities.getSkin(this.table).getOverlayColor(
+                    SubstanceSlices.ColorOverlayType.LINE,
+                    DecorationPainterUtils.getDecorationType(this.table), currState);
+            if (gridColor == null) {
+                SubstanceColorScheme scheme = SubstanceColorSchemeUtilities.getColorScheme(this.table,
+                        ColorSchemeAssociationKind.BORDER,
+                        this.table.isEnabled() ? ComponentState.ENABLED
+                                : ComponentState.DISABLED_UNSELECTED);
+                gridColor = scheme.getLineColor();
+            }
         }
         g2d.setColor(gridColor);
 
@@ -1090,22 +1078,16 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
             component.setBounds(cellRect);
             component.validate();
         } else {
-            boolean isWatermarkBleed = this.updateInfo.toDrawWatermark;
             if (rendererComponent != null) {
-                if (!isWatermarkBleed) {
-                    Color background = rendererComponent.getBackground();
-                    // optimization - only render background if it's different
-                    // from the table background
-                    if ((background != null) && (!table.getBackground().equals(background)
-                            || this.updateInfo.isInDecorationArea)) {
-                        // fill with the renderer background color
-                        g2d.setColor(background);
-                        g2d.fillRect(highlightCellRect.x, highlightCellRect.y,
-                                highlightCellRect.width, highlightCellRect.height);
-                    }
-                } else {
-                    BackgroundPaintingUtils.fillAndWatermark(g2d, this.table,
-                            rendererComponent.getBackground(), highlightCellRect);
+                Color background = rendererComponent.getBackground();
+                // optimization - only render background if it's different
+                // from the table background
+                if ((background != null) && (!table.getBackground().equals(background)
+                        || this.updateInfo.isInDecorationArea)) {
+                    // fill with the renderer background color
+                    g2d.setColor(background);
+                    g2d.fillRect(highlightCellRect.x, highlightCellRect.y,
+                            highlightCellRect.width, highlightCellRect.height);
                 }
             }
 
@@ -1190,9 +1172,6 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
                         ? this.selectedIndices.containsKey(cellId)
                         : this.table.isCellSelected(row, column);
                 boolean newOpaque = !(isSelected || isRollover || hasHighlights);
-
-                if (this.updateInfo.toDrawWatermark)
-                    newOpaque = false;
 
                 Map<Component, Boolean> opacity = new HashMap<>();
                 if (!newOpaque)
@@ -1338,7 +1317,7 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * Repaints a single cell during the fade animation cycle.
-     * 
+     *
      * @author Kirill Grouchnikov
      */
     protected class CellRepaintCallback extends EventDispatchThreadTimelineCallbackAdapter {
@@ -1359,13 +1338,10 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
         /**
          * Creates a new animation repaint callback.
-         * 
-         * @param table
-         *            Associated table.
-         * @param rowIndex
-         *            Associated (animated) row index.
-         * @param columnIndex
-         *            Associated (animated) column index.
+         *
+         * @param table       Associated table.
+         * @param rowIndex    Associated (animated) row index.
+         * @param columnIndex Associated (animated) column index.
          */
         public CellRepaintCallback(JTable table, int rowIndex, int columnIndex) {
             super();
@@ -1412,7 +1388,7 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * Repaints a single row during the fade animation cycle.
-     * 
+     *
      * @author Kirill Grouchnikov
      */
     protected class RowRepaintCallback extends EventDispatchThreadTimelineCallbackAdapter {
@@ -1428,11 +1404,9 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
         /**
          * Creates a new animation repaint callback.
-         * 
-         * @param table
-         *            Associated table.
-         * @param rowIndex
-         *            Associated (animated) row index.
+         *
+         * @param table    Associated table.
+         * @param rowIndex Associated (animated) row index.
          */
         public RowRepaintCallback(JTable table, int rowIndex) {
             super();
@@ -1485,7 +1459,7 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * Repaints a single column during the fade animation cycle.
-     * 
+     *
      * @author Kirill Grouchnikov
      */
     protected class ColumnRepaintCallback extends EventDispatchThreadTimelineCallbackAdapter {
@@ -1501,11 +1475,9 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
         /**
          * Creates a new animation repaint callback.
-         * 
-         * @param table
-         *            Associated table.
-         * @param columnIndex
-         *            Associated (animated) column index.
+         *
+         * @param table       Associated table.
+         * @param columnIndex Associated (animated) column index.
          */
         public ColumnRepaintCallback(JTable table, int columnIndex) {
             super();
@@ -1556,7 +1528,7 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * ID of a single table cell.
-     * 
+     *
      * @author Kirill Grouchnikov
      */
     public static class TableCellId implements Comparable<TableCellId> {
@@ -1572,11 +1544,9 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
         /**
          * Creates a new cell ID.
-         * 
-         * @param row
-         *            Cell row.
-         * @param column
-         *            Cell column.
+         *
+         * @param row    Cell row.
+         * @param column Cell column.
          */
         public TableCellId(int row, int column) {
             this.row = row;
@@ -1613,7 +1583,7 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * State listener for tracking the selection changes.
-     * 
+     *
      * @author Kirill Grouchnikov
      */
     protected class TableStateListener
@@ -1696,7 +1666,7 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * Listener for fade animations on table rollovers.
-     * 
+     *
      * @author Kirill Grouchnikov
      */
     private class RolloverFadeListener implements MouseListener, MouseMotionListener {
@@ -1716,9 +1686,6 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
         }
 
         public void mouseExited(MouseEvent e) {
-            // if (SubstanceCoreUtilities.toBleedWatermark(list))
-            // return;
-
             if (table == null)
                 return;
 
@@ -1732,11 +1699,11 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
             PointerInfo pi = MouseInfo.getPointerInfo();
             Point mouseLoc = pi != null ? pi.getLocation() : null;
             Window windowAncestor = SwingUtilities.getWindowAncestor(table);
-            if ((mouseLoc != null) && (windowAncestor != null)) { 
+            if ((mouseLoc != null) && (windowAncestor != null)) {
                 SwingUtilities.convertPointFromScreen(mouseLoc, windowAncestor);
                 Component deepest = SwingUtilities.getDeepestComponentAt(windowAncestor, mouseLoc.x,
                         mouseLoc.y);
-    
+
                 while (deepest != null) {
                     if (deepest == table) {
                         // still in table
@@ -1775,9 +1742,8 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
         /**
          * Handles various mouse move events and initiates the fade animation if necessary.
-         * 
-         * @param e
-         *            Mouse event.
+         *
+         * @param e Mouse event.
          */
         private void handleMoveForHeader(MouseEvent e) {
             if (!SubstanceTableUI.this.table.getColumnSelectionAllowed())
@@ -1838,9 +1804,8 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
         /**
          * Handles various mouse move events and initiates the fade animation if necessary.
-         * 
-         * @param mousePoint
-         *            Mouse event location.
+         *
+         * @param mousePoint Mouse event location.
          */
         private void handleMouseMove(Point mousePoint) {
             // synchronized (SubstanceTableUI.this.table) {
@@ -1949,11 +1914,9 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * Returns a comparable ID for the specified location.
-     * 
-     * @param row
-     *            Row index.
-     * @param column
-     *            Column index.
+     *
+     * @param row    Row index.
+     * @param column Column index.
      * @return Comparable ID for the specified location.
      */
     public TableCellId getId(int row, int column) {
@@ -2132,9 +2095,8 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * Returns the current state for the specified cell.
-     * 
-     * @param cellIndex
-     *            Cell index.
+     *
+     * @param cellIndex Cell index.
      * @return The current state for the specified cell.
      */
     public ComponentState getCellState(TableCellId cellIndex) {
@@ -2168,9 +2130,8 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * Returns the current state for the specified cell.
-     * 
-     * @param cellId
-     *            Cell index.
+     *
+     * @param cellId Cell index.
      * @return The current state for the specified cell.
      */
     public StateTransitionTracker.ModelStateInfo getModelStateInfo(TableCellId cellId) {
@@ -2186,7 +2147,7 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * Checks whether the table has animations.
-     * 
+     *
      * @return <code>true</code> if the table has animations, <code>false</code> otherwise.
      */
     protected boolean _hasAnimations() {
@@ -2211,9 +2172,9 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * Checks whether the table has selection animations.
-     * 
+     *
      * @return <code>true</code> if the table has selection animations, <code>false</code>
-     *         otherwise.
+     * otherwise.
      */
     protected boolean _hasSelectionAnimations() {
         return this._hasAnimations()
@@ -2222,7 +2183,7 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * Checks whether the table has rollover animations.
-     * 
+     *
      * @return <code>true</code> if the table has rollover animations, <code>false</code> otherwise.
      */
     protected boolean _hasRolloverAnimations() {
@@ -2232,7 +2193,7 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * Returns the index of the rollover column.
-     * 
+     *
      * @return The index of the rollover column.
      */
     public int getRolloverColumnIndex() {
@@ -2241,13 +2202,11 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * Returns indication whether the specified cell has focus.
-     * 
-     * @param row
-     *            Cell row index.
-     * @param column
-     *            Cell column index.
+     *
+     * @param row    Cell row index.
+     * @param column Cell column index.
      * @return <code>true</code> If the focus is on the specified cell, <code>false</code>
-     *         otherwise.
+     * otherwise.
      */
     public boolean isFocusedCell(int row, int column) {
         return (this.focusedCellId != null) && (this.focusedCellId.row == row)
@@ -2269,7 +2228,7 @@ public class SubstanceTableUI extends BasicTableUI implements UpdateOptimization
 
     /**
      * Returns the cell renderer insets of this table. Is for internal use only.
-     * 
+     *
      * @return The cell renderer insets of this table.
      */
     public Insets getCellRendererInsets() {

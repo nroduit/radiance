@@ -138,16 +138,14 @@ public class SubstanceCortex {
          * @param newSkin         Skin to set.
          * @param toUpdateWindows if <code>true</code>, the
          *                        {@link SwingUtilities#updateComponentTreeUI(Component)} is
-         *                        called on all
-         *                        windows returned by {@link Window#getWindows()} API.
+         *                        called on all windows returned by {@link Window#getWindows()} API.
          * @return <code>true</code> if the specified skin has been set successfully,
          * <code>false</code> otherwise.
          * @see #setSkin(SubstanceSkin)
          */
         static boolean setSkin(SubstanceSkin newSkin, boolean toUpdateWindows) {
             if (!SwingUtilities.isEventDispatchThread()) {
-                throw new IllegalStateException(
-                        "This method must be called on the Event Dispatch Thread");
+                throw new IllegalStateException("This method must be called on the Event Dispatch Thread");
             }
 
             if (!newSkin.isValid())
@@ -165,6 +163,7 @@ public class SubstanceCortex {
                 try {
                     UIManager.setLookAndFeel(derived);
                 } catch (UnsupportedLookAndFeelException ulafe) {
+                    ulafe.printStackTrace(System.err);
                     return false;
                 }
                 if (!(UIManager.getLookAndFeel() instanceof SubstanceLookAndFeel)) {
@@ -182,20 +181,9 @@ public class SubstanceCortex {
                     return false;
                 }
 
-                // fix for defect 109 - memory leak on watermark switch
-                if ((currentSkin != null) && (currentSkin.getWatermark() != null)) {
-                    currentSkin.getWatermark().dispose();
-                }
-                if (newSkin.getWatermark() != null) {
-                    if (!newSkin.getWatermark().updateWatermarkImage(newSkin)) {
-                        return false;
-                    }
-                }
-
                 UIDefaults lafDefaults = UIManager.getLookAndFeelDefaults();
-                UIDefaults defaults = lafDefaults;
                 // The table will be null when the skin is set using a custom LAF
-                if (defaults != null) {
+                if (lafDefaults != null) {
                     initFontDefaults(lafDefaults, getFontPolicy().getFontSet());
                     newSkin.addCustomEntriesToTable(lafDefaults);
                     SubstancePluginRepository.getInstance()
@@ -213,9 +201,7 @@ public class SubstanceCortex {
                     }
                 }
 
-                if (isSubstance) {
-                    LazyResettableHashMap.reset();
-                }
+                LazyResettableHashMap.reset();
 
                 currentSkin = newSkin;
 
@@ -227,13 +213,8 @@ public class SubstanceCortex {
                     skinChangeListener.skinChanged();
                 }
                 return true;
-            } catch (NoClassDefFoundError ncdfe) {
-                // this may happen when a skin references some class
-                // that can't be found in the classpath.
-                ncdfe.printStackTrace(System.out);
-                return false;
-            } catch (Exception e) {
-                e.printStackTrace(System.out);
+            } catch (NoClassDefFoundError | Exception e) {
+                e.printStackTrace(System.err);
                 return false;
             }
         }
@@ -1069,23 +1050,6 @@ public class SubstanceCortex {
          */
         public static void setAutomaticScrollPresence(Boolean hasAutomaticScroll) {
             UIManager.put(SubstanceSynapse.AUTO_SCROLL, hasAutomaticScroll);
-        }
-
-        /**
-         * Specifies that watermark should be painted on all components. There is a special default
-         * setting for trees, tables, lists and text components. These show watermark only when
-         * {@link ComponentOrParentChainScope#setWatermarkVisible(JComponent, Boolean)} is called
-         * with <code>true</code> on component itself or one of its ancestors, or this method is
-         * called with <code>true</code>.
-         *
-         * @param watermarkVisible If <code>true</code>, watermark will be painted on all
-         *                         components not explicitly configured with
-         *                         {@link ComponentOrParentChainScope#setWatermarkVisible(JComponent, Boolean)}.
-         *                         Pass <code>null</code> to reset to the default behavior.
-         * @see ComponentOrParentChainScope#setWatermarkVisible(JComponent, Boolean)
-         */
-        public static void setWatermarkVisible(Boolean watermarkVisible) {
-            UIManager.put(SubstanceSynapse.WATERMARK_VISIBLE, watermarkVisible);
         }
 
         /**
@@ -2161,25 +2125,6 @@ public class SubstanceCortex {
          */
         public static void setSelectTextOnFocus(JComponent comp, Boolean selectTextOnFocus) {
             comp.putClientProperty(SubstanceSynapse.TEXT_SELECT_ON_FOCUS, selectTextOnFocus);
-        }
-
-        /**
-         * Specifies that watermark should be painted on the component and its nested children.
-         * There is a special default setting for trees, tables, lists and text components. These
-         * show watermark only when this method is called with <code>true</code> on the component
-         * itself or one of its ancestors, or
-         * {@link GlobalScope#setWatermarkVisible(Boolean)} is called with
-         * <code>true</code>.
-         *
-         * @param comp             Component.
-         * @param watermarkVisible If <code>true</code>, watermark will be painted on the
-         *                         component and its
-         *                         nested children. Pass <code>null</code> to reset to the
-         *                         default behavior.
-         * @see GlobalScope#setWatermarkVisible(Boolean)
-         */
-        public static void setWatermarkVisible(JComponent comp, Boolean watermarkVisible) {
-            comp.putClientProperty(SubstanceSynapse.WATERMARK_VISIBLE, watermarkVisible);
         }
 
         /**

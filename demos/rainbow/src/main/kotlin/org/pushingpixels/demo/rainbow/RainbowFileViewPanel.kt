@@ -30,15 +30,18 @@
  */
 package org.pushingpixels.demo.rainbow
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.swing.Swing
 import org.pushingpixels.flamingo.api.bcb.JBreadcrumbBar
 import org.pushingpixels.flamingo.api.common.*
 import org.pushingpixels.flamingo.api.common.model.Command
-import org.pushingpixels.flamingo.api.common.CommandAction
 import org.pushingpixels.flamingo.api.layout.TransitionLayoutManager
+import org.pushingpixels.neon.api.icon.ResizableIcon
 import org.pushingpixels.photon.api.icon.SvgBatikResizableIcon
 import java.awt.Dimension
 import java.io.InputStream
-import javax.swing.SwingUtilities
 
 /**
  * Panel that hosts SVG-based gallery buttons.
@@ -51,15 +54,14 @@ class RainbowFileViewPanel<T>(private val bar: JBreadcrumbBar<T>, startingDimens
         TransitionLayoutManager.getInstance().track(this, true)
     }
 
-    override fun configureCommand(leaf: Leaf, command: Command, icon: org.pushingpixels.neon.api.icon.ResizableIcon?) {
+    override fun configureCommand(leaf: Leaf, command: Command, icon: ResizableIcon?) {
         command.actionRichTooltip = RichTooltip.builder()
                 .setTitle("Transcode")
                 .addDescriptionSection("Click to generate Java2D class")
                 .build()
         command.action = CommandAction {
-            SwingUtilities.invokeLater {
-                // can't pass the stream contents since the
-                // input can be .svgz
+            GlobalScope.launch(Dispatchers.Swing) {
+                // can't pass the stream contents since the input can be .svgz
                 val svgIcon = icon as SvgBatikResizableIcon
                 RainbowUtils.processSvgButtonClick(svgIcon.svgBytes, leaf.leafName)
             }
@@ -71,12 +73,12 @@ class RainbowFileViewPanel<T>(private val bar: JBreadcrumbBar<T>, startingDimens
         return name.endsWith(".svg") || name.endsWith(".svgz")
     }
 
-    override fun getLeafContent(leaf: T): java.io.InputStream? {
+    override fun getLeafContent(leaf: T): InputStream? {
         return bar.callback.getLeafContent(leaf)
     }
 
     override fun getResizableIcon(leaf: AbstractFileViewPanel.Leaf, stream: InputStream,
-            state: CommandButtonPresentationState, dimension: Dimension): org.pushingpixels.neon.api.icon.ResizableIcon? {
+            state: CommandButtonPresentationState, dimension: Dimension): ResizableIcon? {
         val name = leaf.leafName
         return if (name.endsWith(".svg"))
             SvgBatikResizableIcon.getSvgIcon(leaf.leafStream, dimension)

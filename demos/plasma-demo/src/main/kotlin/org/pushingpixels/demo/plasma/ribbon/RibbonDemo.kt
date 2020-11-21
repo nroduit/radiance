@@ -30,6 +30,10 @@
 package org.pushingpixels.demo.plasma.ribbon
 
 import com.jgoodies.forms.builder.FormBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.swing.Swing
 import org.pushingpixels.demo.plasma.LocaleSwitcher
 import org.pushingpixels.demo.plasma.popup.ColorIcon
 import org.pushingpixels.demo.plasma.svg.*
@@ -49,6 +53,7 @@ import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizeSequencingPo
 import org.pushingpixels.meteor.addDelayedActionListener
 import org.pushingpixels.meteor.addDelayedItemListener
 import org.pushingpixels.meteor.awt.brightness
+import org.pushingpixels.meteor.awt.deriveByBrightness
 import org.pushingpixels.meteor.awt.render
 import org.pushingpixels.neon.api.NeonCortex
 import org.pushingpixels.neon.api.icon.ResizableIcon
@@ -274,7 +279,7 @@ private class SimpleResizableIcon(private val priority: PresentationPriority,
 
         graphics.color = color
         graphics.fillOval(cx - rx, cy - ry, 2 * rx, 2 * ry)
-        graphics.color = color.darker()
+        graphics.color = color.deriveByBrightness(-0.4)
         graphics.drawOval(cx - rx, cy - ry, 2 * rx, 2 * ry)
         graphics.drawRect(x, y, this.currWidth - 2, this.currHeight - 2)
 
@@ -1702,7 +1707,7 @@ fun getApplicationMenuRichTooltipIcon(): Factory {
 }
 
 fun main() {
-    SwingUtilities.invokeLater {
+    GlobalScope.launch(Dispatchers.Swing) {
         JFrame.setDefaultLookAndFeelDecorated(true)
         JDialog.setDefaultLookAndFeelDecorated(true)
 
@@ -2081,6 +2086,6 @@ fun main() {
         javaRibbonFrame.setLocation(r.x, r.y)
         javaRibbonFrame.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
 
-        javaRibbonFrame.setVisible(true)
+        javaRibbonFrame.isVisible = true
     }
 }
